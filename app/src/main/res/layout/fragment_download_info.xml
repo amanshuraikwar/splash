@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+    
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_vertical"
+            android:elevation="2dp">
+
+            <ImageView
+                android:id="@+id/downloadingPhotoIv"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/me"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/downloadIconIv"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/ic_file_download_black_24dp"
+                android:tint="@color/fog"
+                tools:ignore="ContentDescription" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="104dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/downloadFileInfoTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="abcwd.jpg"
+                android:textAppearance="@style/TextAppearance.Body2" />
+
+            <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:indeterminate="false"
+                android:progress="40"
+                android:max="100"
+                android:progressTint="@color/green"
+                app:mpb_progressStyle="horizontal"
+                app:mpb_useIntrinsicPadding="false"
+                app:mpb_progressBackgroundTint="@color/midGrey"
+                style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:layout_gravity="end">
+
+                <Button
+                    android:id="@+id/retryBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:text="RETRY"/>
+
+                <Button
+                    android:id="@+id/cancelBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:text="CANCEL"/>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="40dp">
+
+            <TextView
+                android:id="@+id/downloadTitleTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="downloading"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.Caption"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="*"
+                android:textAppearance="@android:style/TextAppearance.Material.Caption" />
+            <TextView
+                android:id="@+id/downloadProgressTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="2MB"
+                android:textAllCaps="true"
+                android:textAppearance="@android:style/TextAppearance.Material.Caption" />
+        </LinearLayout>
+
+
+
+        
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/download_sheet_height"
+        android:background="@color/fog"
+        android:visibility="gone"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/enqueuedDownloadNoTv"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:text="3"
+            android:background="@drawable/circle_background_blue"
+            android:textAppearance="@android:style/TextAppearance.Material.Body2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="56dp"
+            android:layout_gravity="center_vertical"
+            android:text="downloads enqueued"
+            android:textAppearance="@android:style/TextAppearance.Material.Body1"/>
+    </FrameLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/pendingDownloadsRv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/download_sheet_height"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFeatureSettings="smcp"
+        android:gravity="center"
+        android:padding="32dp"
+        android:text="@string/download_queue_empty"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+
+</FrameLayout>

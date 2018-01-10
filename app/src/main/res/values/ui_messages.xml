@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="photo_exist_in_dowload_queue">Photo already exists in Download Queue!</string>
+    <string name="download_complete">Download Completed!</string>
+    <string name="download_cancelled">Download Cancelled!</string>
+    <string name="download_started">Download Started!</string>
+
+    <string name="download_queue_empty">Download Queue will be shown here.</string>
+
+    <string name="io_exception_title">
+        Network Error!
+    </string>
+
+    <string name="unknown_exception_title">
+        Unknown Exception!
+    </string>
+
+    <string name="unknown_exception_message">
+        Please try again after some time
+    </string>
+
+    <string name="io_exception_message">
+        Please check your internet connection.
+    </string>
+
+    <string name="unsplash_api_rate_limit_exceed_title">
+        Api Limit Exceeded!
+    </string>
+
+    <string name="unsplash_api_unknown_exception_title">
+        Unknown Api Exception!
+    </string>
+
+    <string name="unsplash_api_rate_limit_exceed_message">
+        Please try again after… about an hour.
+    </string>
+
+    <string name="unsplash_api_unknown_exception_message">
+        Please try again after some time.
+    </string>
+</resources>

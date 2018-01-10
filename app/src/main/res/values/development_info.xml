@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="developer_linkedin">
+        https://www.linkedin.com/in/amanshu-raikwar-36b534103/
+    </string>
+
+    <string name="developer_github">
+        https://github.com/amanshuraikwar
+    </string>
+
+    <string name="developer_instagram">
+        https://instagram.com/amanshuraikwar
+    </string>
+
+    <string name="project_github">
+        https://github.com/amanshuraikwar/musicplayer
+    </string>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="download_sheet_height">104dp</dimen>
+    <dimen name="persistent_message_parent_height">26dp</dimen>
+</resources>

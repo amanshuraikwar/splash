@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/supl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/persistentMessageFl"
+        android:gravity="bottom"
+        app:umanoPanelHeight="@dimen/download_sheet_height"
+        app:umanoShadowHeight="2dp"
+        app:umanoInitialState="hidden">
+
+        <FrameLayout
+            android:id="@+id/mainContentFl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/persistentMessageFl"
+            android:background="@color/fog">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:actionBarSize"
+                app:title="@string/app_name"
+                style="@style/Widget.Splash.Toolbar.SmallCapsTitle"/>
+
+            <FrameLayout
+                android:id="@+id/contentFl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_info_outline_black_24dp"
+                android:clickable="true"
+                android:focusable="true"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/bottomSheetContentFl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="android.support.design.widget.BottomSheetBehavior" />
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    <LinearLayout
+        android:id="@+id/persistentMessageFl"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/persistent_message_parent_height"
+        android:layout_above="@+id/bottomNav"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:background="@color/darkRed"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:elevation="6dp">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_warning_black_16dp"
+            android:tint="@color/fog"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/no_internet_connection_txt"
+            android:textAppearance="@style/TextAppearance.PersistentMessage" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_landscape_black_24dp"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_search_black_24dp"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_file_download_black_24dp"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_info_outline_black_24dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bnv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        app:menu="@menu/navigation"
+        android:visibility="gone"/>
+</RelativeLayout>
