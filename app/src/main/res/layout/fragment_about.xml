@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.android.sonu.ummsplash.ui.widget.WidthFitSquareLayout
+    <com.sonu.app.splash.ui.widget.WidthFitSquareLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent">
@@ -56,7 +56,7 @@
             android:clickable="true"
             android:focusable="true"
             tools:ignore="ContentDescription" />
-    </com.android.sonu.ummsplash.ui.widget.WidthFitSquareLayout>
+    </com.sonu.app.splash.ui.widget.WidthFitSquareLayout>
 
     <TextView
         android:layout_width="wrap_content"

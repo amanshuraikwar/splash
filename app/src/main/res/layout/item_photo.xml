@@ -13,10 +13,11 @@
     android:clickable="true"
     android:focusable="true">
 
-    <com.android.sonu.ummsplash.ui.widget.WidthRelativeAspectRatioImageView
+    <com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView
         android:id="@+id/photoIv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scaleType="fitXY"
         tools:ignore="ContentDescription"/>
 
     <TextView
