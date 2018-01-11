@@ -38,4 +38,12 @@
     <string name="unsplash_api_unknown_exception_message">
         Please try again after some time.
     </string>
+
+    <string name="write_external_storage_permission_title">
+        Permissions!
+    </string>
+
+    <string name="write_external_storage_permission_message">
+        We need permissions to save the downloaded photo to your device.
+    </string>
 </resources>

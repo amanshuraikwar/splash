@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">Splash</string>
+
+    <string name="app_name">@string/app_name_release</string>
+    <string name="app_name_debug">Splash-DEBUG</string>
+    <string name="app_name_release">Splash</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>

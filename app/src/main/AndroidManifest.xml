@@ -8,7 +8,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
+        android:label="${applicationLabel}"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/Splash"
@@ -18,8 +18,9 @@
 
         <activity
             android:name="com.sonu.app.splash.ui.home.HomeActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Splash.Home">
+            android:label="${applicationLabel}"
+            android:theme="@style/Splash.Home"
+            android:screenOrientation="portrait">
 
             <intent-filter>
 

@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
@@ -380,16 +381,34 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
+                MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
+                messageDialogConfig
+                        .color(getContext().getColor(com.sonu.app.splash.R.color.darkOrange));
+                messageDialogConfig.actionText("GIVE PERMISSIONS");
+                messageDialogConfig.iconDrawable(R.drawable.ic_error_grey_56dp);
+                messageDialogConfig
+                        .title(getString(R.string.write_external_storage_permission_title));
+                messageDialogConfig
+                        .message(getString(R.string.write_external_storage_permission_message));
+                messageDialogConfig
+                        .actionOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
 
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+
+                                messageDialog.dismiss();
+                            }
+                        });
+                messageDialog.setConfig(messageDialogConfig);
+                messageDialog.show();
 
                 return false;
             } else {
 
                 // No explanation needed, we can request the permission.
-
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);

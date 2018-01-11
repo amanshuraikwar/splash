@@ -6,7 +6,6 @@
 
     <color name="coal">#212121</color>
     <color name="charcoal">#757575</color>
-    <color name="fog">#eeeeee</color>
 
     <color name="midGrey">#40808080</color>
 
@@ -15,20 +14,23 @@
 
     <color name="blue">#80DEEA</color>
     <color name="sky">#B2EBF2</color>
-    <color name="white">#ffffff</color>
 
     <color name="scrim">#99323232</color>
 
-    <color name="darkRed">#B71C1C</color>
     <color name="green">#66BB6A</color>
 
     <color name="grey">#888888</color>
     <color name="darkGrey">#616161</color>
 
+    <color name="darkRed">#B71C1C</color>
     <color name="midRed">#EF5350</color>
 
-    <color name="mist">#55eeeeee</color>
-    <color name="smoke">#dfeeeeee</color>
+    <color name="darkOrange">#E65100</color>
+
+    <color name="white">#ffffff</color>
+    <color name="fog">#eeeeee</color>
     <color name="lightSmoke">#cceeeeee</color>
+    <color name="smoke">#dfeeeeee</color>
+    <color name="mist">#55eeeeee</color>
 
 </resources>

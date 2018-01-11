@@ -35,7 +35,7 @@ public class MessageDialog extends AlertDialog {
     @BindView(R.id.actionBtn)
     Button action;
 
-    View.OnClickListener actionBtnOnClickListener = new View.OnClickListener() {
+    public View.OnClickListener actionBtnOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             dismiss();
