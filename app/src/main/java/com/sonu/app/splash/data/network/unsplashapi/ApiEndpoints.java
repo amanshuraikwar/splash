@@ -9,4 +9,6 @@ public interface ApiEndpoints {
     String BASE_ENDPOINT = "https://api.unsplash.com/";
 
     String GET_NEW_PHOTOS = BASE_ENDPOINT + "photos?page=%s&per_page=30";
+
+    String GET_PHOTO_DESCRIPTION = BASE_ENDPOINT + "photos/%s";
 }

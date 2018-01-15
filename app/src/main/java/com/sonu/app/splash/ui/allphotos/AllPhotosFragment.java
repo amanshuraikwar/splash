@@ -38,6 +38,8 @@ import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.ui.list.RecyclerViewAdapter;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
+import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
 
 import java.util.ArrayList;
@@ -418,6 +420,13 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
         }
 
         return true;
+    }
+
+    @Override
+    public void startPhotoDescriptionActivity(Photo photo) {
+        Intent i = new Intent(getActivity(), PhotoDescriptionActivity.class);
+        i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
+        startActivity(i);
     }
 
     // todo temp

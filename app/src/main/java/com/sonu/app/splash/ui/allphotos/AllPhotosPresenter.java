@@ -1,6 +1,7 @@
 package com.sonu.app.splash.ui.allphotos;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 
 import com.sonu.app.splash.R;
@@ -14,6 +15,7 @@ import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
+import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.util.ConnectionUtil;
 import com.sonu.app.splash.util.LogUtils;
 
@@ -69,6 +71,11 @@ public class AllPhotosPresenter
 
                     getActivity().startService(intent);
                     */
+                }
+
+                @Override
+                public void onClick(Photo photo) {
+                    getView().startPhotoDescriptionActivity(photo);
                 }
             };
 

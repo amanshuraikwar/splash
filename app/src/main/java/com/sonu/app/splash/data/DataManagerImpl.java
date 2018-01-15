@@ -5,8 +5,10 @@ import android.content.Context;
 import com.sonu.app.splash.data.cache.NewPhotosCache;
 import com.sonu.app.splash.data.cache.PhotosCache;
 import com.sonu.app.splash.data.download.DownloadSession;
+import com.sonu.app.splash.data.network.NetworkDataManager;
 import com.sonu.app.splash.di.ApplicationContext;
 import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.ui.photodescription.PhotoDescription;
 
 import java.util.List;
 
@@ -29,6 +31,9 @@ public class DataManagerImpl implements DataManager {
 
     @Inject
     NewPhotosCache newPhotosCache;
+
+    @Inject
+    NetworkDataManager networkDataManager;
 
     @Inject
     public DataManagerImpl(){
@@ -58,5 +63,10 @@ public class DataManagerImpl implements DataManager {
     @Override
     public DownloadSession getDownloadSession() {
         return downloadSession;
+    }
+
+    @Override
+    public Observable<PhotoDescription> getPhotoDescription(String photoId) {
+        return networkDataManager.getPhotoDescription(photoId);
     }
 }

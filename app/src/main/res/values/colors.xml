@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">@color/coal</color>
     <color name="colorPrimaryDark">@color/colorPrimary</color>
-    <color name="colorAccent">@color/blue</color>
+    <color name="colorAccent">@color/lightBlue</color>
 
     <color name="coal">#212121</color>
     <color name="charcoal">#757575</color>
@@ -12,7 +12,7 @@
     <color name="immersive_bars">#99000000</color>
     <color name="background_dark">#ff333333</color>
 
-    <color name="blue">#80DEEA</color>
+    <color name="lightBlue">#80DEEA</color>
     <color name="sky">#B2EBF2</color>
 
     <color name="scrim">#99323232</color>
@@ -32,5 +32,9 @@
     <color name="lightSmoke">#cceeeeee</color>
     <color name="smoke">#dfeeeeee</color>
     <color name="mist">#55eeeeee</color>
+
+    <color name="pink">#E91E63</color>
+    <color name="blue">#2196F3</color>
+    <color name="teal">#009688</color>
 
 </resources>

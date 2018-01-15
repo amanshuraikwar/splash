@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+def gitTag = 'git describe --tags'.execute([], project.rootDir).text.trim()
+def gitCommitCount = 3
+//        Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
+logger.debug("gitTag="+gitTag)
+
 android {
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildTools
@@ -7,11 +12,11 @@ android {
 
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
-        versionCode 2
-        versionName "0.0.1.1"
+        versionCode gitCommitCount
+        versionName gitTag
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    
+
     ext{
         APP_NAME_DEBUG = "@string/app_name_debug"
         APP_NAME_RELEASE = "@string/app_name_release"

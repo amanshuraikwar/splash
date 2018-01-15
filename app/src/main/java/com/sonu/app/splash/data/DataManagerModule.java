@@ -4,6 +4,8 @@ import android.app.DownloadManager;
 import android.content.Context;
 
 import com.sonu.app.splash.data.cache.NewPhotosCache;
+import com.sonu.app.splash.data.network.NetworkDataManager;
+import com.sonu.app.splash.data.network.NetworkDataManagerImpl;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.di.ApplicationContext;
 
@@ -29,6 +31,10 @@ public abstract class DataManagerModule {
     @Singleton
     @Binds
     abstract DataManager getDataManager(DataManagerImpl impl);
+
+    @Singleton
+    @Binds
+    abstract NetworkDataManager getNetworkDataManager(NetworkDataManagerImpl impl);
 
     @Singleton
     @Provides

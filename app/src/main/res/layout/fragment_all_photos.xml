@@ -39,7 +39,7 @@
 
         <ImageView
             android:id="@+id/noConnection"
-            android:layout_width="wrap_content"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/no_connection"
@@ -59,7 +59,7 @@
             android:id="@+id/errorMessageTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="16dp"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:gravity="center"
@@ -69,7 +69,7 @@
             android:id="@+id/retryBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             android:textAppearance="@style/TextAppearance.Button"
             android:text="@string/retry_btn_text"/>
     </LinearLayout>

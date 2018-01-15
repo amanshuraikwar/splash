@@ -6,4 +6,5 @@ package com.sonu.app.splash.ui.photo;
 
 public interface PhotoOnClickListener {
     void onDownloadBtnClick(Photo photo);
+    void onClick(Photo photo);
 }

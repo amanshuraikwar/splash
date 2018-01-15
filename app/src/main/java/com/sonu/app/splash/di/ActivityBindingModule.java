@@ -7,6 +7,8 @@ import com.sonu.app.splash.data.download.PhotoDownloadService;
 import com.sonu.app.splash.ui.downloadinfo.DownloadInfoModule;
 import com.sonu.app.splash.ui.home.HomeActivity;
 import com.sonu.app.splash.ui.home.HomeModule;
+import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
+import com.sonu.app.splash.ui.photodescription.PhotoDescriptionModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -32,6 +34,11 @@ public abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = {
             AboutModule.class})
     abstract AboutActivity aboutActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = {
+            PhotoDescriptionModule.class})
+    abstract PhotoDescriptionActivity photoDescriptionActivity();
 
     @ActivityScoped
     @ContributesAndroidInjector

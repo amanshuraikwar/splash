@@ -20,4 +20,6 @@
     <string name="no_internet_connection_txt">no internet connection</string>
     <string name="downloading_text">Downloading</string>
     <string name="ok_btn_txt">OK</string>
+    <string name="done_btn_txt">done</string>
+    <string name="close_btn_txt">close</string>
 </resources>

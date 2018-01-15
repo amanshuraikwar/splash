@@ -25,7 +25,50 @@
     </style>
 
     <style name="Splash.Translucent.About">
-        <item name="android:statusBarColor">@color/blue</item>
+        <item name="android:statusBarColor">@color/lightBlue</item>
+    </style>
+
+    <style name="Splash.Translucent.PhotoDescription">
+        <item name="android:statusBarColor">@color/coal</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style
+        name="Widget.Splash.BorderlessImageButton"
+        parent="@android:style/Widget.Material.ImageButton">
+
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Widget.Splash.InlineActionButton" parent="@android:style/Widget.Material.Button">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textAppearance">@style/TextAppearance.PhotoStatsVal</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:background">?android:selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Widget.Splash.PhotoInfoButton" parent="@android:style/Widget.Material.Button">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:textAppearance">@style/TextAppearance.PhotoStatsVal</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:background">?android:selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsVal" parent="@style/TextAppearance.Caption">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="TextAppearance.ArtistName" parent="@style/TextAppearance.Body1">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+    </style>
+
+    <style name="TextAppearance.ArtistUsername" parent="@style/TextAppearance.Caption">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:color">@color/darkGrey</item>
     </style>
 
     <style
@@ -46,6 +89,13 @@
         <item name="android:textColor">@color/coal</item>
         <item name="android:fontFeatureSettings">smcp</item>
         <item name="android:letterSpacing">0.2</item>
+    </style>
+
+    <style
+        name="TextAppearance.Headline"
+        parent="@android:style/TextAppearance.Material.Headline">
+
+        <!-- change default title text appearance here -->
     </style>
 
     <style
@@ -92,7 +142,7 @@
         name="TextAppearance.ErrorTitle"
         parent="@style/TextAppearance.Title">
 
-        <item name="android:textColor">@color/coal</item>
+        <item name="android:textColor">@color/darkGrey</item>
         <item name="android:fontFeatureSettings">smcp</item>
         <item name="android:textStyle">bold</item>
     </style>

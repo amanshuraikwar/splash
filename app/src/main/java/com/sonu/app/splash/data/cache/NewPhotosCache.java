@@ -11,6 +11,7 @@ import com.sonu.app.splash.util.LogUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.sonu.app.splash.util.UnsplashJsonUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,57 +103,7 @@ public class NewPhotosCache implements PhotosCache {
 
             for (JsonElement element : jsonArray) {
 
-                Photo.Builder builder =
-                        new Photo.Builder(element.getAsJsonObject().get("id").getAsString());
-
-                builder.width(element.getAsJsonObject().get("width").getAsInt());
-                builder.height(element.getAsJsonObject().get("height").getAsInt());
-
-//            if (element.getAsJsonObject().get("description") != null) {
-//                builder.description(element.getAsJsonObject().get("description").getAsString());
-//            }
-
-                builder.likes(element.getAsJsonObject().get("likes").getAsInt());
-                builder.color(element.getAsJsonObject().get("color").getAsString());
-
-                builder.artistName(
-                        element
-                                .getAsJsonObject()
-                                .get("user")
-                                .getAsJsonObject().get("name").getAsString()
-                );
-
-                builder.artistProfileImageUrl(
-                        element
-                                .getAsJsonObject()
-                                .get("user")
-                                .getAsJsonObject()
-                                .get("profile_image")
-                                .getAsJsonObject()
-                                .get("medium").getAsString()
-                );
-
-                builder.urlRegular(
-                        element
-                                .getAsJsonObject()
-                                .get("urls")
-                                .getAsJsonObject().get("regular").getAsString());
-
-                builder.urlThumb(
-                        element
-                                .getAsJsonObject()
-                                .get("urls")
-                                .getAsJsonObject()
-                                .get("thumb")
-                                .getAsString());
-
-                builder.linkDownload(
-                        element
-                                .getAsJsonObject()
-                                .get("links")
-                                .getAsJsonObject().get("download").getAsString());
-
-                photoList.add(builder.build());
+                photoList.add(UnsplashJsonUtils.getPhotoObj(element));
             }
 
             // updating cache

@@ -4,6 +4,7 @@ import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BaseView;
 import com.sonu.app.splash.ui.list.ListItem;
+import com.sonu.app.splash.ui.photo.Photo;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public interface AllPhotosContract {
         void showUnknownException(String message);
         void downloadPhoto(PhotoDownload photoDownload);
         boolean checkPermissions();
+        void startPhotoDescriptionActivity(Photo photo);
     }
 
     interface Presenter extends BasePresenter<View> {

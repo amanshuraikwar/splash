@@ -1,9 +1,7 @@
-package com.sonu.app.splash.ui.photo;
+package com.sonu.app.splash.ui.photodescription;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.sonu.app.splash.data.download.PhotoDownload;
 
 import javax.annotation.Nonnull;
 
@@ -11,7 +9,7 @@ import javax.annotation.Nonnull;
  * Created by amanshuraikwar on 18/12/17.
  */
 
-public class Photo implements Parcelable {
+public class PhotoDescription implements Parcelable {
 
     private String id,
             createdAt,
@@ -29,10 +27,18 @@ public class Photo implements Parcelable {
             linkDownloadLocation,
             artistId,
             artistName,
+            artistProfileImageUrl,
             artistUsername,
-            artistProfileImageUrl;
+            locationTitle,
+            exifMake,
+            exifModel,
+            exifExposureTime,
+            exifAperture,
+            exifFocalLength;
 
-    private int width, height, likes;
+    private int width, height, likes, views, downloads, exifIso;
+
+    private double locationLat, locationLon;
 
     public String getId() {
         return id;
@@ -110,42 +116,59 @@ public class Photo implements Parcelable {
         return artistName;
     }
 
-    public String getArtistUsername() {
-        return artistUsername;
-    }
-
     public String getArtistProfileImageUrl() {
         return artistProfileImageUrl;
     }
 
-    @Override
-    public String toString() {
-        return "Photo{" +
-                "id='" + id + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", color='" + color + '\'' +
-                ", description='" + description + '\'' +
-                ", urlRaw='" + urlRaw + '\'' +
-                ", urlFull='" + urlFull + '\'' +
-                ", urlRegular='" + urlRegular + '\'' +
-                ", urlSmall='" + urlSmall + '\'' +
-                ", urlThumb='" + urlThumb + '\'' +
-                ", linkSelf='" + linkSelf + '\'' +
-                ", linkHtml='" + linkHtml + '\'' +
-                ", linkDownload='" + linkDownload + '\'' +
-                ", linkDownloadLocation='" + linkDownloadLocation + '\'' +
-                ", width=" + width +
-                ", height=" + height +
-                ", likes=" + likes +
-                ", artistId=" + artistId +
-                ", artistName=" + artistName +
-                ", artistUsername=" + artistUsername +
-                ", artistProfileImageUrl=" + artistProfileImageUrl +
-                '}';
+    public String getArtistUsername() {
+        return artistUsername;
     }
 
-    private Photo(Builder builder) {
+    public String getLocationTitle() {
+        return locationTitle;
+    }
+
+    public String getExifMake() {
+        return exifMake;
+    }
+
+    public String getExifModel() {
+        return exifModel;
+    }
+
+    public String getExifExposureTime() {
+        return exifExposureTime;
+    }
+
+    public String getExifAperture() {
+        return exifAperture;
+    }
+
+    public String getExifFocalLength() {
+        return exifFocalLength;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public int getDownloads() {
+        return downloads;
+    }
+
+    public int getExifIso() {
+        return exifIso;
+    }
+
+    public double getLocationLat() {
+        return locationLat;
+    }
+
+    public double getLocationLon() {
+        return locationLon;
+    }
+
+    private PhotoDescription(Builder builder) {
         id = builder.id;
         createdAt = builder.createdAt;
         updatedAt = builder.updatedAt;
@@ -160,13 +183,24 @@ public class Photo implements Parcelable {
         linkHtml = builder.linkHtml;
         linkDownload = builder.linkDownload;
         linkDownloadLocation = builder.linkDownloadLocation;
+        locationTitle = builder.locationTitle;
+        exifMake = builder.exifMake;
+        exifModel = builder.exifModel;
+        exifExposureTime = builder.exifExposureTime;
+        exifAperture = builder.exifAperture;
+        exifFocalLength = builder.exifFocalLength;
         width = builder.width;
         height = builder.height;
         likes = builder.likes;
+        views = builder.views;
+        downloads = builder.downloads;
+        exifIso = builder.exifIso;
         artistId = builder.artistId;
         artistName = builder.artistName;
-        artistUsername = builder.artistUsername;
         artistProfileImageUrl = builder.artistProfileImageUrl;
+        artistUsername = builder.artistUsername;
+        locationLat = builder.locationLat;
+        locationLon = builder.locationLon;
     }
 
     @Override
@@ -190,16 +224,27 @@ public class Photo implements Parcelable {
         parcel.writeString(linkHtml);
         parcel.writeString(linkDownload);
         parcel.writeString(linkDownloadLocation);
+        parcel.writeString(locationTitle);
+        parcel.writeString(exifMake);
+        parcel.writeString(exifModel);
+        parcel.writeString(exifExposureTime);
+        parcel.writeString(exifAperture);
+        parcel.writeString(exifFocalLength);
+        parcel.writeInt(exifIso);
         parcel.writeInt(width);
         parcel.writeInt(height);
         parcel.writeInt(likes);
+        parcel.writeInt(views);
+        parcel.writeInt(downloads);
         parcel.writeString(artistId);
         parcel.writeString(artistName);
-        parcel.writeString(artistUsername);
         parcel.writeString(artistProfileImageUrl);
+        parcel.writeString(artistUsername);
+        parcel.writeDouble(locationLat);
+        parcel.writeDouble(locationLon);
     }
 
-    public Photo(Parcel parcel) {
+    public PhotoDescription(Parcel parcel) {
         id = parcel.readString();
         createdAt = parcel.readString();
         updatedAt = parcel.readString();
@@ -214,23 +259,72 @@ public class Photo implements Parcelable {
         linkHtml = parcel.readString();
         linkDownload = parcel.readString();
         linkDownloadLocation = parcel.readString();
+        locationTitle = parcel.readString();
+        exifMake = parcel.readString();
+        exifModel = parcel.readString();
+        exifExposureTime = parcel.readString();
+        exifAperture = parcel.readString();
+        exifFocalLength = parcel.readString();
+        exifIso = parcel.readInt();
         width = parcel.readInt();
         height = parcel.readInt();
         likes = parcel.readInt();
+        views = parcel.readInt();
+        downloads = parcel.readInt();
         artistId = parcel.readString();
         artistName = parcel.readString();
-        artistUsername = parcel.readString();
         artistProfileImageUrl = parcel.readString();
+        artistUsername = parcel.readString();
+        locationLat = parcel.readLong();
+        locationLon = parcel.readLong();
     }
 
-    public static final Parcelable.Creator<Photo> CREATOR =
-            new Parcelable.Creator<Photo>() {
-                public Photo createFromParcel(Parcel in) {
-                    return new Photo(in);
+    @Override
+    public String toString() {
+        return "PhotoDescription{" +
+                "id='" + id + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", color='" + color + '\'' +
+                ", description='" + description + '\'' +
+                ", urlRaw='" + urlRaw + '\'' +
+                ", urlFull='" + urlFull + '\'' +
+                ", urlRegular='" + urlRegular + '\'' +
+                ", urlSmall='" + urlSmall + '\'' +
+                ", urlThumb='" + urlThumb + '\'' +
+                ", linkSelf='" + linkSelf + '\'' +
+                ", linkHtml='" + linkHtml + '\'' +
+                ", linkDownload='" + linkDownload + '\'' +
+                ", linkDownloadLocation='" + linkDownloadLocation + '\'' +
+                ", artistId='" + artistId + '\'' +
+                ", artistName='" + artistName + '\'' +
+                ", artistProfileImageUrl='" + artistProfileImageUrl + '\'' +
+                ", artistUsername='" + artistUsername + '\'' +
+                ", locationTitle='" + locationTitle + '\'' +
+                ", exifMake='" + exifMake + '\'' +
+                ", exifModel='" + exifModel + '\'' +
+                ", exifExposureTime='" + exifExposureTime + '\'' +
+                ", exifAperture='" + exifAperture + '\'' +
+                ", exifFocalLength='" + exifFocalLength + '\'' +
+                ", width=" + width +
+                ", height=" + height +
+                ", likes=" + likes +
+                ", views=" + views +
+                ", downloads=" + downloads +
+                ", exifIso=" + exifIso +
+                ", locationLat=" + locationLat +
+                ", locationLon=" + locationLon +
+                '}';
+    }
+
+    public static final Creator<PhotoDescription> CREATOR =
+            new Creator<PhotoDescription>() {
+                public PhotoDescription createFromParcel(Parcel in) {
+                    return new PhotoDescription(in);
                 }
 
-                public Photo[] newArray(int size) {
-                    return new Photo[size];
+                public PhotoDescription[] newArray(int size) {
+                    return new PhotoDescription[size];
                 }
             };
 
@@ -253,10 +347,18 @@ public class Photo implements Parcelable {
                 linkDownloadLocation = "",
                 artistId = "",
                 artistName = "",
+                artistProfileImageUrl = "",
                 artistUsername = "",
-                artistProfileImageUrl = "";
+                locationTitle = "",
+                exifMake = "--",
+                exifModel = "--",
+                exifExposureTime = "--",
+                exifAperture = "--",
+                exifFocalLength = "--";
 
-        private int width, height, likes;
+        private int width, height, likes, views, downloads, exifIso;
+
+        private double locationLat, locationLon;
 
         public Builder(String id) {
             this.id = id;
@@ -314,6 +416,30 @@ public class Photo implements Parcelable {
             this.linkDownloadLocation = linkDownloadLocation;
         }
 
+        public void locationTitle(@Nonnull String locationTitle) {
+            this.locationTitle = locationTitle;
+        }
+
+        public void exifMake(@Nonnull String exifMake) {
+            this.exifMake = exifMake;
+        }
+
+        public void exifModel(@Nonnull String exifModel) {
+            this.exifModel = exifModel;
+        }
+
+        public void exifExposureTime(@Nonnull String exifExposureTime) {
+            this.exifExposureTime = exifExposureTime;
+        }
+
+        public void exifAperture(@Nonnull String exifApperature) {
+            this.exifAperture = exifApperature;
+        }
+
+        public void exifFocalLength(@Nonnull String exifFocalLength) {
+            this.exifFocalLength = exifFocalLength;
+        }
+
         public void width(int width) {
             this.width = width;
         }
@@ -326,6 +452,18 @@ public class Photo implements Parcelable {
             this.likes = likes;
         }
 
+        public void views(int views) {
+            this.views = views;
+        }
+
+        public void downloads(int downloads) {
+            this.downloads = downloads;
+        }
+
+        public void exifIso(int exifIso) {
+            this.exifIso = exifIso;
+        }
+
         public void artistId(String artistId) {
             this.artistId = artistId;
         }
@@ -334,16 +472,24 @@ public class Photo implements Parcelable {
             this.artistName = artistName;
         }
 
-        public void artistUsername(String artistUsername) {
-            this.artistUsername = artistUsername;
-        }
-
         public void artistProfileImageUrl(String artistProfileImageUrl) {
             this.artistProfileImageUrl = artistProfileImageUrl;
         }
 
-        public Photo build() {
-            return new Photo(this);
+        public void artistUsername(String artistUsername) {
+            this.artistUsername = artistUsername;
+        }
+
+        public void locationLat(double locationLat) {
+            this.locationLat = locationLat;
+        }
+
+        public void locationLon(double locationLon) {
+            this.locationLon = locationLon;
+        }
+
+        public PhotoDescription build() {
+            return new PhotoDescription(this);
         }
     }
 }

@@ -75,7 +75,7 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
                         / ((float)listItem.getPhoto().getWidth()));
 
         Glide.with(parentActivity)
-                .load(listItem.getPhoto().getUrlRegular())
+                .load(listItem.getPhoto().getUrlSmall())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 
@@ -94,16 +94,23 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
 
         int color = Color.parseColor(listItem.getPhoto().getColor());
 
-        if (ColorHelper.isColorLight(color)) {
-            artistNameTv.setTextColor(ColorHelper.DARK_TEXT_COLOR);
-        } else {
+        if (ColorHelper.isDark(color)) {
             artistNameTv.setTextColor(ColorHelper.LIGHT_TEXT_COLOR);
+        } else {
+            artistNameTv.setTextColor(ColorHelper.DARK_TEXT_COLOR);
         }
 
         // setting foreground ripple dynamically
         parent.setForeground(DrawableUtils.createRippleDrawable(color));
 
         parent.setBackgroundColor(color);
+
+        parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listItem.getOnClickListener().onClick(listItem.getPhoto());
+            }
+        });
 
         photoResolutionTv
                 .setText(
