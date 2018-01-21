@@ -42,7 +42,7 @@ public class MessageDialog extends AlertDialog {
         }
     };
 
-    MessageDialogConfig messageDialogConfig;
+    private MessageDialogConfig messageDialogConfig;
 
     public MessageDialog(@NonNull Context context) {
         super(context);

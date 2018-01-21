@@ -37,6 +37,10 @@
             android:name="com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity"
             android:theme="@style/Splash.Translucent.PhotoDescription" />
 
+        <activity
+            android:name="com.sonu.app.splash.ui.userdescription.UserDescriptionActivity"
+            android:theme="@style/Splash.Translucent.UserDescription" />
+
         <!-- exported=false for restricting the usage of service by this app only-->
         <service
             android:name="com.sonu.app.splash.data.download.PhotoDownloadService"

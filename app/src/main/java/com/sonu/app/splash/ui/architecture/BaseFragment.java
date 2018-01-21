@@ -1,5 +1,8 @@
 package com.sonu.app.splash.ui.architecture;
 
+import com.sonu.app.splash.R;
+import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
+
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
@@ -8,7 +11,7 @@ import dagger.android.support.DaggerFragment;
  * Created by amanshuraikwar on 18/12/17.
  */
 
-public class BaseFragment<Presenter extends BasePresenter>
+public abstract class BaseFragment<Presenter extends BasePresenter>
         extends DaggerFragment implements BaseView {
 
     // to change the variable name independently
@@ -17,6 +20,7 @@ public class BaseFragment<Presenter extends BasePresenter>
 
     // to avoid multiple initialisations of single time things
     boolean wasViewRecreated = true;
+
 
     /**
      * provides the presenter to sub classes

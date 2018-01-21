@@ -2,6 +2,7 @@ package com.sonu.app.splash.data;
 
 import com.sonu.app.splash.data.cache.NewPhotosCache;
 import com.sonu.app.splash.data.cache.PhotosCache;
+import com.sonu.app.splash.data.cache.UserPhotosCache;
 import com.sonu.app.splash.data.download.DownloadSession;
 import com.sonu.app.splash.data.local.LocalDataManager;
 import com.sonu.app.splash.data.network.NetworkDataManager;
@@ -22,6 +23,8 @@ public interface DataManager extends LocalDataManager, NetworkDataManager{
     boolean isCacheEmpty(PhotosCache photosCache);
 
     NewPhotosCache getNewPhotosCache();
+
+    UserPhotosCache getUserPhotosCache(String username);
 
     DownloadSession getDownloadSession();
 }

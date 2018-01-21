@@ -28,98 +28,22 @@ import okhttp3.Request;
  * Created by amanshuraikwar on 20/12/17.
  */
 
-public class NewPhotosCache implements PhotosCache {
+public class NewPhotosCache extends SimplePhotosCache {
 
     private static final String TAG = LogUtils.getLogTag(NewPhotosCache.class);
 
-    private RequestHandler requestHandler;
-    private List<Photo> cachedPhotos;
-    private int curPage = 1;
-
-    // volatile to give thread safety
-    private volatile STATE state;
-
-    private enum STATE {NORMAL, FETCHING}
-
     @Inject
     public NewPhotosCache(RequestHandler requestHandler) {
-        this.requestHandler = requestHandler;
-        cachedPhotos = new ArrayList<>();
-        state = STATE.NORMAL;
-    }
-
-    // synchronized to give thread safety
-    @Override
-    public synchronized Observable<List<Photo>> getMorePhotos() {
-        return Observable.fromCallable(new Callable<List<Photo>>() {
-            @Override
-            public List<Photo> call() throws Exception {
-
-                if (state == STATE.FETCHING) {
-                    return Collections.emptyList();
-                }
-
-                return getMorePhotosAct();
-            }
-        });
+        super(requestHandler);
     }
 
     @Override
-    public Observable<List<Photo>> getCachedPhotos() {
-        return Observable.fromCallable(new Callable<List<Photo>>() {
-            @Override
-            public List<Photo> call() throws Exception {
-                return cachedPhotos;
-            }
-        });
+    protected String getApiEndpoint() {
+        return ApiEndpoints.GET_NEW_PHOTOS;
     }
 
     @Override
-    public boolean isCacheEmpty() {
-        return cachedPhotos.size() == 0;
-    }
-
-    private List<Photo> getMorePhotosAct() throws IOException, UnsplashApiException {
-        Log.d(TAG, "getMorePhotosAct():called");
-
-        state = STATE.FETCHING;
-
-        List<Photo> photoList;
-
-        try {
-
-            // giving page number to fetch
-            String url = String.format(ApiEndpoints.GET_NEW_PHOTOS, curPage);
-
-            Request request = RequestGenerator.get(url);
-
-            String body = requestHandler.request(request).string();
-            Log.i(TAG, "getMorePhotosAct():response-body:"+body);
-
-            JsonArray jsonArray = new JsonParser().parse(body).getAsJsonArray();
-            Log.i(TAG, "getMorePhotosAct():response-body-json:"+jsonArray);
-
-            photoList = new ArrayList<>();
-
-            for (JsonElement element : jsonArray) {
-
-                photoList.add(UnsplashJsonUtils.getPhotoObj(element));
-            }
-
-            // updating cache
-            updateCache(photoList);
-        } catch (IOException | UnsplashApiException e) {
-            state = STATE.NORMAL;
-            throw e;
-        }
-
-        state = STATE.NORMAL;
-
-        return photoList;
-    }
-
-    private void updateCache(List<Photo> photoList) {
-        cachedPhotos.addAll(photoList);
-        curPage += 1;
+    protected String getTag() {
+        return TAG;
     }
 }

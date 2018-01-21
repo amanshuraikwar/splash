@@ -33,6 +33,9 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <style name="Splash.Translucent.UserDescription">
+    </style>
+
     <style
         name="Widget.Splash.BorderlessImageButton"
         parent="@android:style/Widget.Material.ImageButton">
@@ -64,11 +67,30 @@
     <style name="TextAppearance.ArtistName" parent="@style/TextAppearance.Body1">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:textColor">@color/darkGrey</item>
+    </style>
+
+    <style name="TextAppearance.ArtistName.Big" parent="@style/TextAppearance.Title">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:textColor">@color/darkGrey</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
 
     <style name="TextAppearance.ArtistUsername" parent="@style/TextAppearance.Caption">
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:color">@color/darkGrey</item>
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="TextAppearance.ArtistUsername.Big" parent="@style/TextAppearance.Body1">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="TextAppearance.ArtistBio" parent="@style/TextAppearance.Subhead">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <style

@@ -31,7 +31,7 @@
                     android:textAppearance="@android:style/TextAppearance.Material.Display3"
                     android:fontFeatureSettings="smcp"
                     android:textStyle="bold"
-                    android:textColor="@color/coal"
+                    android:textColor="#0097a7"
                     android:letterSpacing="0.2"/>
             </LinearLayout>
 
@@ -41,7 +41,8 @@
                 android:layout_height="wrap_content"
                 android:text="an unofficial unsplash client"
                 android:textAppearance="@android:style/TextAppearance.Material.Caption"
-                android:fontFeatureSettings="smcp" />
+                android:fontFeatureSettings="smcp"
+                android:textColor="#006064"/>
         </LinearLayout>
 
         <ImageView
@@ -51,7 +52,7 @@
             android:src="@drawable/ic_github_grey_24dp"
             android:layout_gravity="bottom|end"
             android:padding="8dp"
-            android:tint="@color/coal"
+            android:tint="#0097a7"
             android:background="?selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"

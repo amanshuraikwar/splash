@@ -38,23 +38,8 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
     @BindView(R.id.parent)
     View parent;
 
-    @BindView(R.id.photoDescriptionTv)
-    TextView photoDescriptionTv;
-
-    @BindView(R.id.photoLikesTv)
-    TextView photoLikesTv;
-
-    @BindView(R.id.artistNameTv)
-    TextView artistNameTv;
-
-    @BindView(R.id.artistProfileImageIv)
-    ImageView artistProfileImageIv;
-
     @BindView(R.id.downloadIb)
     ImageButton downloadIb;
-
-    @BindView(R.id.photoResolutionTv)
-    TextView photoResolutionTv;
 
 
     public PhotoViewHolder(View itemView) {
@@ -67,10 +52,6 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
         Log.i(TAG, "bind:photo="+listItem.getPhoto());
         Log.i(TAG, "bind:url="+listItem.getPhoto().getUrlRegular());
 
-        photoDescriptionTv.setText(listItem.getPhoto().getDescription());
-        photoLikesTv.setText(String.valueOf(listItem.getPhoto().getLikes()+" likes"));
-        artistNameTv.setText(listItem.getPhoto().getArtistName());
-
         photoIv.setAspectRatio(((float)listItem.getPhoto().getHeight())
                         / ((float)listItem.getPhoto().getWidth()));
 
@@ -78,12 +59,6 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
                 .load(listItem.getPhoto().getUrlSmall())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
-
-        Glide.with(parentActivity)
-                .load(listItem.getPhoto().getArtistProfileImageUrl())
-                .apply(new RequestOptions().centerCrop().circleCrop())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(artistProfileImageIv);
 
         downloadIb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,12 +68,6 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
         });
 
         int color = Color.parseColor(listItem.getPhoto().getColor());
-
-        if (ColorHelper.isDark(color)) {
-            artistNameTv.setTextColor(ColorHelper.LIGHT_TEXT_COLOR);
-        } else {
-            artistNameTv.setTextColor(ColorHelper.DARK_TEXT_COLOR);
-        }
 
         // setting foreground ripple dynamically
         parent.setForeground(DrawableUtils.createRippleDrawable(color));
@@ -111,12 +80,5 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
                 listItem.getOnClickListener().onClick(listItem.getPhoto());
             }
         });
-
-        photoResolutionTv
-                .setText(
-                        new StringBuffer(
-                                listItem.getPhoto().getWidth()
-                                        +" x "+listItem.getPhoto().getHeight()));
-
     }
 }

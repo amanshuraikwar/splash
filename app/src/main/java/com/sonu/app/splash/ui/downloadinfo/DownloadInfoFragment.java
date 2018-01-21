@@ -160,4 +160,19 @@ public class DownloadInfoFragment
         progressBar.setProgress(per);
         downloadProgressTv.setText(new StringBuffer(progressMb+"MB/"+totalMb+"MB"));
     }
+
+    @Override
+    public void showIoException(int titleStringRes, int messageStringRes) {
+
+    }
+
+    @Override
+    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
+
+    }
+
+    @Override
+    public void showUnknownException(String message) {
+
+    }
 }

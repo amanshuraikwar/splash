@@ -26,7 +26,8 @@
         app:mpb_progressStyle="horizontal"
         app:mpb_useIntrinsicPadding="false"
         app:mpb_progressBackgroundTint="@android:color/transparent"
-        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/errorLl"
@@ -70,7 +71,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:textAppearance="@style/TextAppearance.Button"
+            style="@style/Widget.Splash.InlineActionButton"
+            android:drawableTop="@drawable/ic_replay_black_24dp"
             android:text="@string/retry_btn_text"/>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

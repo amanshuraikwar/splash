@@ -350,11 +350,11 @@ public class PhotoDescription implements Parcelable {
                 artistProfileImageUrl = "",
                 artistUsername = "",
                 locationTitle = "",
-                exifMake = "--",
-                exifModel = "--",
-                exifExposureTime = "--",
-                exifAperture = "--",
-                exifFocalLength = "--";
+                exifMake = "",
+                exifModel = "",
+                exifExposureTime = "",
+                exifAperture = "",
+                exifFocalLength = "";
 
         private int width, height, likes, views, downloads, exifIso;
 

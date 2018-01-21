@@ -30,8 +30,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sonu.app.splash.R;
+import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.cache.NewPhotosCache;
 import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
+import com.sonu.app.splash.ui.list.photolist.PhotoListAdapter;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
 import com.sonu.app.splash.ui.home.HomeNavItem;
 import com.sonu.app.splash.ui.list.ListItem;
@@ -39,6 +42,8 @@ import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.ui.list.RecyclerViewAdapter;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
 import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.ui.photo.PhotoListItem;
+import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
 
@@ -60,33 +65,89 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
         implements AllPhotosContract.View, HomeNavItem {
 
     private static final String TAG = LogUtils.getLogTag(AllPhotosFragment.class);
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 101;
 
-    @BindView(com.sonu.app.splash.R.id.itemsRv)
+    @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
 
-    @BindView(com.sonu.app.splash.R.id.progressBar)
+    @BindView(R.id.progressBar)
     MaterialProgressBar progressBar;
 
-    @BindView(com.sonu.app.splash.R.id.noConnection)
+    @BindView(R.id.noConnection)
     ImageView noConnection;
 
-    @BindView(com.sonu.app.splash.R.id.errorLl)
+    @BindView(R.id.errorLl)
     View errorLl;
 
-    @BindView(com.sonu.app.splash.R.id.retryBtn)
+    @BindView(R.id.retryBtn)
     Button retryBtn;
 
-    @BindView(com.sonu.app.splash.R.id.errorTitleTv)
+    @BindView(R.id.errorTitleTv)
     TextView errorTitleTv;
 
-    @BindView(com.sonu.app.splash.R.id.errorMessageTv)
+    @BindView(R.id.errorMessageTv)
     TextView errorMessageTv;
 
-    @BindView(com.sonu.app.splash.R.id.parent)
+    @BindView(R.id.parent)
     CoordinatorLayout coordinatorLayout;
 
-    private RecyclerViewAdapter adapter;
+    private PhotoOnClickListener photoOnClickListener =
+            new PhotoOnClickListener() {
+                @Override
+                public void onDownloadBtnClick(Photo photo) {
+
+                    Log.d(TAG, "onDownloadBtnClick:called");
+
+                    getPresenter().onDownloadBtnClick(photo);
+                }
+
+                @Override
+                public void onClick(Photo photo) {
+
+                    Log.d(TAG, "onPhotoClick:called");
+
+                    getPresenter().onPhotoClick(photo);
+                }
+            };
+
+    private PhotoListAdapter adapter;
+    private PhotoListAdapter.AdapterListener adapterListener =
+            new PhotoListAdapter.AdapterListener() {
+                @Override
+                public ListItem createListItem(Photo photo) {
+                    PhotoListItem listItem = new PhotoListItem(photo);
+                    listItem.setOnClickListener(photoOnClickListener);
+                    return listItem;
+                }
+
+                @Override
+                public void showIoException(int titleStringRes, int messageStringRes) {
+                    AllPhotosFragment
+                            .this.showIoException(titleStringRes, messageStringRes);
+                }
+
+                @Override
+                public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
+                    AllPhotosFragment
+                            .this.showUnsplashApiException(titleStringRes, messageStringRes);
+                }
+
+                @Override
+                public void showUnknownException(String message) {
+                    AllPhotosFragment
+                            .this.showUnknownException(message);
+                }
+
+                @Override
+                public void showLoading() {
+                    AllPhotosFragment.this.showLoading();
+                }
+
+                @Override
+                public void hideLoading() {
+                    AllPhotosFragment.this.hideLoading();
+                }
+            };
+
     private StaggeredGridLayoutManager layoutManager;
 
     private MessageDialog messageDialog;
@@ -120,17 +181,18 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
 
         Log.d(TAG, "onCreateView:called");
 
-        View root = inflater.inflate(com.sonu.app.splash.R.layout.fragment_all_photos, container, false);
+        View root = inflater.inflate(R.layout.fragment_all_photos, container, false);
         ButterKnife.bind(this, root);
         return root;
     }
 
-    // for testing
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         Log.d(TAG, "onActivityCreated:called");
+
+        messageDialog = new MessageDialog(getContext());
 
         // todo temp
         downloadManager =
@@ -145,13 +207,13 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
         Log.d(TAG, "onStart:called");
     }
 
-    // for testing
     @Override
     public void onResume() {
         super.onResume();
 
         Log.d(TAG, "onResume:called");
 
+        // register receiver for download complete
         getActivity().registerReceiver(downloadReceiver, filter);
     }
 
@@ -162,6 +224,7 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
 
         Log.d(TAG, "onPause:called");
 
+        // unregister receiver for download complete
         getActivity().unregisterReceiver(downloadReceiver);
     }
 
@@ -198,75 +261,75 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (layoutManager == null) {
-            layoutManager =
-                    new StaggeredGridLayoutManager(2,
-                            StaggeredGridLayoutManager.VERTICAL);
-            itemsRv.setLayoutManager(layoutManager);
-        }
-
-        // changing grid size for orientation changes
-        if (getActivity().getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE) {
-            layoutManager =
-                    new StaggeredGridLayoutManager(3,
-                            StaggeredGridLayoutManager.VERTICAL);
-            itemsRv.setLayoutManager(layoutManager);
-        }
-
-        if (adapter == null) {
-            adapter = new RecyclerViewAdapter(
-                    getActivity(),
-                    new ListItemTypeFactory(),
-                    new ArrayList<ListItem>());
-        }
-
-        itemsRv.setAdapter(adapter);
-
-        itemsRv.clearOnScrollListeners();
-
-        itemsRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                int lastVisibleItems[] = new int[3];
-                layoutManager.findLastVisibleItemPositions(lastVisibleItems);
-                Log.d(TAG, "onScrollStateChanged:lastVisibleItems="
-                        +Arrays.toString(lastVisibleItems));
-                if (lastVisibleItems[0] == adapter.getItemCount()-1
-                        || lastVisibleItems[1] == adapter.getItemCount()-1) {
-                    if (!isListEmpty()) {
-                        getPresenter().getMorePhotos();
-                    }
-                }
-            }
-        });
+        Log.d(TAG, "onViewCreated:called");
 
         retryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getPresenter().getAllPhotos();
+                adapter.getAllPhotos();
             }
         });
 
-        messageDialog = new MessageDialog(getContext());
+
+    }
+
+    @Override
+    public void setupList(DataManager dataManager, NewPhotosCache photosCache) {
+
+        // changing grid size for orientation changes
+        if (getActivity().getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE) {
+
+            layoutManager =
+                    new StaggeredGridLayoutManager(3,
+                            StaggeredGridLayoutManager.VERTICAL);
+        } else {
+
+            layoutManager =
+                    new StaggeredGridLayoutManager(2,
+                            StaggeredGridLayoutManager.VERTICAL);
+        }
+
+        itemsRv.setLayoutManager(layoutManager);
+
+        adapter = new PhotoListAdapter(
+                getActivity(),
+                new ListItemTypeFactory(),
+                photosCache,
+                dataManager,
+                adapterListener);
+
+        itemsRv.setAdapter(adapter);
+
+        itemsRv.addOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
+                        int lastVisibleItems[] = new int[3];
+
+                        layoutManager.findLastVisibleItemPositions(lastVisibleItems);
+
+                        if (lastVisibleItems[0] == adapter.getItemCount()-1
+                                || lastVisibleItems[1] == adapter.getItemCount()-1) {
+
+                            if (!isListEmpty()) {
+                                adapter.getMorePhotos();
+                            }
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void getAllPhotos() {
+
+        adapter.getAllPhotos();
     }
 
     @Override
     public int getHomeNavItemId() {
         return AllPhotosFragment.class.hashCode();
-    }
-
-    @Override
-    public void displayPhotos(List<ListItem> photoListItems) {
-        adapter.setListItems(photoListItems);
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void addPhotos(List<ListItem> photoListItems) {
-        int lastIndex = adapter.getItemCount() - 1;
-        adapter.addListItems(photoListItems);
-        adapter.notifyItemRangeInserted(lastIndex+1, photoListItems.size());
     }
 
     @Override
@@ -276,8 +339,10 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
 
     @Override
     public void showLoading() {
-        progressBar.setVisibility(View.VISIBLE);
-        errorLl.setVisibility(View.GONE);
+        if (isListEmpty()) {
+            progressBar.setVisibility(View.VISIBLE);
+            errorLl.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -314,15 +379,15 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
             errorMessageTv.setVisibility(View.VISIBLE);
 
             noConnection.setImageDrawable(
-                    ContextCompat.getDrawable(getContext(), com.sonu.app.splash.R.drawable.ic_cloud_off_grey_56dp));
+                    ContextCompat.getDrawable(getContext(), R.drawable.ic_cloud_off_grey_56dp));
 
             errorTitleTv.setText(getString(titleStringRes));
             errorMessageTv.setText(getString(messageStringRes));
         } else {
             MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
-            messageDialogConfig.color(getContext().getColor(com.sonu.app.splash.R.color.darkRed));
+            messageDialogConfig.color(getContext().getColor(R.color.darkRed));
             messageDialogConfig.actionText("OK");
-            messageDialogConfig.iconDrawable(com.sonu.app.splash.R.drawable.ic_cloud_off_grey_56dp);
+            messageDialogConfig.iconDrawable(R.drawable.ic_cloud_off_grey_56dp);
             messageDialogConfig.title(getString(titleStringRes));
             messageDialogConfig.message(getString(messageStringRes));
             messageDialog.setConfig(messageDialogConfig);
@@ -340,7 +405,7 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
             errorMessageTv.setVisibility(View.VISIBLE);
 
             noConnection.setImageDrawable(
-                    ContextCompat.getDrawable(getContext(), com.sonu.app.splash.R.drawable.ic_error_grey_56dp));
+                    ContextCompat.getDrawable(getContext(), R.drawable.ic_error_grey_56dp));
 
             errorTitleTv.setText(getString(com.sonu.app.splash.R.string.unknown_exception_title));
             if (message != null) {
@@ -352,9 +417,9 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
             }
         } else {
             MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
-            messageDialogConfig.color(getContext().getColor(com.sonu.app.splash.R.color.darkRed));
+            messageDialogConfig.color(getContext().getColor(R.color.darkRed));
             messageDialogConfig.actionText("OK");
-            messageDialogConfig.iconDrawable(com.sonu.app.splash.R.drawable.ic_error_grey_56dp);
+            messageDialogConfig.iconDrawable(R.drawable.ic_error_grey_56dp);
             messageDialogConfig.title(getString(com.sonu.app.splash.R.string.unknown_exception_title));
             if (message != null) {
                 if (!message.equals("")) {
@@ -366,60 +431,6 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
             messageDialog.setConfig(messageDialogConfig);
             messageDialog.show();
         }
-    }
-
-    @Override
-    public boolean checkPermissions() {
-
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
-                messageDialogConfig
-                        .color(getContext().getColor(com.sonu.app.splash.R.color.darkOrange));
-                messageDialogConfig.actionText("GIVE PERMISSIONS");
-                messageDialogConfig.iconDrawable(R.drawable.ic_error_grey_56dp);
-                messageDialogConfig
-                        .title(getString(R.string.write_external_storage_permission_title));
-                messageDialogConfig
-                        .message(getString(R.string.write_external_storage_permission_message));
-                messageDialogConfig
-                        .actionOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                ActivityCompat.requestPermissions(getActivity(),
-                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-
-                                messageDialog.dismiss();
-                            }
-                        });
-                messageDialog.setConfig(messageDialogConfig);
-                messageDialog.show();
-
-                return false;
-            } else {
-
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.sonu.app.splash.data.network.unsplashapi.RequestGenerator;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
 import com.sonu.app.splash.ui.photodescription.PhotoDescription;
+import com.sonu.app.splash.ui.userdescription.UserDescription;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
 
@@ -63,6 +64,40 @@ public class NetworkDataManagerImpl implements NetworkDataManager {
             Log.i(TAG, "getPhotoDescriptionAct:response-body-json:"+jsonObject);
 
             return UnsplashJsonUtils.getPhotoDescriptionObj(jsonObject);
+
+        } catch (IOException | UnsplashApiException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public Observable<UserDescription> getUserDescription(final String username) {
+        return Observable.fromCallable(new Callable<UserDescription>() {
+            @Override
+            public UserDescription call() throws Exception {
+                return getUserDescriptionAct(username);
+            }
+        });
+    }
+
+    private UserDescription getUserDescriptionAct(String username)
+            throws IOException, UnsplashApiException {
+
+        try {
+
+            // giving page number to fetch
+            String url = String.format(ApiEndpoints.GET_USER_DESCRIPTION, username);
+
+            Request request = RequestGenerator.get(url);
+
+            String body = requestHandler.request(request).string();
+            Log.i(TAG, "getPhotoDescriptionAct:response-body:"+body);
+
+            JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
+
+            Log.i(TAG, "getPhotoDescriptionAct:response-body-json:"+jsonObject);
+
+            return UnsplashJsonUtils.getUserDescriptionObj(jsonObject);
 
         } catch (IOException | UnsplashApiException e) {
             throw e;

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/userDataLl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_margin="8dp"
+            app:mpb_progressStyle="circular"
+            app:mpb_indeterminateTint="@color/coal"/>
+
+        <ImageView
+            android:id="@+id/userPicIv"
+            android:layout_width="@dimen/large_avatar_size"
+            android:layout_height="@dimen/large_avatar_size"
+            android:layout_gravity="center_horizontal"
+            tools:ignore="ContentDescription"
+            android:src="@drawable/me"/>
+
+        <TextView
+            android:id="@+id/artistNameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingTop="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="0dp"
+            android:textAppearance="@style/TextAppearance.ArtistName.Big"
+            android:layout_gravity="center_horizontal"
+            android:text="Amanshu Raikwar"/>
+
+        <TextView
+            android:id="@+id/artistUsernameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:textAppearance="@style/TextAppearance.ArtistUsername.Big"
+            android:layout_gravity="center_horizontal"
+            android:text="\@amanshuraikwar" />
+
+        <TextView
+            android:id="@+id/artistBioTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="0dp"
+            android:textAppearance="@style/TextAppearance.ArtistBio"
+            android:lines="5"
+            android:ellipsize="end"
+            android:text="photographer from india"
+            android:visibility="gone"/>
+
+        <FrameLayout
+            android:id="@+id/artistLocationFl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:background="@color/fog">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/fog" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_gravity="center_horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/ic_place_black_24dp"
+                    tools:ignore="ContentDescription"
+                    android:tint="@color/green"/>
+
+                <TextView
+                    android:id="@+id/artistLocationTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="24dp"
+                    android:textAppearance="@style/TextAppearance.Body2"
+                    android:textColor="@color/grey"
+                    android:lines="1"
+                    android:text="Montreal, Canada"/>
+            </FrameLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/photoActionsLl"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingStart="16dp"
+            android:paddingTop="24dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:clipToPadding="false">
+
+            <Button
+                android:id="@+id/artistPhotosCountBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_image_black_24dp"
+                android:drawableTint="@color/teal"
+                android:text="--"
+                style="@style/Widget.Splash.InlineActionButton"
+                android:clickable="false"/>
+
+            <Button
+                android:id="@+id/artistFollowersCountBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_group_black_24dp"
+                android:drawableTint="@color/indigo"
+                android:text="--"
+                style="@style/Widget.Splash.InlineActionButton"
+                android:clickable="false"/>
+
+            <Button
+                android:id="@+id/artistLikesCountBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_heart_solid_black_24dp"
+                android:drawableTint="@color/pink"
+                android:text="--"
+                style="@style/Widget.Splash.InlineActionButton"
+                android:clickable="false"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:visibility="gone"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/itemsRv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="16dp"/>
+
+</FrameLayout>

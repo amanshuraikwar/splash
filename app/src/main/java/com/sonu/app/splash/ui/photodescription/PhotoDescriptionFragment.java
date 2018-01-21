@@ -5,6 +5,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
@@ -13,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,14 +35,19 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
+import com.sonu.app.splash.ui.messagedialog.MessageDialog;
+import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photoinfodialog.PhotoInfoDialog;
+import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.util.ColorHelper;
+import com.sonu.app.splash.util.ConnectionUtil;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
@@ -94,8 +102,35 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
     @BindView(R.id.artistUsernameTv)
     TextView artistUsernameTv;
 
+    @BindView(R.id.artistPicCv)
+    CardView artistPicCv;
+
     private int loadCount;
     private PhotoDescription photoDescription;
+
+    private MessageDialog messageDialog;
+    private boolean dataLoaded;
+
+    private ConnectivityManager.NetworkCallback networkCallback =
+            new ConnectivityManager.NetworkCallback(){
+                @Override
+                public void onAvailable(Network network) {
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!dataLoaded) {
+                                getPresenter().getData();
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onLost(Network network) {
+
+                }
+            };
 
     @Inject
     public PhotoDescriptionFragment() {
@@ -149,6 +184,14 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
                 .apply(new RequestOptions().centerCrop().circleCrop())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(artistPicIv);
+
+        artistPicCv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startUserDescriptionActivity(
+                        (Photo) getArguments().getParcelable(PhotoDescriptionActivity.KEY_PHOTO));
+            }
+        });
 
         Glide.with(getActivity())
                 .asBitmap()
@@ -250,6 +293,27 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
         });
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        messageDialog = new MessageDialog(getContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ConnectionUtil.registerNetworkCallback(getContext(), networkCallback);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ConnectionUtil.unregisterNetworkCallback(getContext(), networkCallback);
+    }
+
     private @ColorInt int getDrawableColor(Palette palette, Bitmap resource) {
 
         boolean isDark;
@@ -280,7 +344,7 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
     @Override
     public synchronized void hideLoading() {
         loadCount += 1;
-        if (loadCount == 2) {
+        if (loadCount >= 2) {
             mainProgressBar.setVisibility(View.GONE);
             photoInfoIb.setVisibility(View.VISIBLE);
         }
@@ -288,17 +352,42 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
 
     @Override
     public void showIoException(int titleStringRes, int messageStringRes) {
-
+        MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
+        messageDialogConfig.color(getContext().getColor(R.color.darkRed));
+        messageDialogConfig.actionText("OK");
+        messageDialogConfig.iconDrawable(R.drawable.ic_perm_scan_wifi_black_48dp);
+        messageDialogConfig.title(getString(titleStringRes));
+        messageDialogConfig.message(getString(messageStringRes));
+        messageDialog.setConfig(messageDialogConfig);
+        messageDialog.show();
     }
 
     @Override
     public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-
+        MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
+        messageDialogConfig.color(getContext().getColor(R.color.darkRed));
+        messageDialogConfig.actionText("OK");
+        messageDialogConfig.iconDrawable(R.drawable.ic_cloud_off_grey_56dp);
+        messageDialogConfig.title(getString(titleStringRes));
+        messageDialogConfig.message(getString(messageStringRes));
+        messageDialog.setConfig(messageDialogConfig);
+        messageDialog.show();
     }
 
     @Override
     public void showUnknownException(String message) {
-
+        MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
+        messageDialogConfig.color(getContext().getColor(R.color.darkRed));
+        messageDialogConfig.actionText("OK");
+        messageDialogConfig.iconDrawable(R.drawable.ic_perm_scan_wifi_black_48dp);
+        messageDialogConfig.title(getString(R.string.unknown_exception_title));
+        if (!message.equals("")) {
+            messageDialogConfig.message(message);
+        } else {
+            messageDialogConfig.message(getString(R.string.unknown_exception_message));
+        }
+        messageDialog.setConfig(messageDialogConfig);
+        messageDialog.show();
     }
 
     @Override
@@ -330,10 +419,24 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
                 }
             });
         }
+
+        dataLoaded = true;
     }
 
     @Override
     public String getCurPhotoId() {
         return ((Photo)getArguments().getParcelable(PhotoDescriptionActivity.KEY_PHOTO)).getId();
+    }
+
+    @Override
+    public void showLoading() {
+        mainProgressBar.setVisibility(View.VISIBLE);
+        photoInfoIb.setVisibility(View.GONE);
+    }
+
+    public void startUserDescriptionActivity(Photo photo) {
+        Intent i = new Intent(getActivity(), UserDescriptionActivity.class);
+        i.putExtra(UserDescriptionActivity.KEY_PHOTO, photo);
+        startActivity(i);
     }
 }

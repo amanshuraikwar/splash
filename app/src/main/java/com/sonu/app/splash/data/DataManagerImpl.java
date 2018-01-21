@@ -4,11 +4,15 @@ import android.content.Context;
 
 import com.sonu.app.splash.data.cache.NewPhotosCache;
 import com.sonu.app.splash.data.cache.PhotosCache;
+import com.sonu.app.splash.data.cache.UserPhotosCache;
 import com.sonu.app.splash.data.download.DownloadSession;
 import com.sonu.app.splash.data.network.NetworkDataManager;
+import com.sonu.app.splash.data.network.unsplashapi.RequestGenerator;
+import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.di.ApplicationContext;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photodescription.PhotoDescription;
+import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 import java.util.List;
 
@@ -36,6 +40,9 @@ public class DataManagerImpl implements DataManager {
     NetworkDataManager networkDataManager;
 
     @Inject
+    RequestHandler requestHandler;
+
+    @Inject
     public DataManagerImpl(){
     }
 
@@ -61,6 +68,11 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
+    public UserPhotosCache getUserPhotosCache(String username) {
+        return new UserPhotosCache(requestHandler, username);
+    }
+
+    @Override
     public DownloadSession getDownloadSession() {
         return downloadSession;
     }
@@ -68,5 +80,10 @@ public class DataManagerImpl implements DataManager {
     @Override
     public Observable<PhotoDescription> getPhotoDescription(String photoId) {
         return networkDataManager.getPhotoDescription(photoId);
+    }
+
+    @Override
+    public Observable<UserDescription> getUserDescription(String username) {
+        return networkDataManager.getUserDescription(username);
     }
 }

@@ -107,4 +107,19 @@ public class AboutFragment extends BaseFragment<AboutContract.Presenter>
     public int getHomeNavItemId() {
         return AboutFragment.class.hashCode();
     }
+
+    @Override
+    public void showIoException(int titleStringRes, int messageStringRes) {
+
+    }
+
+    @Override
+    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
+
+    }
+
+    @Override
+    public void showUnknownException(String message) {
+
+    }
 }

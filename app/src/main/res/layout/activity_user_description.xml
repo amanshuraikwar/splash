@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/eddfl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:dragDismissDistance="174dp"
+    app:dragDismissScale="0.95"
+    android:background="@color/white">
+
+    <FrameLayout
+        android:id="@+id/contentFl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

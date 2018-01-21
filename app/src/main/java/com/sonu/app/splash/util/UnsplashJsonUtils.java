@@ -1,9 +1,11 @@
 package com.sonu.app.splash.util;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photodescription.PhotoDescription;
+import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 /**
  * Created by amanshuraikwar on 12/01/18.
@@ -249,7 +251,11 @@ public class UnsplashJsonUtils {
                     element
                             .get("location")
                             .getAsJsonObject().get("title").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
 
+        try {
             builder.locationLat(
                     element
                             .get("location")
@@ -278,11 +284,23 @@ public class UnsplashJsonUtils {
                             .get("exif")
                             .getAsJsonObject().get("make").getAsString());
 
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+
             builder.exifModel(
                     element
                             .getAsJsonObject()
                             .get("exif")
                             .getAsJsonObject().get("model").getAsString());
+
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
 
             builder.exifExposureTime(
                     element
@@ -290,17 +308,35 @@ public class UnsplashJsonUtils {
                             .get("exif")
                             .getAsJsonObject().get("exposure_time").getAsString());
 
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+
             builder.exifAperture(
                     element
                             .getAsJsonObject()
                             .get("exif")
                             .getAsJsonObject().get("aperture").getAsString());
 
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+
             builder.exifFocalLength(
                     element
                             .getAsJsonObject()
                             .get("exif")
                             .getAsJsonObject().get("focal_length").getAsString());
+
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
 
             builder.exifIso(
                     element
@@ -312,6 +348,88 @@ public class UnsplashJsonUtils {
             // do nothing
         }
 
+
+        return builder.build();
+    }
+
+    public static UserDescription getUserDescriptionObj(JsonObject element) {
+
+        UserDescription.Builder builder =
+                new UserDescription.Builder(element.getAsJsonObject().get("id").getAsString());
+
+        builder.updatedAt(element.getAsJsonObject().get("updated_at").getAsString());
+
+        builder.username(element.getAsJsonObject().get("username").getAsString());
+
+        builder.name(element.getAsJsonObject().get("name").getAsString());
+
+        try {
+            builder.portfolioUrl(element.getAsJsonObject().get("portfolio_url").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.bio(element.getAsJsonObject().get("bio").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.location(element.getAsJsonObject().get("location").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        builder.totalLikes(element.getAsJsonObject().get("total_likes").getAsInt());
+
+        builder.totalPhotos(element.getAsJsonObject().get("total_photos").getAsInt());
+
+        builder.totalCollections(element.getAsJsonObject().get("total_collections").getAsInt());
+
+        builder.followersCount(element.getAsJsonObject().get("followers_count").getAsInt());
+
+        builder.downloads(element.getAsJsonObject().get("downloads").getAsInt());
+
+        builder.profileImageUrl(
+                element.getAsJsonObject()
+                        .get("profile_image")
+                        .getAsJsonObject().get("large").getAsString());
+
+        try {
+            builder.badgeTitle(
+                    element.getAsJsonObject()
+                            .get("badge")
+                            .getAsJsonObject().get("title").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.badgeLink(
+                    element.getAsJsonObject()
+                            .get("badge")
+                            .getAsJsonObject().get("link").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+
+        JsonArray jsonTags = element.getAsJsonObject()
+                .get("tags")
+                .getAsJsonObject()
+                .get("custom")
+                .getAsJsonArray();
+
+        String tags[] = new String[jsonTags.size()];
+
+        int index = 0;
+        for (JsonElement tag : jsonTags) {
+            tags[index] = tag.getAsJsonObject().get("title").getAsString();
+            index++;
+        }
+
+        builder.tags(tags);
 
         return builder.build();
     }

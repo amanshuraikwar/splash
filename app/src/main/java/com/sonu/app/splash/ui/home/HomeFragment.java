@@ -273,4 +273,19 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
     public void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void showIoException(int titleStringRes, int messageStringRes) {
+
+    }
+
+    @Override
+    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
+
+    }
+
+    @Override
+    public void showUnknownException(String message) {
+
+    }
 }

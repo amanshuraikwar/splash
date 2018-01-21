@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
                                @NonNull ListItemTypeFactory typeFactory) {
         this.typeFactory = typeFactory;
         this.parentActivity = parentActivity;
-        listItems = Collections.emptyList();
+        listItems = new ArrayList<>();
     }
 
     @Override

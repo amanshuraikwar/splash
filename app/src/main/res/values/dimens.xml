@@ -5,4 +5,5 @@
 
     <dimen name="download_sheet_height">104dp</dimen>
     <dimen name="persistent_message_parent_height">26dp</dimen>
+    <dimen name="large_avatar_size">120dp</dimen>
 </resources>

@@ -9,6 +9,8 @@ import com.sonu.app.splash.ui.home.HomeActivity;
 import com.sonu.app.splash.ui.home.HomeModule;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionModule;
+import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
+import com.sonu.app.splash.ui.userdescription.UserDescriptionModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -39,6 +41,11 @@ public abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = {
             PhotoDescriptionModule.class})
     abstract PhotoDescriptionActivity photoDescriptionActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = {
+            UserDescriptionModule.class})
+    abstract UserDescriptionActivity userDescriptionActivity();
 
     @ActivityScoped
     @ContributesAndroidInjector

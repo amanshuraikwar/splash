@@ -1,4 +1,4 @@
-package com.sonu.app.splash.ui.photodescription;
+package com.sonu.app.splash.ui.userdescription;
 
 import android.app.Activity;
 import android.util.Log;
@@ -6,18 +6,20 @@ import android.util.Log;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.cache.UserPhotosCache;
+import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
-import com.sonu.app.splash.ui.about.AboutContract;
+import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.ui.photodescription.PhotoDescription;
 import com.sonu.app.splash.util.LogUtils;
+import com.sonu.app.splash.util.PermissionsHelper;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -25,29 +27,45 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by amanshuraikwar on 19/12/17.
+ * Created by amanshuraikwar on 16/01/18.
  */
 
-public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptionContract.View>
-        implements PhotoDescriptionContract.Presenter {
+public class UserDescriptionPresenter
+        extends BasePresenterImpl<UserDescriptionContract.View>
+        implements UserDescriptionContract.Presenter {
 
-    private static final String TAG = LogUtils.getLogTag(PhotoDescriptionPresenter.class);
+    private static final String TAG = LogUtils.getLogTag(UserDescriptionPresenter.class);
 
-    private Disposable photoDescriptionDesc;
+    private Disposable userDescriptionDisp;
     private boolean fetchingData;
 
+    private UserPhotosCache userPhotosCache;
+
     @Inject
-    public PhotoDescriptionPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
+    public UserDescriptionPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
         super(appBus, dataManager, activity);
     }
 
     @Override
-    public void attachView(PhotoDescriptionContract.View view, boolean wasViewRecreated) {
+    public void attachView(UserDescriptionContract.View view, boolean wasViewRecreated) {
         super.attachView(view, wasViewRecreated);
 
         if (wasViewRecreated) {
 
             getData();
+
+            if (userPhotosCache == null) {
+                userPhotosCache =
+                        getDataManager().getUserPhotosCache(getView().getCurArtistUsername());
+            }
+
+            getView().setupList(getDataManager(), userPhotosCache);
+            getView().getAllPhotos();
+        } else {
+
+            if (getView().isListEmpty()) {
+                getView().getAllPhotos();
+            }
         }
     }
 
@@ -59,23 +77,24 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
         if (!fetchingData) {
             fetchingData = true;
-            photoDescriptionDesc = getDataManager()
-                    .getPhotoDescription(getView().getCurPhotoId())
+
+            userDescriptionDisp = getDataManager()
+                    .getUserDescription(getView().getCurArtistUsername())
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Consumer<PhotoDescription>() {
+                            new Consumer<UserDescription>() {
                                 @Override
-                                public void accept(PhotoDescription photoDescription) throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onNext:called");
-                                    getView().displayPhotoDescription(photoDescription);
+                                public void accept(UserDescription userDescription) throws Exception {
+                                    Log.d(TAG, "getUserDescription:onNext:called");
+                                    getView().displayUserDescription(userDescription);
                                 }
                             },
                             new Consumer<Throwable>() {
                                 @Override
                                 public void accept(Throwable throwable) throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onError:called");
-                                    Log.e(TAG, "getPhotoDescription:onError:error=" + throwable);
+                                    Log.d(TAG, "getUserDescription:onError:called");
+                                    Log.e(TAG, "getUserDescription:onError:error=" + throwable);
                                     throwable.printStackTrace();
                                     handleException(throwable);
                                     fetchingData = false;
@@ -84,27 +103,26 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
                             new Action() {
                                 @Override
                                 public void run() throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onCompleted:called");
+                                    Log.d(TAG, "getUserDescription:onCompleted:called");
                                     getView().hideLoading();
                                     fetchingData = false;
                                 }
-                            }
-                            ,
+                            },
                             new Consumer<Disposable>() {
                                 @Override
                                 public void accept(Disposable disposable) throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onSubscribe:called");
+                                    Log.d(TAG, "getUserDescription:onSubscribe:called");
                                     getView().showLoading();
                                 }
                             });
         }
-    }
 
+    }
     @Override
     public void detachView() {
         super.detachView();
 
-        photoDescriptionDesc.dispose();
+        userDescriptionDisp.dispose();
     }
 
     private void handleException(Throwable e) {
@@ -131,5 +149,17 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
         } else {
             getView().showUnknownException(e.getMessage());
         }
+    }
+
+    @Override
+    public void onDownloadBtnClick(Photo photo) {
+        if (PermissionsHelper.checkStoragePermission(getActivity())) {
+            getView().downloadPhoto(new PhotoDownload(photo));
+        }
+    }
+
+    @Override
+    public void onPhotoClick(Photo photo) {
+        getView().startPhotoDescriptionActivity(photo);
     }
 }

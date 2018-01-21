@@ -16,9 +16,10 @@ public interface PhotoDescriptionContract {
         void showUnknownException(String message);
         void displayPhotoDescription(PhotoDescription photoDescription);
         String getCurPhotoId();
+        void showLoading();
     }
 
     interface Presenter extends BasePresenter<View> {
-
+        void getData();
     }
 }

@@ -73,7 +73,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="8dp"
             android:layout_weight="1"
-            android:drawableStart="@drawable/ic_exposure_black_24dp"
+            android:drawableStart="@drawable/ic_av_timer_black_24dp"
             android:drawableTint="@color/grey"
             android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"

@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?android:actionBarSize"
                 app:title="@string/app_name"
-                style="@style/Widget.Splash.Toolbar.SmallCapsTitle"/>
+                style="@style/Widget.Splash.Toolbar.SmallCapsTitle" />
 
             <FrameLayout
                 android:id="@+id/contentFl"
@@ -41,9 +41,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
-                android:src="@drawable/ic_info_outline_black_24dp"
+                android:src="@drawable/ic_info_black_24dp"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:focusable="true"
+                android:tint="#0097a7"/>
         </FrameLayout>
 
         <FrameLayout
