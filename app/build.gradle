@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 def gitTag = 'git describe --tags'.execute([], project.rootDir).text.trim()
-def gitCommitCount = 3
+def gitCommitCount = 5
 //        Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
 logger.debug("gitTag="+gitTag)
 

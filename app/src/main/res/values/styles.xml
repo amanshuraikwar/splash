@@ -2,19 +2,24 @@
 
     <!-- Base application theme. -->
     <style name="Splash" parent="Theme.AppCompat.Light.NoActionBar">
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:statusBarColor">@color/fog</item>
+        <item name="android:statusBarColor">@color/grey1</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/coal</item>
+        <item name="android:navigationBarColor">@color/darkGrey3</item>
+        <item name="android:windowBackground">@color/grey1</item>
     </style>
 
+    <!-- activity themes-->
     <style name="Splash.Home">
+
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
     <style name="Splash.Translucent">
+
         <item name="android:windowBackground">@color/scrim</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -25,15 +30,71 @@
     </style>
 
     <style name="Splash.Translucent.About">
-        <item name="android:statusBarColor">@color/lightBlue</item>
     </style>
 
     <style name="Splash.Translucent.PhotoDescription">
-        <item name="android:statusBarColor">@color/coal</item>
+
+        <item name="android:statusBarColor">@color/darkGrey3</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Splash.Translucent.UserDescription">
+    </style>
+
+    <!-- widget themes-->
+    <style
+        name="Widget.Splash.Toolbar"
+        parent="@android:style/Widget.Material.Toolbar">
+
+        <item name="android:titleTextAppearance">
+            @android:style/TextAppearance.Material.Widget.ActionBar.Title</item>
+        <item name="titleTextAppearance">
+            @android:style/TextAppearance.Material.Widget.ActionBar.Title</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.Splash.Toolbar.SmallCapsTitle">
+
+        <item name="android:titleTextAppearance">@style/TextAppearance.ToolbarTitleSmallCaps</item>
+        <item name="titleTextAppearance">@style/TextAppearance.ToolbarTitleSmallCaps</item>
+    </style>
+
+    <style name="Widget.Splash.ImageView" parent="">
+        <item name="android:tint">@color/activeIcon</item>
+    </style>
+
+    <style name="Widget.Splash.ImageView.Inactive">
+        <item name="android:tint">@color/inactiveIcon</item>
+    </style>
+
+    <style name="Widget.Splash.ImageView.Light" parent="">
+        <item name="android:tint">@color/activeIconLight</item>
+    </style>
+
+    <style name="Widget.Splash.ImageView.Light.Inactive">
+        <item name="android:tint">@color/inactiveIconLight</item>
+    </style>
+
+    <style name="Widget.Splash.Fab" parent="@style/Widget.Design.FloatingActionButton">
+        <item name="android:tint">@color/activeIconLight</item>
+    </style>
+
+    <style name="Widget.Splash.Fab.Light" parent="@style/Widget.Design.FloatingActionButton">
+        <item name="android:tint">@color/activeIcon</item>
+    </style>
+
+    <style name="Widget.Splash.HorizontalProgressbar"
+        parent="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal">
+
+        <item name="mpb_progressStyle">horizontal</item>
+        <item name="mpb_useIntrinsicPadding">false</item>
+        <item name="mpb_progressBackgroundTint">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.Splash.HorizontalProgressbar.Small">
+
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">4dp</item>
     </style>
 
     <style
@@ -41,6 +102,13 @@
         parent="@android:style/Widget.Material.ImageButton">
 
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:tint">@color/activeIcon</item>
+    </style>
+
+    <style
+        name="Widget.Splash.BorderlessImageButton.Light">
+
+        <item name="android:tint">@color/activeIconLight</item>
     </style>
 
     <style name="Widget.Splash.InlineActionButton" parent="@android:style/Widget.Material.Button">
@@ -48,83 +116,66 @@
         <item name="android:textAppearance">@style/TextAppearance.PhotoStatsVal</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:background">?android:selectableItemBackgroundBorderless</item>
+        <item name="android:drawableTint">@color/activeIcon</item>
     </style>
 
     <style name="Widget.Splash.PhotoInfoButton" parent="@android:style/Widget.Material.Button">
         <item name="android:gravity">start|center_vertical</item>
         <item name="android:textAppearance">@style/TextAppearance.PhotoStatsVal</item>
         <item name="android:drawablePadding">16dp</item>
-        <item name="android:background">?android:selectableItemBackgroundBorderless</item>
-    </style>
-
-    <style name="TextAppearance.PhotoStatsVal" parent="@style/TextAppearance.Caption">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFeatureSettings">smcp, onum</item>
-        <item name="android:letterSpacing">0.02</item>
-    </style>
-
-    <style name="TextAppearance.ArtistName" parent="@style/TextAppearance.Body1">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:fontFeatureSettings">smcp, onum</item>
-        <item name="android:textColor">@color/darkGrey</item>
-    </style>
-
-    <style name="TextAppearance.ArtistName.Big" parent="@style/TextAppearance.Title">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:fontFeatureSettings">smcp, onum</item>
-        <item name="android:textColor">@color/darkGrey</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:letterSpacing">0.02</item>
-    </style>
-
-    <style name="TextAppearance.ArtistUsername" parent="@style/TextAppearance.Caption">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textColor">@color/grey</item>
-    </style>
-
-    <style name="TextAppearance.ArtistUsername.Big" parent="@style/TextAppearance.Body1">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textColor">@color/grey</item>
-    </style>
-
-    <style name="TextAppearance.ArtistBio" parent="@style/TextAppearance.Subhead">
-        <item name="android:textColor">@color/grey</item>
-        <item name="android:letterSpacing">0.01</item>
+        <item name="android:background">@null</item>
+        <item name="android:drawableTint">@color/activeIcon</item>
     </style>
 
     <style
-        name="Widget.Splash.Toolbar"
-        parent="@android:style/Widget.Material.Toolbar">
+        name="Widget.Splash.BorderlessButton"
+        parent="@android:style/Widget.Material.Button.Borderless">
 
-        <item name="titleTextAppearance">@android:style/TextAppearance.Material.Widget.ActionBar.Title</item>
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button</item>
     </style>
 
-    <style name="Widget.Splash.Toolbar.SmallCapsTitle">
-        <item name="titleTextAppearance">@style/TextAppearance.ToolbarTitleSmallCaps</item>
+    <style
+        name="Widget.Splash.BorderlessButton.Light"
+        parent="@android:style/Widget.Material.Light.Button.Borderless">
+
+        <item name="android:textAppearance">@style/TextAppearance.Button.Light</item>
     </style>
 
-    <style name="TextAppearance.ToolbarTitleSmallCaps"
-        parent="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
+    <!-- text appearance-->
+    <style
+        name="TextAppearance.Display4"
+        parent="@android:style/TextAppearance.Material.Display4">
 
-        <item name="android:textColor">@color/coal</item>
-        <item name="android:fontFeatureSettings">smcp</item>
-        <item name="android:letterSpacing">0.2</item>
+    </style>
+
+    <style
+        name="TextAppearance.Display3"
+        parent="@android:style/TextAppearance.Material.Display3">
+
+    </style>
+
+    <style
+        name="TextAppearance.Display2"
+        parent="@android:style/TextAppearance.Material.Display2">
+
+    </style>
+
+    <style
+        name="TextAppearance.Display1"
+        parent="@android:style/TextAppearance.Material.Display1">
+
     </style>
 
     <style
         name="TextAppearance.Headline"
         parent="@android:style/TextAppearance.Material.Headline">
 
-        <!-- change default title text appearance here -->
     </style>
 
     <style
         name="TextAppearance.Title"
         parent="@android:style/TextAppearance.Material.Title">
 
-        <!-- change default title text appearance here -->
     </style>
 
     <style
@@ -151,73 +202,165 @@
 
     </style>
 
+    <style name="TextAppearance.ToolbarTitleSmallCaps"
+        parent="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
+
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:fontFeatureSettings">smcp</item>
+        <item name="android:letterSpacing">0.2</item>
+    </style>
+
     <style
         name="TextAppearance.PersistentMessage"
         parent="@style/TextAppearance.Caption">
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
 
+    <style
+        name="TextAppearance.AppNameBig"
+        parent="@style/TextAppearance.Display3">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/secondaryText</item>
+        <item name="android:letterSpacing">0.2</item>
         <item name="android:fontFeatureSettings">smcp</item>
+    </style>
+
+    <style
+        name="TextAppearance.AppShortDescription"
+        parent="@style/TextAppearance.Caption">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/disableHintText</item>
+        <item name="android:fontFeatureSettings">smcp</item>
+    </style>
+
+    <style
+        name="TextAppearance.AppInfoHeading"
+        parent="@style/TextAppearance.Body2">
+        <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/fog</item>
+        <item name="android:textColor">@color/disableHintText</item>
+    </style>
+
+    <style
+        name="TextAppearance.AppInfoElementTitle"
+        parent="@style/TextAppearance.Subhead">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.AppInfoElementSubtitle"
+        parent="@style/TextAppearance.Body1">
+
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.LocationTitle"
+        parent="@style/TextAppearance.Body2">
+
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.PhotoDescription"
+        parent="@style/TextAppearance.Headline">
+
+        <item name="android:fontFamily">@font/roboto_mono</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsVal" parent="@style/TextAppearance.Caption">
+
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.ArtistName" parent="@style/TextAppearance.Body1">
+
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.ArtistUsername" parent="@style/TextAppearance.Caption">
+
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:textColor">@color/disableHintText</item>
+    </style>
+
+    <style name="TextAppearance.ArtistName.Big" parent="@style/TextAppearance.Title">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+
+    <style name="TextAppearance.ArtistUsername.Big" parent="@style/TextAppearance.Body1">
+
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:textColor">@color/disableHintText</item>
+    </style>
+
+    <style name="TextAppearance.ArtistBio" parent="@style/TextAppearance.Subhead">
+        <item name="android:fontFamily">@font/roboto_mono</item>
+        <item name="android:textColor">@color/secondaryText</item>
     </style>
 
     <style
         name="TextAppearance.ErrorTitle"
         parent="@style/TextAppearance.Title">
 
-        <item name="android:textColor">@color/darkGrey</item>
         <item name="android:fontFeatureSettings">smcp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primaryText</item>
     </style>
 
     <style
         name="TextAppearance.ErrorTitle.Light"
         parent="@style/TextAppearance.ErrorTitle">
 
-        <item name="android:textColor">@color/smoke</item>
+        <item name="android:textColor">@color/primaryTextLight</item>
     </style>
 
     <style
         name="TextAppearance.ErrorMessage"
         parent="@style/TextAppearance.Body2">
 
-        <item name="android:textColor">@color/grey</item>
+        <item name="android:textColor">@color/secondaryText</item>
     </style>
 
     <style
         name="TextAppearance.ErrorMessage.Light"
         parent="@style/TextAppearance.ErrorMessage">
 
-        <item name="android:textColor">@color/lightSmoke</item>
+        <item name="android:textColor">@color/secondaryTextLight</item>
     </style>
 
     <style
         name="TextAppearance.Button"
         parent="@android:style/TextAppearance.Material.Widget.Button">
 
-        <item name="android:textColor">@color/coal</item>
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.1</item>
+        <item name="android:textColor">@color/primaryText</item>
     </style>
 
     <style
         name="TextAppearance.Button.Light"
         parent="@style/TextAppearance.Button">
 
-        <item name="android:textColor">@color/fog</item>
+        <item name="android:textColor">@color/primaryTextLight</item>
     </style>
-
-    <style
-        name="Widget.Splash.BorderlessButton"
-        parent="@android:style/Widget.Material.Button.Borderless">
-
-        <item name="android:textAppearance">@style/TextAppearance.Button</item>
-    </style>
-
-    <style
-        name="Widget.Splash.BorderlessButton.Light"
-        parent="@android:style/Widget.Material.Light.Button.Borderless">
-
-        <item name="android:textAppearance">@style/TextAppearance.Button.Light</item>
-    </style>
-
 </resources>

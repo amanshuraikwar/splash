@@ -30,7 +30,7 @@ public class UnsplashJsonUtils {
         try {
             builder.description(element.getAsJsonObject().get("description").getAsString());
         } catch (Exception e) {
-            // do nothing
+            builder.description("- photo on Unsplash");
         }
 
         builder.artistId(
@@ -149,7 +149,7 @@ public class UnsplashJsonUtils {
         try {
             builder.description(element.getAsJsonObject().get("description").getAsString());
         } catch (Exception e) {
-            // do nothing
+            builder.description("- photo on Unsplash");
         }
 
         builder.artistId(

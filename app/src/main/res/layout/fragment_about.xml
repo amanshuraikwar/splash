@@ -1,156 +1,479 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clipToPadding="false">
 
-    <com.sonu.app.splash.ui.widget.WidthFitSquareLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent">
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            android:gravity="center">
+        <com.sonu.app.splash.ui.widget.WidthFitSquareLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name_release"
+                        android:textAppearance="@style/TextAppearance.AppNameBig" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/appDescTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_short_description"
+                    android:textAppearance="@style/TextAppearance.AppShortDescription" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/projectGithubIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:padding="8dp"
+                android:src="@drawable/ic_github_grey_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
+        </com.sonu.app.splash.ui.widget.WidthFitSquareLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/developed_by_title"
+            android:textAppearance="@style/TextAppearance.AppInfoHeading"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/myImageCv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="1dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/me"
+                    tools:ignore="ContentDescription" />
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toEndOf="@+id/myImageCv"
+                android:layout_marginStart="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Splash"
-                    android:textAppearance="@android:style/TextAppearance.Material.Display3"
-                    android:fontFeatureSettings="smcp"
-                    android:textStyle="bold"
-                    android:textColor="#0097a7"
-                    android:letterSpacing="0.2"/>
+                    android:text="@string/developer_name"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementTitle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementSubtitle"
+                    android:text="@string/ar_email"/>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/appDescTv"
+            <ImageView
+                android:id="@+id/arLinkedinIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="an unofficial unsplash client"
-                android:textAppearance="@android:style/TextAppearance.Material.Caption"
-                android:fontFeatureSettings="smcp"
-                android:textColor="#006064"/>
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/projectGithubIv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_github_grey_24dp"
-            android:layout_gravity="bottom|end"
-            android:padding="8dp"
-            android:tint="#0097a7"
-            android:background="?selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            tools:ignore="ContentDescription" />
-    </com.sonu.app.splash.ui.widget.WidthFitSquareLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/developed_by_title"
-        android:textAppearance="@android:style/TextAppearance.Material.Body2"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/myImageCv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="0dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:padding="4dp"
+                android:layout_toStartOf="@+id/arGithubIv"
+                android:layout_below="@+id/myImageCv"
+                android:src="@drawable/ic_linkedin_grey_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/me"
+                android:id="@+id/arGithubIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:padding="4dp"
+                android:layout_toStartOf="@+id/arInstagramIv"
+                android:layout_below="@+id/myImageCv"
+                android:src="@drawable/ic_github_grey_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
                 tools:ignore="ContentDescription" />
-        </android.support.v7.widget.CardView>
 
-        <LinearLayout
+            <ImageView
+                android:id="@+id/arInstagramIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:layout_below="@+id/myImageCv"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_instagram_grey_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/third_party_libraries_title"
+            android:textAppearance="@style/TextAppearance.AppInfoHeading"/>
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toEndOf="@+id/myImageCv"
-            android:layout_marginStart="16dp">
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
-            <TextView
+            <android.support.v7.widget.CardView
+                android:id="@+id/slIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/developer_name"
-                android:textAppearance="@android:style/TextAppearance.Material.Subhead"/>
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
-            <TextView
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/android_icon_125"
+                    tools:ignore="ContentDescription" />
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/slDtLl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toEndOf="@+id/slIv"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Android support libraries"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementTitle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementSubtitle"
+                    android:text="The Android support libraries offer a number of features that are not built into the framework."/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/slLinkIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@android:style/TextAppearance.Material.Body1"
-                android:text="@string/ar_email"/>
-        </LinearLayout>
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:layout_below="@+id/slDtLl"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_open_in_new_black_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/arLinkedinIv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:padding="4dp"
-            android:layout_toStartOf="@+id/arGithubIv"
-            android:src="@drawable/ic_linkedin_grey_24dp"
-            android:layout_below="@+id/myImageCv"
-            android:background="?selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            tools:ignore="ContentDescription" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="72dp"/>
 
-        <ImageView
-            android:id="@+id/arGithubIv"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:padding="4dp"
-            android:layout_toStartOf="@+id/arInstagramIv"
-            android:src="@drawable/ic_github_grey_24dp"
-            android:layout_below="@+id/myImageCv"
-            android:background="?selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            tools:ignore="ContentDescription" />
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
-        <ImageView
-            android:id="@+id/arInstagramIv"
-            android:layout_width="wrap_content"
+            <android.support.v7.widget.CardView
+                android:id="@+id/bnIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/butterknife"
+                    tools:ignore="ContentDescription" />
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/bnDtLl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toEndOf="@+id/bnIv"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ButterKnife"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementTitle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementSubtitle"
+                    android:text="Bind Android views and callbacks to fields and methods."/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/bnLinkIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:layout_below="@+id/bnDtLl"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_open_in_new_black_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="72dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_instagram_grey_24dp"
-            android:layout_below="@+id/myImageCv"
-            android:layout_alignParentEnd="true"
-            android:background="?selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            tools:ignore="ContentDescription" />
-    </RelativeLayout>
-</LinearLayout>
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/glideIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/glide"
+                    tools:ignore="ContentDescription" />
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/glideDtLl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toEndOf="@+id/glideIv"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Glide"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementTitle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementSubtitle"
+                    android:text="An image loading and caching library for Android focused on smooth scrolling."/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/glideLinkIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:layout_below="@+id/glideDtLl"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_open_in_new_black_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="72dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/okhttpIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/okhttp"
+                    tools:ignore="ContentDescription" />
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/okhttpDtLl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toEndOf="@+id/okhttpIv"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OkHttp"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementTitle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementSubtitle"
+                    android:text="An HTTP and HTTP/2 client for Android and Java applications."/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/okhttpLinkIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:layout_below="@+id/okhttpDtLl"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_open_in_new_black_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="72dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/rfIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/okhttp"
+                    tools:ignore="ContentDescription" />
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/rfDtLl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_toEndOf="@+id/rfIv"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Retrofit"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementTitle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppInfoElementSubtitle"
+                    android:text="A type-safe HTTP client for Android and Java."/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/rfLinkIv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:layout_below="@+id/rfDtLl"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_open_in_new_black_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="16dp"
+            android:text="made with LOVE."
+            android:textAppearance="@style/TextAppearance.AppInfoHeading"
+            android:textColor="@color/pink"
+            android:background="@color/grey2"/>
+    </LinearLayout>
+</ScrollView>

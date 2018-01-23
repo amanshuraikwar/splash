@@ -5,27 +5,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:layout_marginStart="16dp"
-            android:text="Info"
-            android:layout_gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.Subhead"
-            android:textStyle="bold"/>
-    </LinearLayout>
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="16dp"
+        android:textAppearance="@style/TextAppearance.AppInfoHeading"
+        android:textColor="@color/primaryText"
+        android:text="Info"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/smoke" />
+        android:background="@color/divider" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,10 +33,8 @@
             android:paddingEnd="8dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_camera_alt_black_24dp"
-            android:drawableTint="@color/grey"
-            android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false"/>
+            android:text="--"/>
 
         <Button
             android:id="@+id/exifModelBtn"
@@ -53,12 +44,10 @@
             android:paddingEnd="16dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_camera_roll_black_24dp"
-            android:drawableTint="@color/grey"
             android:lines="1"
             android:ellipsize="end"
-            android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false"/>
+            android:text="--"/>
     </LinearLayout>
 
     <LinearLayout
@@ -74,10 +63,8 @@
             android:paddingEnd="8dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_av_timer_black_24dp"
-            android:drawableTint="@color/grey"
-            android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false"/>
+            android:text="--" />
 
         <Button
             android:id="@+id/exifApertureBtn"
@@ -87,10 +74,8 @@
             android:paddingEnd="16dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_camera_black_24dp"
-            android:drawableTint="@color/grey"
-            android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false"/>
+            android:text="--" />
     </LinearLayout>
 
     <LinearLayout
@@ -106,10 +91,8 @@
             android:paddingEnd="8dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_center_focus_strong_black_24dp"
-            android:drawableTint="@color/grey"
-            android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false"/>
+            android:text="--" />
 
         <Button
             android:id="@+id/exifIsoBtn"
@@ -119,10 +102,8 @@
             android:paddingEnd="16dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_iso_black_24dp"
-            android:drawableTint="@color/grey"
-            android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false"/>
+            android:text="--" />
     </LinearLayout>
 
     <LinearLayout
@@ -138,10 +119,8 @@
             android:paddingEnd="8dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_image_aspect_ratio_black_24dp"
-            android:drawableTint="@color/grey"
-            android:text="--"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false"/>
+            android:text="--" />
 
         <Button
             android:layout_width="0dp"
@@ -150,16 +129,14 @@
             android:paddingEnd="16dp"
             android:layout_weight="1"
             android:drawableStart="@drawable/ic_timeline_black_24dp"
-            android:drawableTint="@color/grey"
-            android:text="stats (soon)"
             style="@style/Widget.Splash.PhotoInfoButton"
-            android:clickable="false" />
+            android:text="stats (soon)"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/smoke" />
+        android:background="@color/divider" />
 
     <Button
         android:id="@+id/actionBtn"
@@ -167,7 +144,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         style="@style/Widget.Splash.BorderlessButton"
-        android:text="@string/close_btn_txt"
-        android:textColor="@color/darkGrey"/>
+        android:text="@string/close_btn_txt" />
 
 </LinearLayout>

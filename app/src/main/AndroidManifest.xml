@@ -29,6 +29,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".test.TestActivity">
+        </activity>
+
         <activity
             android:name="com.sonu.app.splash.ui.about.AboutActivity"
             android:theme="@style/Splash.Translucent.About" />
@@ -45,6 +48,9 @@
         <service
             android:name="com.sonu.app.splash.data.download.PhotoDownloadService"
             android:exported="false"/>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

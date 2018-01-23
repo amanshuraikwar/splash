@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by amanshuraikwar on 19/12/17.
@@ -40,6 +41,51 @@ public class AboutFragment extends BaseFragment<AboutContract.Presenter>
 
     @BindView(R.id.arInstagramIv)
     ImageView arInstagramIv;
+
+    @OnClick(R.id.slLinkIv)
+    void onSlIvClick() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("https://developer.android.com/topic/libraries/support-library"));
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.bnLinkIv)
+    void onBnIvClick() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("http://jakewharton.github.io/butterknife/"));
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.glideLinkIv)
+    void onGlideIvClick() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("https://github.com/bumptech/glide"));
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.okhttpLinkIv)
+    void onOkhttpIvClick() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("http://square.github.io/okhttp/"));
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.rfLinkIv)
+    void onRfIvClick() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("http://square.github.io/retrofit/"));
+        startActivity(intent);
+    }
 
     @Inject
     public AboutFragment() {

@@ -169,12 +169,12 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
         if (photo.getDescription().equals("")) {
             photoDescriptionTv.setVisibility(View.GONE);
         } else {
-            photoDescriptionTv.setText(photo.getDescription());
+            photoDescriptionTv.setText(photo.getDescription().trim());
         }
 
         photoLikesCountBtn.setText(String.format("%s likes", String.valueOf(photo.getLikes())));
 
-        artistNameTv.setText(photo.getArtistName());
+        artistNameTv.setText(photo.getArtistName().toLowerCase());
 
         artistUsernameTv.setText(
                 String.format("@%s", photo.getArtistUsername()));
@@ -331,12 +331,12 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
 
             return ContextCompat.getColor(
                             getActivity(),
-                            R.color.fog);
+                            R.color.grey3);
         } else {
 
             return ContextCompat.getColor(
                     getActivity(),
-                    R.color.coal);
+                    R.color.darkGrey3);
         }
     }
 

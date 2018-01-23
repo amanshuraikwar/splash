@@ -111,7 +111,7 @@ public class DownloadInfoFragment
         cancelBtn.setVisibility(View.GONE);
 
 
-        downloadProgressTv.setTextColor(ContextCompat.getColor(getContext(), R.color.coal));
+        downloadProgressTv.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGrey3));
 
         downloadIconIv
                 .setImageDrawable(
@@ -123,7 +123,7 @@ public class DownloadInfoFragment
         downloadIconIv
                 .setImageTintList(
                         ColorStateList
-                                .valueOf(ContextCompat.getColor(getContext(), R.color.coal)));
+                                .valueOf(ContextCompat.getColor(getContext(), R.color.darkGrey3)));
     }
 
     @Override

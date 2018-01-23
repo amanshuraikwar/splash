@@ -22,4 +22,6 @@
     <string name="ok_btn_txt">OK</string>
     <string name="done_btn_txt">done</string>
     <string name="close_btn_txt">close</string>
+    <string name="app_short_description">an unofficial unsplash client</string>
+    <string name="third_party_libraries_title">Third party libraries used</string>
 </resources>

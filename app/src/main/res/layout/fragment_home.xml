@@ -20,8 +20,7 @@
             android:id="@+id/mainContentFl"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/persistentMessageFl"
-            android:background="@color/fog">
+            android:layout_above="@+id/persistentMessageFl">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -42,9 +41,7 @@
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
                 android:src="@drawable/ic_info_black_24dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:tint="#0097a7"/>
+                style="@style/Widget.Splash.Fab.Light" />
         </FrameLayout>
 
         <FrameLayout
@@ -64,19 +61,20 @@
         android:background="@color/darkRed"
         android:orientation="horizontal"
         android:visibility="gone"
-        android:elevation="6dp">
+        android:elevation="@dimen/persistent_message_parent_elevation">
 
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_warning_black_16dp"
-            android:tint="@color/fog"
+            android:src="@drawable/ic_perm_scan_wifi_black_48dp"
+            style="@style/Widget.Splash.ImageView.Light"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:gravity="center_vertical"
             android:text="@string/no_internet_connection_txt"
             android:textAppearance="@style/TextAppearance.PersistentMessage" />
     </LinearLayout>

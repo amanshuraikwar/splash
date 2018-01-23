@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     app:dragDismissDistance="174dp"
     app:dragDismissScale="0.95"
-    android:background="@color/white">
+    android:background="@color/grey1">
 
     <FrameLayout
         android:id="@+id/contentFl"

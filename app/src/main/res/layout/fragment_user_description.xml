@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/userDataLl"
@@ -20,7 +20,7 @@
             android:layout_gravity="end"
             android:layout_margin="8dp"
             app:mpb_progressStyle="circular"
-            app:mpb_indeterminateTint="@color/coal"/>
+            app:mpb_indeterminateTint="@color/grey3"/>
 
         <ImageView
             android:id="@+id/userPicIv"
@@ -56,28 +56,23 @@
             android:id="@+id/artistBioTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="7"
+            android:paddingBottom="0dp"
+            android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="0dp"
-            android:textAppearance="@style/TextAppearance.ArtistBio"
-            android:lines="5"
-            android:ellipsize="end"
             android:text="photographer from india"
-            android:visibility="gone"/>
+            android:textAppearance="@style/TextAppearance.ArtistBio"
+            android:visibility="gone" />
 
         <FrameLayout
             android:id="@+id/artistLocationFl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:visibility="gone"
-            android:background="@color/fog">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/fog" />
+            android:visibility="visible"
+            android:background="@color/grey2">
 
             <FrameLayout
                 android:layout_width="wrap_content"
@@ -92,6 +87,7 @@
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="12dp"
                     android:src="@drawable/ic_place_black_24dp"
+                    style="@style/Widget.Splash.ImageView"
                     tools:ignore="ContentDescription"
                     android:tint="@color/green"/>
 
@@ -101,8 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="24dp"
-                    android:textAppearance="@style/TextAppearance.Body2"
-                    android:textColor="@color/grey"
+                    android:textAppearance="@style/TextAppearance.LocationTitle"
                     android:lines="1"
                     android:text="Montreal, Canada"/>
             </FrameLayout>
@@ -125,9 +120,9 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_image_black_24dp"
                 android:drawableTint="@color/teal"
-                android:text="--"
                 style="@style/Widget.Splash.InlineActionButton"
-                android:clickable="false"/>
+                android:background="@null"
+                android:text="--"/>
 
             <Button
                 android:id="@+id/artistFollowersCountBtn"
@@ -136,9 +131,9 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_group_black_24dp"
                 android:drawableTint="@color/indigo"
-                android:text="--"
                 style="@style/Widget.Splash.InlineActionButton"
-                android:clickable="false"/>
+                android:background="@null"
+                android:text="--"/>
 
             <Button
                 android:id="@+id/artistLikesCountBtn"
@@ -147,9 +142,9 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_heart_solid_black_24dp"
                 android:drawableTint="@color/pink"
-                android:text="--"
                 style="@style/Widget.Splash.InlineActionButton"
-                android:clickable="false"/>
+                android:background="@null"
+                android:text="--" />
         </LinearLayout>
     </LinearLayout>
 
@@ -157,7 +152,7 @@
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/grey1"
         android:visibility="gone"/>
 
     <android.support.v7.widget.RecyclerView
@@ -165,9 +160,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingStart="2dp"
+        android:paddingBottom="16dp"
         android:paddingEnd="2dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="16dp"/>
+        android:paddingStart="2dp"
+        android:paddingTop="2dp" />
 
 </FrameLayout>

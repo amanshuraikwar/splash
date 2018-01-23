@@ -35,7 +35,7 @@
         android:layout_marginBottom="4dp"
         android:padding="8dp"
         android:background="?android:attr/selectableItemBackground"
-        android:tint="@color/fog"
+        android:tint="@color/grey3"
         android:src="@drawable/ic_file_download_black_24dp"
         tools:ignore="ContentDescription" />
 </FrameLayout>
