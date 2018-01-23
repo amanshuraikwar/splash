@@ -24,7 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:layout_gravity="bottom"
-        android:background="@drawable/gradient_background_dark_bottom_up_dark" />
+        android:background="@drawable/gradient_background_dark_bottom_up_dark"
+        android:visibility="gone"/>
 
     <ImageButton
         android:id="@+id/downloadIb"

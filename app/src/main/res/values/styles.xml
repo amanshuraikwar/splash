@@ -10,6 +10,8 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/darkGrey3</item>
         <item name="android:windowBackground">@color/grey1</item>
+
+        <!--<item name="android:windowContentTransitions">true</item>-->
     </style>
 
     <!-- activity themes-->
@@ -30,6 +32,8 @@
     </style>
 
     <style name="Splash.Translucent.About">
+        <item name="android:windowEnterTransition">@transition/about_enter</item>
+        <item name="android:windowExitTransition">@transition/about_return</item>
     </style>
 
     <style name="Splash.Translucent.PhotoDescription">
@@ -362,5 +366,13 @@
         parent="@style/TextAppearance.Button">
 
         <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
+    <style
+        name="TextAppearance.ArtistTag"
+        parent="@style/TextAppearance.Body2">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">@color/disableHintText</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 </resources>

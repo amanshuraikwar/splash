@@ -14,9 +14,23 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <FrameLayout
-            android:id="@+id/contentFl"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView
+                android:id="@+id/targetIv"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:transitionName="target"
+                android:background="@color/darkGrey1"/>
+
+            <FrameLayout
+                android:id="@+id/contentFl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

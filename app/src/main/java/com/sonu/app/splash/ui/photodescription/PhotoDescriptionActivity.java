@@ -2,11 +2,16 @@ package com.sonu.app.splash.ui.photodescription;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.about.AboutFragment;
+import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.FragmentUtils;
 
 import javax.inject.Inject;
@@ -26,6 +31,9 @@ public class PhotoDescriptionActivity extends DaggerAppCompatActivity {
     @BindView(R.id.eddfl)
     ElasticDragDismissFrameLayout eddfl;
 
+    @BindView(R.id.targetIv)
+    WidthRelativeAspectRatioImageView targetIv;
+
     @Inject
     PhotoDescriptionFragment photoDescriptionFragment;
 
@@ -40,10 +48,20 @@ public class PhotoDescriptionActivity extends DaggerAppCompatActivity {
         arguments.putParcelable(KEY_PHOTO, getIntent().getParcelableExtra(KEY_PHOTO));
         photoDescriptionFragment.setArguments(arguments);
 
-        FragmentUtils
-                .addFragmentToUi(
-                        getSupportFragmentManager(), photoDescriptionFragment,
-                        R.id.contentFl);
+        Photo photo = getIntent().getParcelableExtra(KEY_PHOTO);
+
+        targetIv.setAspectRatio(((float)photo.getHeight())
+                / ((float)photo.getWidth()));
+
+        Glide.with(this)
+                .load(photo.getUrlSmall())
+                .into(targetIv);
+
+        // todo temp
+//        FragmentUtils
+//                .addFragmentToUi(
+//                        getSupportFragmentManager(), photoDescriptionFragment,
+//                        R.id.contentFl);
 
         eddfl.addListener(new ElasticDragDismissListener() {
             @Override
@@ -56,7 +74,7 @@ public class PhotoDescriptionActivity extends DaggerAppCompatActivity {
 
             @Override
             public void onDragDismissed() {
-                finish();
+                onBackPressed();
             }
         });
     }

@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -101,11 +102,22 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
                 }
 
                 @Override
-                public void onClick(Photo photo) {
+                public void onClick(Photo photo, View itemView) {
 
                     Log.d(TAG, "onPhotoClick:called");
 
-                    getPresenter().onPhotoClick(photo);
+                    Intent i = new Intent(getActivity(), PhotoDescriptionActivity.class);
+                    i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
+
+                    startActivity(i,
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    getActivity(),
+                                    itemView,
+                                    "target"
+                            ).toBundle());
+
+                    // todo temp
+                    //getPresenter().onPhotoClick(photo);
                 }
             };
 

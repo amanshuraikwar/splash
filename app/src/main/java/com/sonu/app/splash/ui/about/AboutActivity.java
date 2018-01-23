@@ -1,6 +1,7 @@
 package com.sonu.app.splash.ui.about;
 
 import android.os.Bundle;
+import android.transition.TransitionInflater;
 
 
 import com.sonu.app.splash.R;
@@ -47,7 +48,14 @@ public class AboutActivity extends DaggerAppCompatActivity {
 
             @Override
             public void onDragDismissed() {
-                finish();
+                // if we drag dismiss downward then the default reversal of the enter
+                // transition would slide content upward which looks weird. So reverse it.
+                if (eddfl.getTranslationY() > 0) {
+                    getWindow().setReturnTransition(
+                            TransitionInflater.from(AboutActivity.this)
+                                    .inflateTransition(R.transition.about_return_downward));
+                }
+                finishAfterTransition();
             }
         });
     }

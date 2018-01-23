@@ -74,10 +74,13 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
 
         parent.setBackgroundColor(color);
 
+        // unique transition name
+        parent.setTransitionName(listItem.getPhoto().getId());
+
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getPhoto());
+                listItem.getOnClickListener().onClick(listItem.getPhoto(), parent);
             }
         });
     }

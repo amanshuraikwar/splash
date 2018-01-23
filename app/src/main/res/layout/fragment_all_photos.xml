@@ -30,7 +30,7 @@
         android:orientation="vertical"
         android:layout_gravity="center"
         android:gravity="center_horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/noConnection"

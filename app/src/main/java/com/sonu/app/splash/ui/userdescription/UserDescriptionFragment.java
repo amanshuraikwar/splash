@@ -1,5 +1,6 @@
 package com.sonu.app.splash.ui.userdescription;
 
+import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,15 +15,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -109,6 +113,12 @@ public class UserDescriptionFragment
     @BindView(R.id.overlay)
     View overlay;
 
+    @BindView(R.id.tagsParentLl)
+    LinearLayout tagsParentLl;
+
+    @BindView(R.id.artistPortfolioLinkIb)
+    ImageButton artistPortfolioLinkIb;
+
     private int loadCount;
 
     private int userDataHeight;
@@ -123,7 +133,7 @@ public class UserDescriptionFragment
                 }
 
                 @Override
-                public void onClick(Photo photo) {
+                public void onClick(Photo photo, View itemView) {
 
                     Log.d(TAG, "onPhotoClick:called");
 
@@ -272,6 +282,7 @@ public class UserDescriptionFragment
         ConnectionUtil.unregisterNetworkCallback(getContext(), networkCallback);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void setupList(DataManager dataManager, PhotosCache photosCache) {
 
@@ -354,6 +365,35 @@ public class UserDescriptionFragment
                         userDataLl.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 });
+
+        itemsRv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                int firstVisibleItems[] = new int[3];
+
+                layoutManager.findFirstVisibleItemPositions(firstVisibleItems);
+
+                if (firstVisibleItems[0] > 0) {
+                    return false;
+                }
+
+                // if no data loaded then pass through
+                if (adapter.getItemCount() == 0) {
+                    return userDataLl.dispatchTouchEvent(event);
+                }
+
+                final RecyclerView.ViewHolder vh = itemsRv.findViewHolderForAdapterPosition(0);
+                if (vh == null) {
+                    return false;
+                }
+                final int firstTop = vh.itemView.getTop();
+                if (event.getY() < firstTop) {
+                    return userDataLl.dispatchTouchEvent(event);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -372,6 +412,7 @@ public class UserDescriptionFragment
         loadCount += 1;
         if (loadCount >= 2) {
             progressBar.setVisibility(View.INVISIBLE);
+            artistPortfolioLinkIb.setVisibility(View.VISIBLE);
         }
     }
 
@@ -421,7 +462,7 @@ public class UserDescriptionFragment
     }
 
     @Override
-    public void displayUserDescription(UserDescription userDescription) {
+    public void displayUserDescription(final UserDescription userDescription) {
 
         artistPhotosCountBtn.setText(String.format("%d photos", userDescription.getTotalPhotos()));
         artistFollowersCountBtn.setText(String.format("%d followers", userDescription.getFollowersCount()));
@@ -459,7 +500,39 @@ public class UserDescriptionFragment
                     }
                 });
 
+        if (userDescription.getTags().length > 0) {
+            for (String tag : userDescription.getTags()) {
+                tagsParentLl.addView(getTagView(tag));
+            }
+        }
+
+
+        artistPortfolioLinkIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!userDescription.getPortfolioUrl().equals("")) {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                    intent.setData(Uri.parse(userDescription.getPortfolioUrl()));
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getContext(), "No portfolio url", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         dataLoaded = true;
+    }
+
+    private CardView getTagView(String tag) {
+        CardView parent =
+                (CardView) getLayoutInflater().inflate(
+                        R.layout.item_artist_tag, tagsParentLl, false);
+        TextView tagTv = (TextView) parent.getChildAt(0);
+        tagTv.setText(tag);
+        return parent;
     }
 
     @Override

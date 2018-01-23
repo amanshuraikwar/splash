@@ -1,5 +1,6 @@
 package com.sonu.app.splash.ui.home;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -235,7 +236,8 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), AboutActivity.class));
+                startActivity(new Intent(getActivity(), AboutActivity.class),
+                        ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
             }
         });
     }

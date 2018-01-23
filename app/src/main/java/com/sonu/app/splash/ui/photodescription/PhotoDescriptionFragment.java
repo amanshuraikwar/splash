@@ -195,7 +195,7 @@ public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContr
 
         Glide.with(getActivity())
                 .asBitmap()
-                .load(photo.getUrlRegular())
+                .load(photo.getUrlSmall())
                 .apply(new RequestOptions().centerCrop())
                 .listener(new RequestListener<Bitmap>() {
 

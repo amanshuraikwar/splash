@@ -13,14 +13,30 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end"
-            android:layout_margin="8dp"
-            app:mpb_progressStyle="circular"
-            app:mpb_indeterminateTint="@color/grey3"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end">
+
+            <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="8dp"
+                app:mpb_progressStyle="circular"
+                app:mpb_indeterminateTint="@color/activeIcon" />
+
+            <ImageButton
+                android:id="@+id/artistPortfolioLinkIb"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                android:src="@drawable/ic_open_in_new_black_24dp"
+                tools:ignore="ContentDescription"
+                android:visibility="gone"/>
+        </FrameLayout>
+
 
         <ImageView
             android:id="@+id/userPicIv"
@@ -51,6 +67,24 @@
             android:textAppearance="@style/TextAppearance.ArtistUsername.Big"
             android:layout_gravity="center_horizontal"
             android:text="\@amanshuraikwar" />
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:clipToPadding="false"
+            android:scrollbars="none"
+            android:layout_gravity="center_horizontal">
+
+            <LinearLayout
+                android:id="@+id/tagsParentLl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+        </HorizontalScrollView>
 
         <TextView
             android:id="@+id/artistBioTv"
