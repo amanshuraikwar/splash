@@ -3,34 +3,367 @@
 <com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/eddfl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:transitionGroup="false"
     app:dragDismissDistance="174dp"
     app:dragDismissScale="0.95">
 
-    <android.support.v4.widget.NestedScrollView
+    <View
+        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/grey1"
+        android:transitionName="@string/transition_photo_description_background" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView
-                android:id="@+id/targetIv"
+            <FrameLayout
+                android:id="@+id/picParentFl"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:transitionName="target"
-                android:background="@color/darkGrey1"/>
+                android:layout_height="wrap_content"
+                android:clipChildren="false">
+
+                <com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView
+                    android:id="@+id/photoIv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:foreground="@drawable/mid_grey_ripple"
+                    android:transitionName="@string/transition_photo"
+                    android:background="@color/grey1"
+                    tools:ignore="ContentDescription" />
+
+                <FrameLayout
+                    android:id="@+id/toolbarWrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:id="@+id/topGradientView"
+                        android:layout_width="match_parent"
+                        android:layout_height="72dp"
+                        android:background="@drawable/gradient_background_dark_top_down_dark" />
+
+                    <ImageButton
+                        android:id="@+id/backIb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:src="@drawable/ic_arrow_back_black_24dp"
+                        style="@style/Widget.Splash.BorderlessImageButton.Light"
+                        tools:ignore="ContentDescription" />
+
+                    <ImageButton
+                        android:id="@+id/photoInfoIb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:layout_gravity="end"
+                        android:src="@drawable/ic_info_black_24dp"
+                        style="@style/Widget.Splash.BorderlessImageButton.Light"
+                        tools:ignore="ContentDescription"
+                        android:visibility="gone"/>
+
+                    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+                        android:id="@+id/mainProgressBar"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end"
+                        android:layout_margin="16dp"
+                        app:mpb_progressStyle="circular"
+                        app:mpb_indeterminateTint="@color/activeIconLight"
+                        android:visibility="gone"/>
+                </FrameLayout>
+
+                <ImageButton
+                    android:id="@+id/fullScreenIb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:layout_gravity="bottom|end"
+                    android:src="@drawable/ic_fullscreen_black_24dp"
+                    style="@style/Widget.Splash.BorderlessImageButton.Light"
+                    tools:ignore="ContentDescription"
+                    android:visibility="visible"/>
+            </FrameLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:focusableInTouchMode="true"
+                android:importantForAccessibility="no" />
 
             <FrameLayout
-                android:id="@+id/contentFl"
+                android:id="@+id/photoLocationFl"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/ic_place_black_24dp"
+                    style="@style/Widget.Splash.ImageView"
+                    android:tint="@color/green"
+                    tools:ignore="ContentDescription"/>
+
+                <TextView
+                    android:id="@+id/photoLocationTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="40dp"
+                    android:textAppearance="@style/TextAppearance.LocationTitle"
+                    android:text="Unknown location"/>
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/photoDescriptionTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:background="@color/grey2"
+                android:textAppearance="@style/TextAppearance.PhotoDescription"
+                android:text="Description" />
+
+            <LinearLayout
+                android:id="@+id/photoActionsLl"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:paddingStart="16dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
+                android:clipToPadding="false">
+
+                <Button
+                    android:id="@+id/photoLikesCountBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/ic_heart_solid_black_24dp"
+                    android:drawableTint="@color/pink"
+                    style="@style/Widget.Splash.InlineActionButton"
+                    android:background="@null"
+                    android:text="--"/>
+
+                <Button
+                    android:id="@+id/photoViewsCountBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/ic_remove_red_eye_black_24dp"
+                    android:drawableTint="@color/blue"
+                    style="@style/Widget.Splash.InlineActionButton"
+                    android:background="@null"
+                    android:text="--" />
+
+                <Button
+                    android:id="@+id/photoDownloadsCountBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/ic_file_download_black_24dp"
+                    android:drawableTint="@color/teal"
+                    style="@style/Widget.Splash.InlineActionButton"
+                    android:background="@null"
+                    android:text="--" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider" />
+
+            <LinearLayout
+                android:id="@+id/artistDataLl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/artistPicCv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_gravity="center_horizontal"
+                    android:stateListAnimator="@animator/raise"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="36dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/artistPicIv"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        tools:ignore="ContentDescription"
+                        android:src="@drawable/me" />
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:id="@+id/artistNameTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textAppearance="@style/TextAppearance.ArtistName"
+                    android:text="Amanshu Raikwar" />
+
+                <TextView
+                    android:id="@+id/artistUsernameTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textAppearance="@style/TextAppearance.ArtistUsername"
+                    android:text="\@amanshuraikwar" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/exifMakeBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_camera_alt_black_24dp"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="--"/>
+
+                <Button
+                    android:id="@+id/exifModelBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="16dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_camera_roll_black_24dp"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="--"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/exifExposureTimeBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_av_timer_black_24dp"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="--" />
+
+                <Button
+                    android:id="@+id/exifApertureBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="16dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_camera_black_24dp"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="--" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/exifFocalLengthBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_center_focus_strong_black_24dp"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="--" />
+
+                <Button
+                    android:id="@+id/exifIsoBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="16dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_iso_black_24dp"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="--" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/photoResolutionBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_image_aspect_ratio_black_24dp"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="--" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="16dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_timeline_black_24dp"
+                    style="@style/Widget.Splash.PhotoInfoButton"
+                    android:text="stats (soon)"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="16dp"
+                android:text="made with LOVE."
+                android:textAppearance="@style/TextAppearance.AppInfoHeading"
+                android:textColor="@color/pink"
+                android:background="@color/grey2"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

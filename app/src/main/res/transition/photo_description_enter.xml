@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <transitionSet>
+
+        <targets>
+            <target android:excludeId="@android:id/navigationBarBackground" />
+            <target android:excludeId="@android:id/statusBarBackground" />
+            <target android:excludeId="@id/photoIv" />
+            <target android:excludeId="@id/toolbarWrapper" />
+        </targets>
+
+        <slide
+            android:duration="350"
+            android:slideEdge="bottom"
+            android:interpolator="@android:interpolator/linear_out_slow_in" />
+
+        <!-- Delay fading in so that the shared element transition on the background
+             has time to run -->
+        <fade
+            android:startDelay="250"
+            android:duration="100"
+            android:interpolator="@android:interpolator/linear" />
+    </transitionSet>
+
+    <transitionSet>
+
+        <targets>
+
+            <target android:targetId="@android:id/navigationBarBackground" />
+            <target android:targetId="@android:id/statusBarBackground" />
+        </targets>
+
+        <fade
+            android:duration="350"
+            android:interpolator="@android:interpolator/linear" />
+    </transitionSet>
+
+    <fade
+        android:startDelay="1000"
+        android:duration="1000"
+        android:interpolator="@android:interpolator/linear">
+        <targets>
+            <target android:targetId="@id/toolbarWrapper" />
+        </targets>
+    </fade>
+</transitionSet>

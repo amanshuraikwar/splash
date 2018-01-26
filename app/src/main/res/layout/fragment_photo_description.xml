@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <com.sonu.app.splash.ui.widget.WidthFitSquareLayout
-        android:id="@+id/picParentWfsl"
+        android:id="@+id/picParentFl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="2dp"
-    android:background="@android:color/white"
+    android:background="@color/white"
     android:foreground="@drawable/mid_grey_ripple"
     android:stateListAnimator="@animator/raise"
-    android:elevation="1dp"
+    android:elevation="2dp"
     android:clickable="true"
     android:focusable="true">
 
@@ -25,7 +25,7 @@
         android:layout_height="72dp"
         android:layout_gravity="bottom"
         android:background="@drawable/gradient_background_dark_bottom_up_dark"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/downloadIb"
@@ -35,8 +35,7 @@
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
         android:padding="8dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:tint="@color/grey3"
         android:src="@drawable/ic_file_download_black_24dp"
+        style="@style/Widget.Splash.BorderlessImageButton.Light"
         tools:ignore="ContentDescription" />
 </FrameLayout>

@@ -24,4 +24,9 @@
     <string name="close_btn_txt">close</string>
     <string name="app_short_description">an unofficial unsplash client</string>
     <string name="third_party_libraries_title">Third party libraries used</string>
+
+    <string name="transition_photo">photo</string>
+    <string name="transition_photo_description_background">photo_description_background</string>
+    <string name="transition_artist_pic">artist_pic</string>
+    <string name="transition_photo_fullscreen">photo_fullscreen</string>
 </resources>

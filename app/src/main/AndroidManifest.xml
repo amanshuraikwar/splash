@@ -44,10 +44,15 @@
             android:name="com.sonu.app.splash.ui.userdescription.UserDescriptionActivity"
             android:theme="@style/Splash.Translucent.UserDescription" />
 
+        <activity
+            android:name="com.sonu.app.splash.ui.photofullscreen.PhotoFullscreenActivity"
+            android:theme="@style/Splash.Translucent.PhotoFullscreen" />
+
         <!-- exported=false for restricting the usage of service by this app only-->
         <service
             android:name="com.sonu.app.splash.data.download.PhotoDownloadService"
             android:exported="false"/>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

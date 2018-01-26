@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.Uri;
@@ -13,7 +12,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.util.TypedValue;
@@ -47,7 +45,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
@@ -57,7 +54,7 @@ import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 public class PhotoDescriptionFragment extends BaseFragment<PhotoDescriptionContract.Presenter>
         implements PhotoDescriptionContract.View {
 
-    @BindView(R.id.picParentWfsl)
+    @BindView(R.id.picParentFl)
     View picParentWfsl;
 
     @BindView(R.id.photoIv)

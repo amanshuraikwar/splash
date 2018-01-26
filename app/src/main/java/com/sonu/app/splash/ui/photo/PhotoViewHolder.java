@@ -41,7 +41,6 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
     @BindView(R.id.downloadIb)
     ImageButton downloadIb;
 
-
     public PhotoViewHolder(View itemView) {
         super(itemView);
     }
@@ -75,12 +74,12 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
         parent.setBackgroundColor(color);
 
         // unique transition name
-        parent.setTransitionName(listItem.getPhoto().getId());
+        photoIv.setTransitionName(listItem.getPhoto().getId());
 
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getPhoto(), parent);
+                listItem.getOnClickListener().onClick(listItem.getPhoto(), photoIv);
             }
         });
     }

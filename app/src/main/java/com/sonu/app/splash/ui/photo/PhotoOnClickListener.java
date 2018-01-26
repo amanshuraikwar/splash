@@ -8,5 +8,5 @@ import android.view.View;
 
 public interface PhotoOnClickListener {
     void onDownloadBtnClick(Photo photo);
-    void onClick(Photo photo, View itemView);
+    void onClick(Photo photo, View transitionView);
 }

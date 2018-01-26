@@ -11,7 +11,10 @@
         <item name="android:navigationBarColor">@color/darkGrey3</item>
         <item name="android:windowBackground">@color/grey1</item>
 
-        <!--<item name="android:windowContentTransitions">true</item>-->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowSharedElementsUseOverlay">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
     </style>
 
     <!-- activity themes-->
@@ -40,9 +43,32 @@
 
         <item name="android:statusBarColor">@color/darkGrey3</item>
         <item name="android:windowLightStatusBar">false</item>
+
+        <item name="android:windowAllowReturnTransitionOverlap">false</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/photo_description_shared_enter</item>
+        <item name="android:windowSharedElementReturnTransition">@transition/photo_description_shared_exit</item>
+        <!--<item name="android:windowEnterTransition">@transition/photo_description_enter</item>-->
+        <!--<item name="android:windowReturnTransition">@transition/photo_description_exit</item>-->
     </style>
 
     <style name="Splash.Translucent.UserDescription">
+
+        <item name="android:windowAllowReturnTransitionOverlap">false</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/user_description_shared_enter</item>
+        <item name="android:windowSharedElementReturnTransition">@transition/user_description_shared_exit</item>
+        <item name="android:windowEnterTransition">@transition/user_description_enter</item>
+        <item name="android:windowReturnTransition">@transition/user_description_exit</item>
+    </style>
+
+    <style name="Splash.Translucent.PhotoFullscreen">
+
+        <item name="android:statusBarColor">@color/darkGrey3</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/black</item>
+
+        <item name="android:windowAllowReturnTransitionOverlap">false</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/photo_fullscreen_shared_enter</item>
+        <item name="android:windowSharedElementReturnTransition">@transition/photo_fullscreen_shared_exit</item>
     </style>
 
     <!-- widget themes-->

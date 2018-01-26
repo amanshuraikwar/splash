@@ -1,12 +1,11 @@
 package com.sonu.app.splash.ui.allphotos;
 
-import android.Manifest;
+import android.app.ActivityOptions;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.net.Uri;
@@ -15,13 +14,12 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.util.LongSparseArray;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,17 +38,12 @@ import com.sonu.app.splash.ui.messagedialog.MessageDialog;
 import com.sonu.app.splash.ui.home.HomeNavItem;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.list.RecyclerViewAdapter;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -109,12 +102,14 @@ public class AllPhotosFragment extends BaseFragment<AllPhotosContract.Presenter>
                     Intent i = new Intent(getActivity(), PhotoDescriptionActivity.class);
                     i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
 
-                    startActivity(i,
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    getActivity(),
-                                    itemView,
-                                    "target"
-                            ).toBundle());
+                    ActivityOptions options =
+                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                                    Pair.create(itemView,
+                                            getActivity().getString(R.string.transition_photo)),
+                                    Pair.create(itemView,
+                                            getActivity().getString(R.string.transition_photo_description_background)));
+
+                    startActivity(i, options.toBundle());
 
                     // todo temp
                     //getPresenter().onPhotoClick(photo);

@@ -88,7 +88,7 @@
 
         <TextView
             android:id="@+id/artistBioTv"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="7"
@@ -96,6 +96,7 @@
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
+            android:layout_gravity="center_horizontal"
             android:text="photographer from india"
             android:textAppearance="@style/TextAppearance.ArtistBio"
             android:visibility="gone" />
@@ -133,7 +134,7 @@
                     android:layout_marginStart="24dp"
                     android:textAppearance="@style/TextAppearance.LocationTitle"
                     android:lines="1"
-                    android:text="Montreal, Canada"/>
+                    android:text="Unknown location"/>
             </FrameLayout>
         </FrameLayout>
 
