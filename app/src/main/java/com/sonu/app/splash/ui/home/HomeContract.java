@@ -10,9 +10,6 @@ import com.sonu.app.splash.ui.architecture.BaseView;
 public interface HomeContract {
 
     interface View extends BaseView {
-        void setBnvItemSelected(int homeNavItemId);
-        void hideBottomSheet();
-        void showBottomSheet();
         void showToast(String message);
     }
 

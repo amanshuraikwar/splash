@@ -3,7 +3,7 @@ package com.sonu.app.splash.data;
 import android.app.DownloadManager;
 import android.content.Context;
 
-import com.sonu.app.splash.data.cache.NewPhotosCache;
+import com.sonu.app.splash.data.cache.PhotosCache;
 import com.sonu.app.splash.data.network.NetworkDataManager;
 import com.sonu.app.splash.data.network.NetworkDataManagerImpl;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
@@ -35,12 +35,6 @@ public abstract class DataManagerModule {
     @Singleton
     @Binds
     abstract NetworkDataManager getNetworkDataManager(NetworkDataManagerImpl impl);
-
-    @Singleton
-    @Provides
-    public static NewPhotosCache getNewPhotosCache(RequestHandler requestHandler) {
-        return new NewPhotosCache(requestHandler);
-    }
 
     @Singleton
     @Provides

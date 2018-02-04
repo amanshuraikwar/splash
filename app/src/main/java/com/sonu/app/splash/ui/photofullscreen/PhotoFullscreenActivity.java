@@ -15,6 +15,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
@@ -60,20 +61,22 @@ public class PhotoFullscreenActivity extends AppCompatActivity {
         final Photo photo = getIntent().getParcelableExtra(KEY_PHOTO);
 
         Glide.with(PhotoFullscreenActivity.this)
-                .load(photo.getUrlFull())
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        return false;
-                    }
+                .load(photo.getUrlSmall())
+                .into(photoView);
 
+        Glide.with(PhotoFullscreenActivity.this)
+                .load(photo.getUrlFull())
+                .into(new SimpleTarget<Drawable>() {
                     @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    public void onResourceReady(Drawable resource,
+                                                Transition<? super Drawable> transition) {
+                        Log.d(TAG, "onResourceReady:called");
 
                         loadingTv.setText("");
-                        return false;
+                        Glide.with(PhotoFullscreenActivity.this)
+                                .load(resource)
+                                .into(photoView);
                     }
-                })
-                .into(photoView);
+                });
     }
 }

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 def gitTag = 'git describe --tags'.execute([], project.rootDir).text.trim()
-def gitCommitCount = 5
+def gitCommitCount = 9
 //        Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
 logger.debug("gitTag="+gitTag)
 
@@ -30,7 +30,7 @@ android {
             debuggable false
 
             // replace applicationLabel in manifest with appropriate app_name
-            manifestPlaceholders = [ applicationLabel: APP_NAME_RELEASE]
+            manifestPlaceholders = [ applicationLabel_1 : APP_NAME_RELEASE]
         }
 
         debug {
@@ -40,7 +40,7 @@ android {
             versionNameSuffix '-DEBUG'
 
             // replace applicationLabel in manifest with appropriate app_name
-            manifestPlaceholders = [ applicationLabel: APP_NAME_DEBUG]
+            manifestPlaceholders = [ applicationLabel_1: APP_NAME_DEBUG]
         }
     }
 }
@@ -103,6 +103,8 @@ dependencies {
     compile 'com.github.Commit451:ElasticDragDismissLayout:1.0.4'
 
     implementation 'com.github.chrisbanes:PhotoView:2.1.3'
+
+    compile 'com.pacioianu.david:ink-page-indicator:1.2.0'
 
     // testing
     testImplementation 'junit:junit:4.12'

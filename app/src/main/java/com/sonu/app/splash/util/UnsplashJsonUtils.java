@@ -3,6 +3,7 @@ package com.sonu.app.splash.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sonu.app.splash.ui.collection.Collection;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photodescription.PhotoDescription;
 import com.sonu.app.splash.ui.userdescription.UserDescription;
@@ -128,6 +129,8 @@ public class UnsplashJsonUtils {
 
         return builder.build();
     }
+
+
 
     public static PhotoDescription getPhotoDescriptionObj(JsonObject element) {
 
@@ -387,9 +390,17 @@ public class UnsplashJsonUtils {
 
         builder.totalCollections(element.getAsJsonObject().get("total_collections").getAsInt());
 
-        builder.followersCount(element.getAsJsonObject().get("followers_count").getAsInt());
+        try {
+            builder.followersCount(element.getAsJsonObject().get("followers_count").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.downloads(element.getAsJsonObject().get("downloads").getAsInt());
+        try {
+            builder.downloads(element.getAsJsonObject().get("downloads").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         builder.profileImageUrl(
                 element.getAsJsonObject()
@@ -415,21 +426,104 @@ public class UnsplashJsonUtils {
         }
 
 
-        JsonArray jsonTags = element.getAsJsonObject()
-                .get("tags")
-                .getAsJsonObject()
-                .get("custom")
-                .getAsJsonArray();
+        try {
 
-        String tags[] = new String[jsonTags.size()];
+            JsonArray jsonTags = element.getAsJsonObject()
+                    .get("tags")
+                    .getAsJsonObject()
+                    .get("custom")
+                    .getAsJsonArray();
 
-        int index = 0;
-        for (JsonElement tag : jsonTags) {
-            tags[index] = tag.getAsJsonObject().get("title").getAsString();
-            index++;
+            String tags[] = new String[jsonTags.size()];
+
+            int index = 0;
+            for (JsonElement tag : jsonTags) {
+                tags[index] = tag.getAsJsonObject().get("title").getAsString();
+                index++;
+            }
+
+            builder.tags(tags);
+        } catch (Exception e) {
+            // do nothing
         }
 
-        builder.tags(tags);
+        return builder.build();
+    }
+
+    public static Collection getCollectionObj(JsonElement element) {
+
+
+        Collection.Builder builder =
+                new Collection.Builder(element.getAsJsonObject().get("id").getAsInt());
+
+        builder.title(element.getAsJsonObject().get("title").getAsString());
+
+        builder.publishedAt(element.getAsJsonObject().get("published_at").getAsString());
+        builder.updatedAt(element.getAsJsonObject().get("updated_at").getAsString());
+
+        try {
+            builder.description(element.getAsJsonObject().get("description").getAsString());
+        } catch (Exception e) {
+            builder.description("- collection on Unsplash");
+        }
+
+        builder.curated(element.getAsJsonObject().get("curated").getAsBoolean());
+
+        builder.shareKey(element.getAsJsonObject().get("share_key").getAsString());
+
+        builder.totalPhotos(element.getAsJsonObject().get("total_photos").getAsInt());
+
+        builder.coverPhoto(getPhotoObj(element.getAsJsonObject().get("cover_photo").getAsJsonObject()));
+
+        builder.artistId(
+                element
+                        .getAsJsonObject()
+                        .get("user")
+                        .getAsJsonObject().get("id").getAsString()
+        );
+
+        builder.artistName(
+                element
+                        .getAsJsonObject()
+                        .get("user")
+                        .getAsJsonObject().get("name").getAsString()
+        );
+
+        builder.artistUsername(
+                element
+                        .getAsJsonObject()
+                        .get("user")
+                        .getAsJsonObject().get("username").getAsString()
+        );
+
+        builder.artistProfileImageUrl(
+                element
+                        .getAsJsonObject()
+                        .get("user")
+                        .getAsJsonObject()
+                        .get("profile_image")
+                        .getAsJsonObject()
+                        .get("large").getAsString()
+        );
+
+        try {
+
+            JsonArray jsonTags = element.getAsJsonObject()
+                    .get("tags")
+                    .getAsJsonArray();
+
+            String tags[] = new String[jsonTags.size()];
+
+            int index = 0;
+            for (JsonElement tag : jsonTags) {
+                tags[index] = tag.getAsJsonObject().get("title").getAsString();
+                index++;
+            }
+
+            builder.tags(tags);
+        } catch (Exception e) {
+            // do nothing
+        }
 
         return builder.build();
     }

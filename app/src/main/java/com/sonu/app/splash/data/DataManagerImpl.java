@@ -2,14 +2,24 @@ package com.sonu.app.splash.data;
 
 import android.content.Context;
 
-import com.sonu.app.splash.data.cache.NewPhotosCache;
+import com.sonu.app.splash.data.cache.AllCollectionsCache;
+import com.sonu.app.splash.data.cache.AllPhotosCache;
+import com.sonu.app.splash.data.cache.CollectionPhotosCache;
+import com.sonu.app.splash.data.cache.ContentCache;
+import com.sonu.app.splash.data.cache.CuratedPhotosCache;
+import com.sonu.app.splash.data.cache.FeaturedCollectionsCache;
 import com.sonu.app.splash.data.cache.PhotosCache;
+import com.sonu.app.splash.data.cache.SearchCollectionsCache;
+import com.sonu.app.splash.data.cache.SearchPhotosCache;
+import com.sonu.app.splash.data.cache.SearchUsersCache;
 import com.sonu.app.splash.data.cache.UserPhotosCache;
 import com.sonu.app.splash.data.download.DownloadSession;
+import com.sonu.app.splash.data.download.Downloader;
+import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.data.network.NetworkDataManager;
-import com.sonu.app.splash.data.network.unsplashapi.RequestGenerator;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.di.ApplicationContext;
+import com.sonu.app.splash.ui.content.featuredcollections.FeaturedCollectionsContract;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photodescription.PhotoDescription;
 import com.sonu.app.splash.ui.userdescription.UserDescription;
@@ -34,7 +44,25 @@ public class DataManagerImpl implements DataManager {
     DownloadSession downloadSession;
 
     @Inject
-    NewPhotosCache newPhotosCache;
+    AllCollectionsCache allCollectionsCache;
+
+    @Inject
+    FeaturedCollectionsCache featuredCollectionsCache;
+
+    @Inject
+    AllPhotosCache allPhotosCache;
+
+    @Inject
+    CuratedPhotosCache curatedPhotosCache;
+
+    @Inject
+    SearchCollectionsCache searchCollectionsCache;
+
+    @Inject
+    SearchPhotosCache searchPhotosCache;
+
+    @Inject
+    SearchUsersCache searchUsersCache;
 
     @Inject
     NetworkDataManager networkDataManager;
@@ -43,28 +71,45 @@ public class DataManagerImpl implements DataManager {
     RequestHandler requestHandler;
 
     @Inject
+    Downloader downloader;
+
+    @Inject
     public DataManagerImpl(){
     }
 
-
     @Override
-    public Observable<List<Photo>> getMorePhotos(PhotosCache photosCache) {
-        return photosCache.getMorePhotos();
+    public AllPhotosCache getAllPhotosCache() {
+        return allPhotosCache;
     }
 
     @Override
-    public Observable<List<Photo>> getCachedPhotos(PhotosCache photosCache) {
-        return photosCache.getCachedPhotos();
+    public CuratedPhotosCache getCuratedPhotoCache() {
+        return curatedPhotosCache;
     }
 
     @Override
-    public boolean isCacheEmpty(PhotosCache photosCache) {
-        return photosCache.isCacheEmpty();
+    public AllCollectionsCache getAllCollectionsCache() {
+        return allCollectionsCache;
     }
 
     @Override
-    public NewPhotosCache getNewPhotosCache() {
-        return newPhotosCache;
+    public FeaturedCollectionsCache getFeaturedCollectionsCache() {
+        return featuredCollectionsCache;
+    }
+
+    @Override
+    public SearchCollectionsCache getSearchCollectionsCache() {
+        return searchCollectionsCache;
+    }
+
+    @Override
+    public SearchPhotosCache getSearchPhotosCache() {
+        return searchPhotosCache;
+    }
+
+    @Override
+    public SearchUsersCache getSearchUsersCache() {
+        return searchUsersCache;
     }
 
     @Override
@@ -73,8 +118,18 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
+    public CollectionPhotosCache getCollectionPhotosCache(String id) {
+        return new CollectionPhotosCache(requestHandler, id);
+    }
+
+    @Override
     public DownloadSession getDownloadSession() {
         return downloadSession;
+    }
+
+    @Override
+    public void downloadPhoto(PhotoDownload photoDownload) {
+        downloader.downloadPhoto(photoDownload);
     }
 
     @Override

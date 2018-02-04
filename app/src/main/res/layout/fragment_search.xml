@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:elevation="4dp"
+        android:background="@color/grey1">
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:iconifiedByDefault="false"
+            style="@style/Widget.Splash.SearchView"/>
+
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/photosHeaderTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.LargeHeader"
+                android:padding="12dp"
+                android:text="Photos"
+                android:textColor="@color/secondaryText"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/photosRv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:clipToPadding="false" />
+                
+                <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+                    android:id="@+id/photosPb"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/grey3"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/photosBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
+                    style="@style/Widget.Splash.BorderlessButton"
+                    android:text="RETRY"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/collectionsHeaderTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.LargeHeader"
+                android:padding="12dp"
+                android:text="Collections"
+                android:textColor="@color/secondaryText"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/collectionsRv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:clipToPadding="false"  />
+
+                <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+                    android:id="@+id/collectionsPb"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/grey3"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/collectionsBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
+                    style="@style/Widget.Splash.BorderlessButton"
+                    android:text="RETRY"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/usersHeaderTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.LargeHeader"
+                android:padding="12dp"
+                android:text="Users"
+                android:textColor="@color/secondaryText"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/usersRv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:clipToPadding="false"  />
+
+                <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+                    android:id="@+id/usersPb"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/grey3"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/usersBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
+                    style="@style/Widget.Splash.BorderlessButton"
+                    android:text="RETRY"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

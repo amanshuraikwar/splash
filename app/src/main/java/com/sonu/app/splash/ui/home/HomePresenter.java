@@ -25,70 +25,8 @@ public class HomePresenter
 
     private static final String TAG = LogUtils.getLogTag(HomePresenter.class);
 
-    private Disposable onHomeNavItemVisibleDsp, downloadStateChangedDsp, quickMessageDsp;
-
     @Inject
-    public HomePresenter(AppBus appBus, DataManager dataManager, Activity activity) {
+    HomePresenter(AppBus appBus, DataManager dataManager, Activity activity) {
         super(appBus, dataManager, activity);
-    }
-
-    @Override
-    public void attachView(HomeContract.View view, boolean wasViewRecreated) {
-        super.attachView(view, wasViewRecreated);
-
-        Log.d(TAG, "attachView:called");
-
-        // to prevent more than one consumers to one subject
-        if (wasViewRecreated) {
-            onHomeNavItemVisibleDsp = getAppBus().onHomeNavItemVisible
-                    .subscribe(new Consumer<Integer>() {
-                        @Override
-                        public void accept(Integer integer) throws Exception {
-                            Log.d(TAG, "onHomeNavItemVisible:consumed");
-                            getView().setBnvItemSelected(integer);
-                        }
-                    });
-
-            downloadStateChangedDsp = getAppBus().onDownloadStateChange
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<Integer>() {
-                        @Override
-                        public void accept(
-                                Integer t)
-                                throws Exception {
-
-                            PhotoDownloadService.DownloadState downloadState =
-                                    getDataManager().getDownloadSession().getDownloadState();
-
-                            switch (downloadState.state) {
-                                case IDLE:
-                                    getView().hideBottomSheet();
-                                    break;
-                                default:
-                                    getView().showBottomSheet();
-                                    break;
-                            }
-                        }
-                    });
-
-            quickMessageDsp = getAppBus().sendQuickMessage
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) throws Exception {
-                            getView().showToast(s);
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void detachView() {
-        super.detachView();
-
-        Log.d(TAG, "detachView:called");
-
-        onHomeNavItemVisibleDsp.dispose();
-        downloadStateChangedDsp.dispose();
     }
 }

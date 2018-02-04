@@ -9,10 +9,8 @@ import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.UserPhotosCache;
 import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
-import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.ui.photo.Photo;
-import com.sonu.app.splash.ui.photodescription.PhotoDescription;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.PermissionsHelper;
 

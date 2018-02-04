@@ -42,27 +42,26 @@ import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.DataManager;
-import com.sonu.app.splash.data.cache.PhotosCache;
+import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
+import com.sonu.app.splash.ui.collection.Collection;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.list.photolist.PhotoListAdapter;
+import com.sonu.app.splash.ui.list.ContentListAdapter;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
 import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
+import com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout;
+import com.sonu.app.splash.ui.widget.SwipeBackCoordinatorLayout;
 import com.sonu.app.splash.util.ConnectionUtil;
-import com.sonu.app.splash.util.FragmentUtils;
 import com.sonu.app.splash.util.LogUtils;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import dagger.android.support.DaggerAppCompatActivity;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
@@ -75,10 +74,14 @@ public class UserDescriptionActivity
 
     public static final String KEY_PHOTO = "photo";
 
+    public static final String KEY_USER = "user";
+
+    public static final String KEY_COLLECTION = "collection";
+
     private static final String TAG = LogUtils.getLogTag(UserDescriptionActivity.class);
 
     @BindView(R.id.eddfl)
-    ElasticDragDismissFrameLayout eddfl;
+    SwipeBackCoordinatorLayout eddfl;
 
     @BindView(R.id.userPicIv)
     ImageView userPicIv;
@@ -125,9 +128,11 @@ public class UserDescriptionActivity
     @BindView(R.id.artistPortfolioLinkIb)
     ImageButton artistPortfolioLinkIb;
 
+    @BindView(R.id.appBar)
+    NestedScrollAppBarLayout appBar;
+
     private int loadCount;
 
-    private int userDataHeight;
     private PhotoOnClickListener photoOnClickListener =
             new PhotoOnClickListener() {
                 @Override
@@ -154,16 +159,13 @@ public class UserDescriptionActivity
                                             UserDescriptionActivity.this.getString(R.string.transition_photo_description_background)));
 
                     startActivity(i, options.toBundle());
-
-                    // todo temp
-//                    getPresenter().onPhotoClick(photo);
                 }
             };
 
-    private PhotoListAdapter adapter;
+    private ContentListAdapter adapter;
 
-    private PhotoListAdapter.AdapterListener adapterListener =
-            new PhotoListAdapter.AdapterListener() {
+    private ContentListAdapter.AdapterListener<Photo> adapterListener =
+            new ContentListAdapter.AdapterListener<Photo>() {
                 @Override
                 public ListItem createListItem(Photo photo) {
                     PhotoListItem listItem = new PhotoListItem(photo);
@@ -230,6 +232,46 @@ public class UserDescriptionActivity
         ButterKnife.bind(this);
 
         Photo photo = getIntent().getParcelableExtra(KEY_PHOTO);
+        UserDescription userDescription = getIntent().getParcelableExtra(KEY_USER);
+        Collection collection = getIntent().getParcelableExtra(KEY_COLLECTION);
+
+        if (photo != null) {
+
+            updateUi(photo);
+        } else if (userDescription != null){
+
+            updateUi(userDescription);
+        } else {
+
+            updateUi(collection);
+        }
+
+
+        eddfl.setOnSwipeListener(new SwipeBackCoordinatorLayout.OnSwipeListener() {
+            @Override
+            public boolean canSwipeBack(int dir) {
+                return dir == SwipeBackCoordinatorLayout.UP_DIR || appBar.getY() >= 0;
+            }
+
+            @Override
+            public void onSwipeProcess(float percent) {
+
+            }
+
+            @Override
+            public void onSwipeFinish(int dir) {
+                finishAfterTransition();
+            }
+        });
+
+        messageDialog = new MessageDialog(this) ;
+
+        // todo temp
+        downloadManager =
+                (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+    }
+
+    private void updateUi(Photo photo) {
 
         artistNameTv.setText(photo.getArtistName().toLowerCase());
 
@@ -260,27 +302,72 @@ public class UserDescriptionActivity
                     }
                 })
                 .into(userPicIv);
+    }
 
-        eddfl.addListener(new ElasticDragDismissListener() {
-            @Override
-            public void onDrag(float elasticOffset,
-                               float elasticOffsetPixels,
-                               float rawOffset,
-                               float rawOffsetPixels) {
+    private void updateUi(UserDescription userDescription) {
 
-            }
+        artistNameTv.setText(userDescription.getName().toLowerCase());
 
-            @Override
-            public void onDragDismissed() {
-                finishAfterTransition();
-            }
-        });
+        artistUsernameTv.setText(
+                String.format("@%s", userDescription.getUsername()));
 
-        messageDialog = new MessageDialog(this) ;
+        Glide.with(this)
+                .load(userDescription.getProfileImageUrl())
+                .apply(new RequestOptions().centerCrop().circleCrop())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e,
+                                                Object model,
+                                                Target<Drawable> target,
+                                                boolean isFirstResource) {
+                        return false;
+                    }
 
-        // todo temp
-        downloadManager =
-                (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                    @Override
+                    public boolean onResourceReady(Drawable resource,
+                                                   Object model,
+                                                   Target<Drawable> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+
+                        hideLoading();
+                        return false;
+                    }
+                })
+                .into(userPicIv);
+    }
+
+    private void updateUi(Collection collection) {
+
+        artistNameTv.setText(collection.getArtistName().toLowerCase());
+
+        artistUsernameTv.setText(
+                String.format("@%s", collection.getArtistUsername()));
+
+        Glide.with(this)
+                .load(collection.getArtistProfileImageUrl())
+                .apply(new RequestOptions().centerCrop().circleCrop())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e,
+                                                Object model,
+                                                Target<Drawable> target,
+                                                boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource,
+                                                   Object model,
+                                                   Target<Drawable> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+
+                        hideLoading();
+                        return false;
+                    }
+                })
+                .into(userPicIv);
     }
 
     @Override
@@ -299,7 +386,7 @@ public class UserDescriptionActivity
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void setupList(DataManager dataManager, PhotosCache photosCache) {
+    public void setupList(DataManager dataManager, ContentCache contentCache) {
 
         // changing grid size for orientation changes
         if (getResources().getConfiguration().orientation
@@ -317,11 +404,10 @@ public class UserDescriptionActivity
 
         itemsRv.setLayoutManager(layoutManager);
 
-        adapter = new PhotoListAdapter(
+        adapter = new ContentListAdapter(
                 this,
                 new ListItemTypeFactory(),
-                photosCache,
-                dataManager,
+                contentCache,
                 adapterListener);
 
         itemsRv.setAdapter(adapter);
@@ -356,64 +442,35 @@ public class UserDescriptionActivity
 
                             Log.i(TAG, "onScrollStateChanged:loading-more");
 
-                            adapter.getMorePhotos();
+                            adapter.getMoreContent();
                         }
                     }
                 });
 
-        userDataLl.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Layout has happened here.
-
-                        Log.d(TAG, "yoyoyo===="+userDataLl.getBottom());
-
-                        itemsRv.setPaddingRelative(itemsRv.getPaddingStart(),
-                                userDataLl.getBottom(),
-                                itemsRv.getPaddingEnd(),
-                                itemsRv.getPaddingBottom());
-
-                        userDataHeight = userDataLl.getBottom();
-
-                        // Don't forget to remove your listener when you are done with it.
-                        userDataLl.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                });
-
-        itemsRv.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                int firstVisibleItems[] = new int[3];
-
-                layoutManager.findFirstVisibleItemPositions(firstVisibleItems);
-
-                if (firstVisibleItems[0] > 0) {
-                    return false;
-                }
-
-                // if no data loaded then pass through
-                if (adapter.getItemCount() == 0) {
-                    return userDataLl.dispatchTouchEvent(event);
-                }
-
-                final RecyclerView.ViewHolder vh = itemsRv.findViewHolderForAdapterPosition(0);
-                if (vh == null) {
-                    return false;
-                }
-                final int firstTop = vh.itemView.getTop();
-                if (event.getY() < firstTop) {
-                    return userDataLl.dispatchTouchEvent(event);
-                }
-                return false;
-            }
-        });
+//        userDataLl.getViewTreeObserver().addOnGlobalLayoutListener(
+//                new ViewTreeObserver.OnGlobalLayoutListener() {
+//                    @Override
+//                    public void onGlobalLayout() {
+//                        // Layout has happened here.
+//
+//                        Log.d(TAG, "yoyoyo===="+userDataLl.getBottom());
+//
+//                        itemsRv.setPaddingRelative(itemsRv.getPaddingStart(),
+//                                userDataLl.getBottom(),
+//                                itemsRv.getPaddingEnd(),
+//                                itemsRv.getPaddingBottom());
+//
+//                        userDataHeight = userDataLl.getBottom();
+//
+//                        // Don't forget to remove your listener when you are done with it.
+//                        userDataLl.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                    }
+//                });
     }
 
     @Override
     public void getAllPhotos() {
-        adapter.getAllPhotos();
+        adapter.getAllContent();
     }
 
     @Override
@@ -495,26 +552,6 @@ public class UserDescriptionActivity
             artistLocationTv.setText(userDescription.getLocation());
         }
 
-        userDataLl.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Layout has happened here.
-
-                        Log.d(TAG, "yoyoyo123===="+userDataLl.getBottom());
-
-                        itemsRv.setPaddingRelative(itemsRv.getPaddingStart(),
-                                userDataLl.getBottom(),
-                                itemsRv.getPaddingEnd(),
-                                itemsRv.getPaddingBottom());
-
-                        userDataHeight = userDataLl.getBottom();
-
-                        // Don't forget to remove your listener when you are done with it.
-                        userDataLl.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                });
-
         itemsRv.scrollToPosition(0);
 
         if (userDescription.getTags().length > 0) {
@@ -554,7 +591,22 @@ public class UserDescriptionActivity
 
     @Override
     public String getCurArtistUsername() {
-        return ((Photo)getIntent().getParcelableExtra(UserDescriptionActivity.KEY_PHOTO)).getArtistUsername();
+        if (getIntent().getParcelableExtra(UserDescriptionActivity.KEY_PHOTO) != null) {
+            return ((Photo)
+                    getIntent()
+                            .getParcelableExtra(
+                                    UserDescriptionActivity.KEY_PHOTO)).getArtistUsername();
+        } else if (getIntent().getParcelableExtra(UserDescriptionActivity.KEY_USER) != null) {
+            return ((UserDescription)
+                    getIntent()
+                            .getParcelableExtra(
+                                    UserDescriptionActivity.KEY_USER)).getUsername();
+        } else {
+            return ((Collection)
+                    getIntent()
+                            .getParcelableExtra(
+                                    UserDescriptionActivity.KEY_COLLECTION)).getArtistUsername();
+        }
     }
 
     @Override

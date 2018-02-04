@@ -71,6 +71,13 @@
         <item name="android:windowSharedElementReturnTransition">@transition/photo_fullscreen_shared_exit</item>
     </style>
 
+    <style name="Splash.Translucent.Search">
+    </style>
+
+    <style name="Splash.Translucent.CollectionDescription">
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
     <!-- widget themes-->
     <style
         name="Widget.Splash.Toolbar"
@@ -169,6 +176,18 @@
         parent="@android:style/Widget.Material.Light.Button.Borderless">
 
         <item name="android:textAppearance">@style/TextAppearance.Button.Light</item>
+    </style>
+
+    <style name="BottomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorHeight">0dp</item>
+        <item name="tabPaddingStart">0dp</item>
+        <item name="tabPaddingEnd">0dp</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMode">fixed</item>
+    </style>
+
+    <style name="Widget.Splash.SearchView" parent="android:style/Widget.Material.SearchView">
+        <item name="android:queryBackground">@android:color/transparent</item>
     </style>
 
     <!-- text appearance-->
@@ -321,6 +340,11 @@
         <item name="android:textColor">@color/primaryText</item>
     </style>
 
+    <style name="TextAppearance.ArtistName.Light">
+
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
     <style name="TextAppearance.ArtistUsername" parent="@style/TextAppearance.Caption">
 
         <item name="android:fontFamily">@font/roboto_mono_medium</item>
@@ -401,4 +425,74 @@
         <item name="android:textColor">@color/disableHintText</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
+    <style
+        name="TextAppearance.Filter"
+        parent="@style/TextAppearance.Subhead">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.Header"
+        parent="@style/TextAppearance.Body2">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/disableHintText</item>
+    </style>
+
+    <style
+        name="TextAppearance.LargeHeader"
+        parent="@style/TextAppearance.Title">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/disableHintText</item>
+    </style>
+
+    <style
+        name="TextAppearance.OverlayLarge"
+        parent="@style/TextAppearance.Display1">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.CollectionPhotoCount"
+        parent="@style/TextAppearance.Body1">
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/secondaryTextLight</item>
+    </style>
+
+    <style
+        name="TextAppearance.CollectionTitle"
+        parent="@style/TextAppearance.Title">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
+    <style
+        name="TextAppearance.CollectionTitle.Dark"
+        parent="@style/TextAppearance.Title">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.CollectionTitleLarge"
+        parent="@style/TextAppearance.Headline">
+
+        <item name="android:fontFamily">@font/roboto_mono</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
+    <style
+        name="TextAppearance.CollectionTitle.AllCaps">
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

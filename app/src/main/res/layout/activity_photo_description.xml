@@ -39,7 +39,9 @@
                     android:layout_height="wrap_content"
                     android:foreground="@drawable/mid_grey_ripple"
                     android:transitionName="@string/transition_photo"
-                    android:background="@color/grey1"
+                    android:stateListAnimator="@animator/raise_small"
+                    android:clickable="true"
+                    android:focusable="true"
                     tools:ignore="ContentDescription" />
 
                 <FrameLayout
@@ -210,8 +212,8 @@
 
                     <ImageView
                         android:id="@+id/artistPicIv"
-                        android:layout_width="72dp"
-                        android:layout_height="72dp"
+                        android:layout_width="@dimen/user_pic_small"
+                        android:layout_height="@dimen/user_pic_small"
                         tools:ignore="ContentDescription"
                         android:src="@drawable/me" />
                 </android.support.v7.widget.CardView>

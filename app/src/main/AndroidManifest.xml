@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.sonu.app.splash">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -8,17 +9,18 @@
 
     <application
         android:allowBackup="true"
-        android:label="${applicationLabel}"
+        android:label="${applicationLabel_1}"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/Splash"
         android:name="com.sonu.app.splash.MyApp"
         android:resizeableActivity="false"
-        android:supportsPictureInPicture="false">
+        android:supportsPictureInPicture="false"
+        tools:replace="android:label, android:supportsRtl">
 
         <activity
             android:name="com.sonu.app.splash.ui.home.HomeActivity"
-            android:label="${applicationLabel}"
+            android:label="${applicationLabel_1}"
             android:theme="@style/Splash.Home"
             android:screenOrientation="portrait">
 
@@ -47,6 +49,14 @@
         <activity
             android:name="com.sonu.app.splash.ui.photofullscreen.PhotoFullscreenActivity"
             android:theme="@style/Splash.Translucent.PhotoFullscreen" />
+
+        <activity
+            android:name=".ui.search.activity.SearchActivity"
+            android:theme="@style/Splash.Translucent.Search" />
+
+        <activity
+            android:name=".ui.collectiondecription.CollectionDescriptionActivity"
+            android:theme="@style/Splash.Translucent.CollectionDescription" />
 
         <!-- exported=false for restricting the usage of service by this app only-->
         <service

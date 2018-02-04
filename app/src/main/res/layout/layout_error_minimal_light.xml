@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:id="@+id/errorWrapperLl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/errorIconIv"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/emoticon_dead_inactive_48dp"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/retryBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.Splash.BorderlessButton"
+            android:text="@string/retry_btn_text"
+            android:textColor="@color/secondaryText"/>
+    </LinearLayout>
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/errorProgressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/inactiveIcon"
+        android:visibility="gone" />
+</FrameLayout>

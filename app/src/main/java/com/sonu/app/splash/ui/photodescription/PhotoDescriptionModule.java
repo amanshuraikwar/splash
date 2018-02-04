@@ -16,10 +16,6 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class PhotoDescriptionModule {
 
-    @FragmentScoped
-    @ContributesAndroidInjector
-    abstract PhotoDescriptionFragment getPhotoDescriptionFragment();
-
     @ActivityScoped
     @Binds
     abstract PhotoDescriptionContract.Presenter getPhotoDescriptionPresenter(PhotoDescriptionPresenter presenter);

@@ -1,8 +1,7 @@
 package com.sonu.app.splash.ui.userdescription;
 
 import com.sonu.app.splash.data.DataManager;
-import com.sonu.app.splash.data.cache.NewPhotosCache;
-import com.sonu.app.splash.data.cache.PhotosCache;
+import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BaseView;
@@ -24,7 +23,7 @@ public interface UserDescriptionContract {
         String getCurArtistUsername();
         void downloadPhoto(PhotoDownload photoDownload);
         void startPhotoDescriptionActivity(Photo photo);
-        void setupList(DataManager dataManager, PhotosCache photosCache);
+        void setupList(DataManager dataManager, ContentCache contentCache);
         void getAllPhotos();
         boolean isListEmpty();
     }

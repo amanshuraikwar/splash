@@ -1,38 +1,37 @@
 package com.sonu.app.splash.ui.home;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sonu.app.splash.ui.about.AboutActivity;
-import com.sonu.app.splash.ui.allphotos.AllPhotosFragment;
+import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
-import com.sonu.app.splash.ui.downloadinfo.DownloadInfoFragment;
+import com.sonu.app.splash.ui.collections.CollectionsFragment;
+import com.sonu.app.splash.ui.content.curatedphotos.CuratedPhotosFragment;
+import com.sonu.app.splash.ui.content.featuredcollections.FeaturedCollectionsFragment;
+import com.sonu.app.splash.ui.photos.PhotosFragment;
+import com.sonu.app.splash.ui.search.SearchFragment;
 import com.sonu.app.splash.util.AnimUtils;
 import com.sonu.app.splash.util.ConnectionUtil;
-import com.sonu.app.splash.util.FragmentUtils;
 import com.sonu.app.splash.util.LogUtils;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import java.util.HashMap;
+import com.sonu.app.splash.util.fragment.FragNavController;
+import com.sonu.app.splash.util.fragment.FragmentHistory;
 
 import javax.inject.Inject;
 
+import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -40,35 +39,27 @@ import butterknife.ButterKnife;
  * Created by amanshuraikwar on 18/12/17.
  */
 
-public class HomeFragment extends BaseFragment<HomeContract.Presenter>
-        implements HomeContract.View {
+public class HomeFragment
+        extends
+        BaseFragment<HomeContract.Presenter>
+        implements
+        HomeContract.View,
+        FragNavController.TransactionListener,
+        FragNavController.RootFragmentListener {
 
     private static final String TAG = LogUtils.getLogTag(HomeFragment.class);
 
-    private final HashMap<Integer, Integer> homeNavItemIdPosition = new HashMap<>();
-
-    @BindView(com.sonu.app.splash.R.id.bnv)
-    BottomNavigationView bnv;
-
-    @BindView(com.sonu.app.splash.R.id.supl)
-    SlidingUpPanelLayout supl;
-
-    @BindView(com.sonu.app.splash.R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindView(com.sonu.app.splash.R.id.fab)
-    FloatingActionButton fab;
+    @BindView(R.id.persistentMessage)
+    View persistentMessage;
 
-    @BindView(com.sonu.app.splash.R.id.persistentMessageFl)
-    View networkErrorFl;
+    @BindArray(R.array.tab_name)
+    String[] TABS;
 
-    @Inject
-    AllPhotosFragment allPhotosFragment;
-
-    @Inject
-    DownloadInfoFragment downloadInfoFragment;
-
-    private int curHomeNavItemId;
+    @BindView(R.id.bottomTl)
+    TabLayout bottomTl;
 
     private ConnectivityManager.NetworkCallback networkCallback =
             new ConnectivityManager.NetworkCallback(){
@@ -78,7 +69,7 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            networkErrorFl.setVisibility(View.GONE);
+                            persistentMessage.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -88,11 +79,31 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            networkErrorFl.setVisibility(View.VISIBLE);
+                            persistentMessage.setVisibility(View.VISIBLE);
                         }
                     });
                 }
             };
+
+    private int[] mTabIconsDrawable = {
+            R.drawable.landscape_drawable_selector,
+            R.drawable.burst_mode_drawable_selector,
+            R.drawable.search_drawable_selector,
+            R.drawable.downloads_drawable_selector,
+            R.drawable.person_drawable_selector};
+
+    private FragNavController navController;
+
+    private FragmentHistory fragmentHistory;
+
+    @Inject
+    PhotosFragment photosFragment;
+
+    @Inject
+    CollectionsFragment collectionsFragment;
+
+    @Inject
+    SearchFragment searchFragment;
 
     @Inject
     public HomeFragment() {
@@ -114,24 +125,48 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        homeNavItemIdPosition.put(allPhotosFragment.getHomeNavItemId(), 0);
-
-        // loading default fragment i.e AllPhotosFragment
-        FragmentUtils.addFragmentToUi(getChildFragmentManager(),
-                allPhotosFragment, com.sonu.app.splash.R.id.contentFl);
-
-        // loading default fragment i.e AllPhotosFragment
-        FragmentUtils.addFragmentToUi(getChildFragmentManager(),
-                downloadInfoFragment, com.sonu.app.splash.R.id.bottomSheetContentFl);
-
-        // initial home nav item id
-        curHomeNavItemId = allPhotosFragment.getHomeNavItemId();
-
-        // setting up bottom navigation view
-        setupBnv();
-
         animateToolbar();
-        animateFab();
+
+        initTab();
+
+        animateBottomTl();
+
+        fragmentHistory = new FragmentHistory();
+
+        navController =
+                FragNavController
+                        .newBuilder(
+                                savedInstanceState,
+                                getChildFragmentManager(),
+                                R.id.contentFl)
+                .transactionListener(this)
+                .rootFragmentListener(this, TABS.length)
+                .build();
+
+        switchTab(0);
+
+        bottomTl.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                fragmentHistory.push(tab.getPosition());
+
+                switchTab(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+                navController.clearStack();
+
+                switchTab(tab.getPosition());
+            }
+        });
     }
 
     @Override
@@ -139,9 +174,9 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
         super.onResume();
 
         if (ConnectionUtil.isConnected(getContext())) {
-            networkErrorFl.setVisibility(View.GONE);
+            persistentMessage.setVisibility(View.GONE);
         } else {
-            networkErrorFl.setVisibility(View.VISIBLE);
+            persistentMessage.setVisibility(View.VISIBLE);
         }
 
         ConnectionUtil.registerNetworkCallback(getContext(), networkCallback);
@@ -154,121 +189,126 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
         ConnectionUtil.unregisterNetworkCallback(getContext(), networkCallback);
     }
 
-    // this part is stolen from the inspirational app PLAID by legendary Nick Butcher
+    // this part is "stolen" from the inspirational app PLAID by legendary Nick Butcher
     private void animateToolbar() {
+
         // this is gross but toolbar doesn't expose it's children to animate them :(
         View t = toolbar.getChildAt(0);
         if (t != null && t instanceof TextView) {
             TextView title = (TextView) t;
 
-            // fade in and space out the title.  Animating the letterSpacing performs horribly so
-            // fake it by setting the desired letterSpacing then animating the scaleX ¯\_(ツ)_/¯
             title.setAlpha(0f);
-            title.setScaleX(0.8f);
+            title.setTranslationX(100f);
 
             title.animate()
                     .alpha(1f)
-                    .scaleX(1f)
+                    .translationXBy(-100f)
                     .setStartDelay(300)
-                    .setDuration(900)
+                    .setDuration(600)
                     .setInterpolator(AnimUtils.getFastOutSlowInInterpolator(getContext()));
         }
     }
 
-    private void animateFab() {
+    private void animateBottomTl() {
 
-        fab.setAlpha(0f);
-        fab.setScaleX(0.8f);
-        fab.setScaleY(0.8f);
+        bottomTl.setAlpha(0f);
+        bottomTl.setTranslationY(60f);
 
-        fab.animate()
+        bottomTl.animate()
                 .alpha(1f)
-                .scaleX(1f)
-                .scaleY(1f)
+                .translationYBy(-60f)
                 .setStartDelay(300)
-                .setDuration(900)
+                .setDuration(600)
                 .setInterpolator(AnimUtils.getFastOutSlowInInterpolator(getContext()));
     }
 
-    private void setupBnv() {
+    private void initTab() {
 
-        // bottom navigation view config
-//        bnv.setTextVisibility(false);
-
-        // on item selected listener
-        bnv.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                        Log.d(TAG, "onNavigationItemSelected:called");
-                        Log.i(TAG, "onNavigationItemSelected:item="+item);
-
-                        switch (item.getItemId()) {
-
-                            case com.sonu.app.splash.R.id.navigation_images:
-
-                                if (curHomeNavItemId != allPhotosFragment.getHomeNavItemId()) {
-                                    FragmentUtils.replaceFragmentInUi(getChildFragmentManager(),
-                                            allPhotosFragment, com.sonu.app.splash.R.id.contentFl);
-                                    curHomeNavItemId = allPhotosFragment.getHomeNavItemId();
-                                }
-                                return true;
-                        }
-                        return false;
-                    }
-                }
-        );
-
-        // on item reselected listener
-        bnv.setOnNavigationItemReselectedListener(
-                new BottomNavigationView.OnNavigationItemReselectedListener() {
-                    @Override
-                    public void onNavigationItemReselected(@NonNull MenuItem item) {
-
-                        Log.d(TAG, "onNavigationItemReselected:called");
-                        Log.i(TAG, "onNavigationItemReselected:item="+item);
-                        // do nothing
-                    }
-                }
-        );
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getActivity(), AboutActivity.class),
-                        ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+        if (bottomTl != null) {
+            for (int i = 0; i < TABS.length; i++) {
+                bottomTl.addTab(bottomTl.newTab());
+                TabLayout.Tab tab = bottomTl.getTabAt(i);
+                if (tab != null)
+                    tab.setCustomView(getTabView(i));
             }
-        });
+        }
+    }
+
+    private View getTabView(int position) {
+
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.tab_item_bottom, null);
+        ImageView icon = view.findViewById(R.id.tab_icon);
+        icon.setImageDrawable(ContextCompat.getDrawable(getActivity(), mTabIconsDrawable[position]));
+        return view;
+    }
+
+    private void switchTab(int position) {
+
+        navController.switchTab(position);
+        updateToolbarTitle(position);
+    }
+
+    private void updateToolbarTitle(int position) {
+        toolbar.setTitle(TABS[position]);
     }
 
     @Override
     public boolean onBackPressed() {
-        FragmentManager fragmentManager = getChildFragmentManager();
 
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
+        if (!navController.isRootFragment()) {
+            navController.popFragment();
             return true;
         } else {
-            return super.onBackPressed();
+
+            if (fragmentHistory.isEmpty()) {
+                return super.onBackPressed();
+            } else {
+
+
+                if (fragmentHistory.getStackSize() > 1) {
+
+                    int position = fragmentHistory.popPrevious();
+
+                    switchTab(position);
+
+                    updateTabSelection(position);
+
+                    return true;
+
+                } else {
+
+                    switchTab(0);
+
+                    updateTabSelection(0);
+
+                    fragmentHistory.emptyStack();
+
+                    return true;
+                }
+            }
+
+        }
+    }
+
+
+    private void updateTabSelection(int currentTab){
+
+        for (int i = 0; i <  TABS.length; i++) {
+            TabLayout.Tab selectedTab = bottomTl.getTabAt(i);
+            if(currentTab != i) {
+                selectedTab.getCustomView().setSelected(false);
+            }else{
+                selectedTab.getCustomView().setSelected(true);
+            }
         }
     }
 
     @Override
-    public void setBnvItemSelected(int homeNavItemId) {
-        curHomeNavItemId = homeNavItemId;
-        bnv.setSelectedItemId(
-                bnv.getMenu().getItem(homeNavItemIdPosition.get(homeNavItemId)).getItemId());
-    }
-
-    @Override
-    public void hideBottomSheet() {
-        supl.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-    }
-
-    @Override
-    public void showBottomSheet() {
-        supl.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (navController != null) {
+            navController.onSaveInstanceState(outState);
+        }
     }
 
     @Override
@@ -289,5 +329,37 @@ public class HomeFragment extends BaseFragment<HomeContract.Presenter>
     @Override
     public void showUnknownException(String message) {
 
+    }
+
+    @Override
+    public void onTabTransaction(Fragment fragment, int index) {
+        // If we have a backstack, show the back button
+    }
+
+    @Override
+    public void onFragmentTransaction(Fragment fragment,
+                                      FragNavController.TransactionType transactionType) {
+        //do fragmentty stuff. Maybe change title, I'm not going to tell you how to live your life
+        // If we have a backstack, show the back button
+    }
+
+    @Override
+    public Fragment getRootFragment(int index) {
+
+        switch (index) {
+
+            case FragNavController.TAB1:
+                return photosFragment;
+            case FragNavController.TAB2:
+                return collectionsFragment;
+            case FragNavController.TAB3:
+                return searchFragment;
+            case FragNavController.TAB4:
+                return photosFragment;
+            case FragNavController.TAB5:
+                return photosFragment;
+        }
+
+        throw new IllegalStateException("Need to send an index that we know");
     }
 }

@@ -2,13 +2,17 @@ package com.sonu.app.splash.di;
 
 import com.sonu.app.splash.ui.about.AboutActivity;
 import com.sonu.app.splash.ui.about.AboutModule;
-import com.sonu.app.splash.ui.allphotos.AllPhotosModule;
 import com.sonu.app.splash.data.download.PhotoDownloadService;
+import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionActivity;
+import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionModule;
+import com.sonu.app.splash.ui.content.ContentModule;
 import com.sonu.app.splash.ui.downloadinfo.DownloadInfoModule;
 import com.sonu.app.splash.ui.home.HomeActivity;
 import com.sonu.app.splash.ui.home.HomeModule;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionModule;
+import com.sonu.app.splash.ui.search.SearchModule;
+import com.sonu.app.splash.ui.search.activity.SearchActivity;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionModule;
 
@@ -28,8 +32,9 @@ public abstract class ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = {
             HomeModule.class,
-            AllPhotosModule.class,
-            DownloadInfoModule.class})
+            ContentModule.class,
+            DownloadInfoModule.class,
+            SearchModule.class})
     abstract HomeActivity homeActivity();
 
     @ActivityScoped
@@ -46,6 +51,17 @@ public abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = {
             UserDescriptionModule.class})
     abstract UserDescriptionActivity userDescriptionActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = {
+            com.sonu.app.splash.ui.search.activity.SearchModule.class})
+    abstract SearchActivity searchActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = {
+            CollectionDescriptionModule.class
+    })
+    abstract CollectionDescriptionActivity getCollectionDescriptionActivity();
 
     @ActivityScoped
     @ContributesAndroidInjector

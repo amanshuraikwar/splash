@@ -3,7 +3,7 @@ package com.sonu.app.splash.util;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
 import com.sonu.app.splash.ui.architecture.BaseView;
-import com.sonu.app.splash.ui.list.photolist.PhotoListAdapter;
+import com.sonu.app.splash.ui.list.ContentListAdapter;
 
 import java.io.IOException;
 
@@ -40,7 +40,7 @@ public class UiExceptionUtils {
         }
     }
 
-    public static void handleUiException(Throwable e, PhotoListAdapter.AdapterListener adapterListener) {
+    public static void handleUiException(Throwable e, ContentListAdapter.AdapterListener adapterListener) {
 
         if (e instanceof IOException) {
 

@@ -1,7 +1,16 @@
 package com.sonu.app.splash.util;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.VectorDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 
 /**
