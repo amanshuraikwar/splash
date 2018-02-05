@@ -55,10 +55,12 @@ import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
+import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
 import com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout;
 import com.sonu.app.splash.ui.widget.SwipeBackCoordinatorLayout;
 import com.sonu.app.splash.util.ConnectionUtil;
 import com.sonu.app.splash.util.LogUtils;
+import com.sonu.app.splash.util.NumberUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -446,26 +448,6 @@ public class UserDescriptionActivity
                         }
                     }
                 });
-
-//        userDataLl.getViewTreeObserver().addOnGlobalLayoutListener(
-//                new ViewTreeObserver.OnGlobalLayoutListener() {
-//                    @Override
-//                    public void onGlobalLayout() {
-//                        // Layout has happened here.
-//
-//                        Log.d(TAG, "yoyoyo===="+userDataLl.getBottom());
-//
-//                        itemsRv.setPaddingRelative(itemsRv.getPaddingStart(),
-//                                userDataLl.getBottom(),
-//                                itemsRv.getPaddingEnd(),
-//                                itemsRv.getPaddingBottom());
-//
-//                        userDataHeight = userDataLl.getBottom();
-//
-//                        // Don't forget to remove your listener when you are done with it.
-//                        userDataLl.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                    }
-//                });
     }
 
     @Override
@@ -536,9 +518,20 @@ public class UserDescriptionActivity
     @Override
     public void displayUserDescription(final UserDescription userDescription) {
 
-        artistPhotosCountBtn.setText(String.format("%d photos", userDescription.getTotalPhotos()));
-        artistFollowersCountBtn.setText(String.format("%d followers", userDescription.getFollowersCount()));
-        artistLikesCountBtn.setText(String.format("%d likes", userDescription.getTotalLikes()));
+        artistPhotosCountBtn.setText(
+                String.format(
+                        "%s photos",
+                        String.valueOf(NumberUtils.format(userDescription.getTotalPhotos()))));
+
+        artistFollowersCountBtn.setText(
+                String.format(
+                        "%s followers",
+                        String.valueOf(NumberUtils.format(userDescription.getFollowersCount()))));
+
+        artistLikesCountBtn.setText(
+                String.format(
+                        "%s likes",
+                        String.valueOf(NumberUtils.format(userDescription.getTotalLikes()))));
 
         if (!userDescription.getBio().equals("")) {
 
@@ -586,8 +579,23 @@ public class UserDescriptionActivity
                         R.layout.item_artist_tag, tagsParentLl, false);
         TextView tagTv = (TextView) parent.getChildAt(0);
         tagTv.setText(tag);
+        parent.setOnClickListener(tagOnClickListener);
         return parent;
     }
+
+    private View.OnClickListener tagOnClickListener =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent i = new Intent(UserDescriptionActivity.this,
+                            AllSearchActivity.class);
+                    i.putExtra(
+                            AllSearchActivity.KEY_QUERY,
+                            ((TextView)((CardView) view).getChildAt(0)).getText());
+                    startActivity(i);
+                }
+            };
 
     @Override
     public String getCurArtistUsername() {

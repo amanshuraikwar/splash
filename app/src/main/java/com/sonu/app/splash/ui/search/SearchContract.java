@@ -24,6 +24,7 @@ public interface SearchContract {
         void updatePhotos(SearchPhotosCache searchPhotosCache);
         void updateCollections(SearchCollectionsCache searchCollectionsCache);
         void updateUsers(SearchUsersCache searchUsersCache);
+        String getInitialQuery();
     }
 
     interface Presenter extends BasePresenter<View> {

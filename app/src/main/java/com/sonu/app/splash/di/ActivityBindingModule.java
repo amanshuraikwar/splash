@@ -13,6 +13,8 @@ import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionModule;
 import com.sonu.app.splash.ui.search.SearchModule;
 import com.sonu.app.splash.ui.search.activity.SearchActivity;
+import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
+import com.sonu.app.splash.ui.search.allsearch.AllSearchModule;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionModule;
 
@@ -62,6 +64,13 @@ public abstract class ActivityBindingModule {
             CollectionDescriptionModule.class
     })
     abstract CollectionDescriptionActivity getCollectionDescriptionActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = {
+            AllSearchModule.class,
+            SearchModule.class
+    })
+    abstract AllSearchActivity getAllSearchActivity();
 
     @ActivityScoped
     @ContributesAndroidInjector

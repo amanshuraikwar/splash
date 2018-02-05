@@ -6,6 +6,7 @@ import android.util.Log;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
 import com.sonu.app.splash.ui.about.AboutContract;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
@@ -98,6 +99,11 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
                                 }
                             });
         }
+    }
+
+    @Override
+    public void downloadPhoto(PhotoDownload photoDownload) {
+        getDataManager().downloadPhoto(photoDownload);
     }
 
     @Override

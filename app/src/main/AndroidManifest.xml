@@ -58,6 +58,10 @@
             android:name=".ui.collectiondecription.CollectionDescriptionActivity"
             android:theme="@style/Splash.Translucent.CollectionDescription" />
 
+        <activity
+            android:name=".ui.search.allsearch.AllSearchActivity"
+            android:theme="@style/Splash.Translucent.AllSearch" />
+
         <!-- exported=false for restricting the usage of service by this app only-->
         <service
             android:name="com.sonu.app.splash.data.download.PhotoDownloadService"

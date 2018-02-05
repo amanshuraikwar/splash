@@ -473,7 +473,47 @@ public class UnsplashJsonUtils {
 
         builder.totalPhotos(element.getAsJsonObject().get("total_photos").getAsInt());
 
-        builder.coverPhoto(getPhotoObj(element.getAsJsonObject().get("cover_photo").getAsJsonObject()));
+        Photo coverPhoto = getPhotoObj(element.getAsJsonObject().get("cover_photo").getAsJsonObject());
+
+        builder.coverPhoto(coverPhoto);
+
+        builder.previewPhoto(coverPhoto);
+
+        try {
+
+            JsonArray previewPhotos = element.getAsJsonObject()
+                    .get("preview_photos")
+                    .getAsJsonArray();
+
+            for (JsonElement previewPhoto : previewPhotos) {
+
+                Photo.Builder builder1 =
+                        new Photo.Builder(previewPhoto.getAsJsonObject().get("id").getAsString());
+                builder1.urlRaw(
+                        previewPhoto
+                                .getAsJsonObject()
+                                .get("urls").getAsJsonObject().get("raw").getAsString());
+                builder1.urlFull(
+                        previewPhoto
+                                .getAsJsonObject()
+                                .get("urls").getAsJsonObject().get("full").getAsString());
+                builder1.urlRegular(
+                        previewPhoto
+                                .getAsJsonObject()
+                                .get("urls").getAsJsonObject().get("regular").getAsString());
+                builder1.urlSmall(
+                        previewPhoto
+                                .getAsJsonObject()
+                                .get("urls").getAsJsonObject().get("small").getAsString());
+                builder1.urlThumb(
+                        previewPhoto
+                                .getAsJsonObject()
+                                .get("urls").getAsJsonObject().get("thumb").getAsString());
+                builder.previewPhoto(builder1.build());
+            }
+        } catch (Exception e) {
+            // do nothing
+        }
 
         builder.artistId(
                 element

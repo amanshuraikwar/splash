@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
@@ -36,6 +37,7 @@ import com.bumptech.glide.request.target.Target;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.sonu.app.splash.R;
+import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
@@ -46,6 +48,7 @@ import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.ColorHelper;
 import com.sonu.app.splash.util.ConnectionUtil;
+import com.sonu.app.splash.util.NumberUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -137,6 +140,9 @@ public class PhotoDescriptionActivity
     @BindView(R.id.fullScreenIb)
     ImageButton fullScreenIb;
 
+    @BindView(R.id.downloadFab)
+    FloatingActionButton downloadFab;
+
     private int loadCount;
     private PhotoDescription photoDescription;
     private Photo photo;
@@ -180,14 +186,29 @@ public class PhotoDescriptionActivity
 
         getWindow().setStatusBarColor(color);
 
+        downloadFab.setBackgroundTintList(ColorStateList.valueOf(color));
+
         if (!ColorHelper.isDark(color)) {
 
                 getWindow()
                     .getDecorView()
                     .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+                downloadFab.setImageTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.activeIcon)));
         }
 
         picParentFl.setBackgroundColor(color);
+
+        downloadFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getPresenter()
+                        .downloadPhoto(
+                                new PhotoDownload(
+                                        (Photo) getIntent().getParcelableExtra(KEY_PHOTO)));
+            }
+        });
 
         if (photo.getDescription().equals("")) {
             photoDescriptionTv.setVisibility(View.GONE);
@@ -195,7 +216,10 @@ public class PhotoDescriptionActivity
             photoDescriptionTv.setText(photo.getDescription().trim());
         }
 
-        photoLikesCountBtn.setText(String.format("%s likes", String.valueOf(photo.getLikes())));
+        photoLikesCountBtn.setText(
+                String.format(
+                        "%s likes",
+                        String.valueOf(NumberUtils.format(photo.getLikes()))));
 
         artistNameTv.setText(photo.getArtistName().toLowerCase());
 
@@ -355,6 +379,8 @@ public class PhotoDescriptionActivity
                 startPhotoFullscreenActivity();
             }
         });
+
+
     }
 
     @Override
@@ -426,10 +452,16 @@ public class PhotoDescriptionActivity
         this.photoDescription = photoDescription;
 
         photoViewsCountBtn
-                .setText(String.format("%s views", String.valueOf(photoDescription.getViews())));
+                .setText(
+                        String.format("%s views",
+                                String.valueOf(
+                                        NumberUtils.format(photoDescription.getViews()))));
 
         photoDownloadsCountBtn
-                .setText(String.format("%s downloads", String.valueOf(photoDescription.getDownloads())));
+                .setText(
+                        String.format("%s downloads",
+                                String.valueOf(
+                                        NumberUtils.format(photoDescription.getDownloads()))));
 
         if (!photoDescription.getLocationTitle().equals("")) {
             photoLocationTv.setText(photoDescription.getLocationTitle());

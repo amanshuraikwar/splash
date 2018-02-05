@@ -39,7 +39,13 @@ public class AllCollectionsFragment
 
                     Intent i = new Intent(getActivity(), CollectionDescriptionActivity.class);
                     i.putExtra(CollectionDescriptionActivity.KEY_COLLECTION, collection);
-                    startActivity(i);
+
+                    ActivityOptions options =
+                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                                    transitionView,
+                                    getString(R.string.transition_artist_pic));
+
+                    startActivity(i, options.toBundle());
                 }
 
                 @Override

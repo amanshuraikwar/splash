@@ -13,9 +13,11 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.list.ViewHolder;
+import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.DrawableUtils;
 import com.sonu.app.splash.util.LogUtils;
+import com.sonu.app.splash.util.NumberUtils;
 
 import butterknife.BindView;
 
@@ -67,6 +69,7 @@ public class CollectionViewHolder extends ViewHolder<CollectionListItem> {
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 
+
         int color = Color.parseColor(listItem.getCollection().getCoverPhoto().getColor());
 
         // setting foreground ripple dynamically
@@ -75,18 +78,21 @@ public class CollectionViewHolder extends ViewHolder<CollectionListItem> {
         parent.setBackgroundColor(color);
 
         // unique transition name
-        photoIv.setTransitionName(listItem.getCollection().getId()+"");
+        artistProfileImageIv.setTransitionName(listItem.getCollection().getId()+"");
 
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getCollection(), parent);
+                listItem.getOnClickListener().onClick(listItem.getCollection(), artistProfileImageIv);
             }
         });
 
         collectionTitleTv.setText(listItem.getCollection().getTitle());
 
-        photosCountTv.setText(String.format("%d photos", listItem.getCollection().getTotalPhotos()));
+        photosCountTv.setText(
+                String.format(
+                        "%s photos",
+                        String.valueOf(NumberUtils.format(listItem.getCollection().getTotalPhotos()))));
 
         artistNameTv.setText(listItem.getCollection().getArtistName().toLowerCase());
 
@@ -99,7 +105,8 @@ public class CollectionViewHolder extends ViewHolder<CollectionListItem> {
         artistPicCv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listItem.getOnClickListener().onArtistClick(listItem.getCollection(), artistProfileImageIv);
+                listItem.getOnClickListener().onArtistClick(listItem.getCollection(),
+                        artistProfileImageIv);
             }
         });
     }

@@ -28,6 +28,14 @@ public class SearchPresenter
     @Override
     public void attachView(SearchContract.View view, boolean wasViewRecreated) {
         super.attachView(view, wasViewRecreated);
+
+        if (wasViewRecreated) {
+
+            if (getView().getInitialQuery() != null) {
+
+                onSearchClick(getView().getInitialQuery());
+            }
+        }
     }
 
     @Override

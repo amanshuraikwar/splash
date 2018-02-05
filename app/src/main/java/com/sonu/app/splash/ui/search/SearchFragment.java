@@ -36,6 +36,7 @@ import com.sonu.app.splash.ui.photo.PhotoHorizontalListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.ui.search.activity.SearchActivity;
+import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
 import com.sonu.app.splash.ui.user.UserHorizontalListItem;
 import com.sonu.app.splash.ui.user.UserOnClickListener;
 import com.sonu.app.splash.ui.userdescription.UserDescription;
@@ -358,6 +359,14 @@ public class SearchFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if (getArguments() != null) {
+
+            if (getArguments().getString(AllSearchActivity.KEY_QUERY) != null) {
+
+                searchView.setQuery(getArguments().getString(AllSearchActivity.KEY_QUERY), false);
+            }
+        }
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -482,6 +491,16 @@ public class SearchFragment
                         usersListener);
         usersRv.setAdapter(usersAdapter);
         usersAdapter.getAllContent();
+    }
+
+    @Override
+    public String getInitialQuery() {
+        if (getArguments() != null) {
+            return getArguments().getString(AllSearchActivity.KEY_QUERY);
+        } else {
+            return null;
+        }
+
     }
 
     private void showPhotosError() {

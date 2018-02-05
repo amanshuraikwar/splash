@@ -74,8 +74,17 @@
     <style name="Splash.Translucent.Search">
     </style>
 
+    <style name="Splash.Translucent.AllSearch">
+    </style>
+
     <style name="Splash.Translucent.CollectionDescription">
         <item name="android:windowLightStatusBar">false</item>
+
+        <item name="android:windowAllowReturnTransitionOverlap">false</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/collection_description_shared_enter</item>
+        <item name="android:windowSharedElementReturnTransition">@transition/collection_description_shared_exit</item>
+        <item name="android:windowEnterTransition">@transition/collection_description_enter</item>
+        <item name="android:windowReturnTransition">@transition/collection_description_exit</item>
     </style>
 
     <!-- widget themes-->

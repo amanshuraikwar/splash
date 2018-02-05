@@ -367,5 +367,18 @@
                 android:textColor="@color/pink"
                 android:background="@color/grey2"/>
         </LinearLayout>
+
     </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/downloadFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:clickable="false"
+        android:focusable="true"
+        android:tint="@color/activeIconLight"
+        android:src="@drawable/ic_file_download_black_24dp" />
+
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

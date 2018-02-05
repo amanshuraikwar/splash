@@ -1,5 +1,6 @@
 package com.sonu.app.splash.ui.photodescription;
 
+import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BaseView;
 
@@ -21,5 +22,6 @@ public interface PhotoDescriptionContract {
 
     interface Presenter extends BasePresenter<View> {
         void getData();
+        void downloadPhoto(PhotoDownload photoDownload);
     }
 }

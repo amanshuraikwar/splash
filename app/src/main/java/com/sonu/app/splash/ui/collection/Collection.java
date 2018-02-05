@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import com.sonu.app.splash.ui.photo.Photo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by amanshuraikwar on 28/01/18.
  */
@@ -29,6 +32,8 @@ public class Collection implements Parcelable {
     private Photo coverPhoto;
 
     private boolean curated;
+
+    private List<Photo> previewPhotos;
 
     public int getId() {
         return id;
@@ -86,6 +91,10 @@ public class Collection implements Parcelable {
         return curated;
     }
 
+    public List<Photo> getPreviewPhotos() {
+        return previewPhotos;
+    }
+
     private Collection(Builder builder) {
 
         id = builder.id;
@@ -102,9 +111,8 @@ public class Collection implements Parcelable {
         coverPhoto = builder.coverPhoto;
         curated = builder.curated;
         tags = builder.tags;
+        previewPhotos = builder.previewPhotos;
     }
-
-
 
     public static class Builder {
 
@@ -126,6 +134,8 @@ public class Collection implements Parcelable {
         private Photo coverPhoto;
 
         private boolean curated;
+
+        private List<Photo> previewPhotos = new ArrayList<>();
 
         public Builder(int id) {
             this.id = id;
@@ -169,6 +179,11 @@ public class Collection implements Parcelable {
 
         public void artistProfileImageUrl(String artistProfileImageUrl) {
             this.artistProfileImageUrl = artistProfileImageUrl;
+        }
+
+        public void previewPhoto(Photo photo) {
+
+            previewPhotos.add(photo);
         }
 
         public void tags(String[] tags) {

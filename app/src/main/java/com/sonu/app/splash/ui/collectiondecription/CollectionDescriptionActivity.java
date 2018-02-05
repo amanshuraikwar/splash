@@ -31,6 +31,7 @@ import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
+import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout;
 import com.sonu.app.splash.ui.widget.SwipeBackCoordinatorLayout;
@@ -252,8 +253,23 @@ public class CollectionDescriptionActivity
                         R.layout.item_artist_tag, tagsParentLl, false);
         TextView tagTv = (TextView) parent.getChildAt(0);
         tagTv.setText(tag);
+        parent.setOnClickListener(tagOnClickListener);
         return parent;
     }
+
+    private View.OnClickListener tagOnClickListener =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent i = new Intent(CollectionDescriptionActivity.this,
+                            AllSearchActivity.class);
+                    i.putExtra(
+                            AllSearchActivity.KEY_QUERY,
+                            ((TextView)((CardView) view).getChildAt(0)).getText());
+                    startActivity(i);
+                }
+            };
 
     @Override
     public void showIoException(int titleStringRes, int messageStringRes) {
