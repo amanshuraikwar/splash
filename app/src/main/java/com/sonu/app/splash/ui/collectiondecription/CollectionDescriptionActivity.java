@@ -21,13 +21,14 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
-import com.sonu.app.splash.ui.collection.Collection;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.ui.list.ContentListAdapter;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.ui.photo.PhotoLight;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
@@ -90,42 +91,23 @@ public class CollectionDescriptionActivity
     @BindView(R.id.errorProgressBar)
     MaterialProgressBar errorProgressBar;
 
+    private ContentListAdapter adapter;
+    private StaggeredGridLayoutManager layoutManager;
+
     private PhotoOnClickListener photoOnClickListener =
             new PhotoOnClickListener() {
                 @Override
                 public void onDownloadBtnClick(Photo photo) {
-
                     Log.d(TAG, "onDownloadBtnClick:called");
-
-                    getPresenter().downloadImage(new PhotoDownload(photo));
+                    getPresenter().downloadImage(photo);
                 }
 
                 @Override
-                public void onClick(Photo photo, View itemView) {
-
+                public void onClick(Photo photo, View transitionView) {
                     Log.d(TAG, "onPhotoClick:called");
-
-                    Intent i =
-                            new Intent(
-                                    CollectionDescriptionActivity.this,
-                                    PhotoDescriptionActivity.class);
-                    i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
-
-                    ActivityOptions options =
-                            ActivityOptions.makeSceneTransitionAnimation(
-                                    CollectionDescriptionActivity.this,
-                                    Pair.create(itemView,
-                                            CollectionDescriptionActivity.this.getString(
-                                                    R.string.transition_photo)),
-                                    Pair.create(itemView,
-                                            CollectionDescriptionActivity.this.getString(
-                                                    R.string.transition_photo_description_background)));
-
-                    startActivity(i, options.toBundle());
+                    startPhotoDescriptionActivity(photo, transitionView);
                 }
             };
-
-    private ContentListAdapter adapter;
 
     private ContentListAdapter.AdapterListener<Photo> adapterListener =
             new ContentListAdapter.AdapterListener<Photo>() {
@@ -161,7 +143,37 @@ public class CollectionDescriptionActivity
                     CollectionDescriptionActivity.this.hideLoading();
                 }
             };
-    private StaggeredGridLayoutManager layoutManager;
+
+    private SwipeBackCoordinatorLayout.OnSwipeListener onSwipeListener =
+            new SwipeBackCoordinatorLayout.OnSwipeListener() {
+                @Override
+                public boolean canSwipeBack(int dir) {
+                    return dir == SwipeBackCoordinatorLayout.UP_DIR || appBar.getY() >= 0;
+                }
+
+                @Override
+                public void onSwipeProcess(float percent) {
+
+                }
+
+                @Override
+                public void onSwipeFinish(int dir) {
+                    finishAfterTransition();
+                }
+            };
+
+    private View.OnClickListener tagOnClickListener =
+            new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+
+                    startAllSearchActivity(
+                            ((TextView)
+                                    ((CardView) view).getChildAt(0)
+                            ).getText().toString());
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,26 +183,9 @@ public class CollectionDescriptionActivity
 
         ButterKnife.bind(this);
 
-        Collection collection = getIntent().getParcelableExtra(KEY_COLLECTION);
+        updateUi((Collection) getIntent().getParcelableExtra(KEY_COLLECTION));
 
-        updateUi(collection);
-
-        parent.setOnSwipeListener(new SwipeBackCoordinatorLayout.OnSwipeListener() {
-            @Override
-            public boolean canSwipeBack(int dir) {
-                return dir == SwipeBackCoordinatorLayout.UP_DIR || appBar.getY() >= 0;
-            }
-
-            @Override
-            public void onSwipeProcess(float percent) {
-
-            }
-
-            @Override
-            public void onSwipeFinish(int dir) {
-                finishAfterTransition();
-            }
-        });
+        parent.setOnSwipeListener(onSwipeListener);
 
         retryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,15 +210,15 @@ public class CollectionDescriptionActivity
         collectionTitleTv.setText(collection.getTitle());
 
         Glide.with(this)
-                .load(collection.getCoverPhoto().getUrlRegular())
+                .load(collection.getCoverPhoto().getPhotoUrls().getRegular())
                 .apply(new RequestOptions().centerCrop())
                 .transition(new DrawableTransitionOptions().crossFade())
                 .into(coverPhotoIv);
 
-        artistNameTv.setText(collection.getArtistName().toLowerCase());
+        artistNameTv.setText(collection.getUser().getName().toLowerCase());
 
         Glide.with(this)
-                .load(collection.getArtistProfileImageUrl())
+                .load(collection.getUser().getProfileImage().getLarge())
                 .apply(new RequestOptions().centerCrop().circleCrop())
                 .transition(new DrawableTransitionOptions().crossFade())
                 .into(userPicIv);
@@ -256,20 +251,6 @@ public class CollectionDescriptionActivity
         parent.setOnClickListener(tagOnClickListener);
         return parent;
     }
-
-    private View.OnClickListener tagOnClickListener =
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Intent i = new Intent(CollectionDescriptionActivity.this,
-                            AllSearchActivity.class);
-                    i.putExtra(
-                            AllSearchActivity.KEY_QUERY,
-                            ((TextView)((CardView) view).getChildAt(0)).getText());
-                    startActivity(i);
-                }
-            };
 
     @Override
     public void showIoException(int titleStringRes, int messageStringRes) {
@@ -377,9 +358,7 @@ public class CollectionDescriptionActivity
     private void startUserDescriptionActivity(Collection collection, View transitionView) {
 
         Intent i = new Intent(this, UserDescriptionActivity.class);
-        i.putExtra(UserDescriptionActivity.KEY_COLLECTION, collection);
-
-        transitionView.setTransitionName(collection.getArtistId());
+        i.putExtra(UserDescriptionActivity.KEY_USER, collection.getUser());
 
         ActivityOptions options =
                 ActivityOptions.makeSceneTransitionAnimation(this,
@@ -387,5 +366,34 @@ public class CollectionDescriptionActivity
                         getString(R.string.transition_artist_pic));
 
         startActivity(i, options.toBundle());
+    }
+
+    private void startPhotoDescriptionActivity(Photo photo, View transitionView) {
+
+        Intent i =
+                new Intent(
+                        CollectionDescriptionActivity.this,
+                        PhotoDescriptionActivity.class);
+        i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
+
+        ActivityOptions options =
+                ActivityOptions.makeSceneTransitionAnimation(
+                        CollectionDescriptionActivity.this,
+                        Pair.create(transitionView,
+                                CollectionDescriptionActivity.this.getString(
+                                        R.string.transition_photo)),
+                        Pair.create(transitionView,
+                                CollectionDescriptionActivity.this.getString(
+                                        R.string.transition_photo_description_background)));
+
+        startActivity(i, options.toBundle());
+    }
+
+    private void startAllSearchActivity(String query) {
+
+        Intent i = new Intent(CollectionDescriptionActivity.this,
+                AllSearchActivity.class);
+        i.putExtra(AllSearchActivity.KEY_QUERY, query);
+        startActivity(i);
     }
 }

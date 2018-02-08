@@ -14,11 +14,11 @@ public interface ApiEndpoints {
 
     String GET_CURATED_PHOTOS = BASE_ENDPOINT + "photos/curated?page=%s&order_by=%s&per_page="+PER_PAGE;
 
-    String GET_PHOTO_DESCRIPTION = BASE_ENDPOINT + "photos/%s";
+    String GET_PHOTO = BASE_ENDPOINT + "photos/%s";
 
     String SEARCH_PHOTOS = BASE_ENDPOINT + "search/photos?query=%s&page=%s&per_page="+PER_PAGE;
 
-    String GET_USER_DESCRIPTION = BASE_ENDPOINT + "users/%s";
+    String GET_USER = BASE_ENDPOINT + "users/%s";
 
     String GET_USER_PHOTOS = BASE_ENDPOINT + "users/%s/photos?page=%s&order_by=%s&per_page="+PER_PAGE;
 

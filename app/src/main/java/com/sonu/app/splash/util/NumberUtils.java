@@ -1,5 +1,10 @@
 package com.sonu.app.splash.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Created by amanshuraikwar on 05/02/18.
  */
@@ -34,5 +39,12 @@ public class NumberUtils {
         }
         value[valueLength++] = SUFFIXES[magnitude - 1];
         return new String(value, 0, valueLength);
+    }
+
+    public static String getCurrentTimeStamp() {
+
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

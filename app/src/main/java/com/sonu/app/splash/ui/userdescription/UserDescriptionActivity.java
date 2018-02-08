@@ -21,9 +21,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Pair;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -38,20 +36,20 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
-import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
-import com.sonu.app.splash.ui.collection.Collection;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.ui.list.ContentListAdapter;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.ui.photo.PhotoLight;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
@@ -74,11 +72,7 @@ public class UserDescriptionActivity
         extends BaseActivity<UserDescriptionContract.Presenter>
         implements UserDescriptionContract.View {
 
-    public static final String KEY_PHOTO = "photo";
-
-    public static final String KEY_USER = "user";
-
-    public static final String KEY_COLLECTION = "collection";
+    public static final String KEY_USER = "User";
 
     private static final String TAG = LogUtils.getLogTag(UserDescriptionActivity.class);
 
@@ -233,21 +227,9 @@ public class UserDescriptionActivity
         setContentView(R.layout.activity_user_description);
         ButterKnife.bind(this);
 
-        Photo photo = getIntent().getParcelableExtra(KEY_PHOTO);
-        UserDescription userDescription = getIntent().getParcelableExtra(KEY_USER);
-        Collection collection = getIntent().getParcelableExtra(KEY_COLLECTION);
+        User user = getIntent().getParcelableExtra(KEY_USER);
 
-        if (photo != null) {
-
-            updateUi(photo);
-        } else if (userDescription != null){
-
-            updateUi(userDescription);
-        } else {
-
-            updateUi(collection);
-        }
-
+        updateUi(user);
 
         eddfl.setOnSwipeListener(new SwipeBackCoordinatorLayout.OnSwipeListener() {
             @Override
@@ -267,87 +249,17 @@ public class UserDescriptionActivity
         });
 
         messageDialog = new MessageDialog(this) ;
-
-        // todo temp
-        downloadManager =
-                (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
     }
 
-    private void updateUi(Photo photo) {
+    private void updateUi(User user) {
 
-        artistNameTv.setText(photo.getArtistName().toLowerCase());
-
-        artistUsernameTv.setText(
-                String.format("@%s", photo.getArtistUsername()));
-
-        Glide.with(this)
-                .load(photo.getArtistProfileImageUrl())
-                .apply(new RequestOptions().centerCrop().circleCrop())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e,
-                                                Object model,
-                                                Target<Drawable> target,
-                                                boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource,
-                                                   Object model,
-                                                   Target<Drawable> target,
-                                                   DataSource dataSource, boolean isFirstResource) {
-
-                        hideLoading();
-                        return false;
-                    }
-                })
-                .into(userPicIv);
-    }
-
-    private void updateUi(UserDescription userDescription) {
-
-        artistNameTv.setText(userDescription.getName().toLowerCase());
+        artistNameTv.setText(user.getName().toLowerCase());
 
         artistUsernameTv.setText(
-                String.format("@%s", userDescription.getUsername()));
+                String.format("@%s", user.getUsername()));
 
         Glide.with(this)
-                .load(userDescription.getProfileImageUrl())
-                .apply(new RequestOptions().centerCrop().circleCrop())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e,
-                                                Object model,
-                                                Target<Drawable> target,
-                                                boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource,
-                                                   Object model,
-                                                   Target<Drawable> target,
-                                                   DataSource dataSource, boolean isFirstResource) {
-
-                        hideLoading();
-                        return false;
-                    }
-                })
-                .into(userPicIv);
-    }
-
-    private void updateUi(Collection collection) {
-
-        artistNameTv.setText(collection.getArtistName().toLowerCase());
-
-        artistUsernameTv.setText(
-                String.format("@%s", collection.getArtistUsername()));
-
-        Glide.with(this)
-                .load(collection.getArtistProfileImageUrl())
+                .load(user.getProfileImage().getLarge())
                 .apply(new RequestOptions().centerCrop().circleCrop())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .listener(new RequestListener<Drawable>() {
@@ -516,53 +428,54 @@ public class UserDescriptionActivity
     }
 
     @Override
-    public void displayUserDescription(final UserDescription userDescription) {
+    public void displayUserDescription(final User user) {
 
         artistPhotosCountBtn.setText(
                 String.format(
                         "%s photos",
-                        String.valueOf(NumberUtils.format(userDescription.getTotalPhotos()))));
+                        String.valueOf(NumberUtils.format(user.getTotalPhotos()))));
 
         artistFollowersCountBtn.setText(
                 String.format(
                         "%s followers",
-                        String.valueOf(NumberUtils.format(userDescription.getFollowersCount()))));
+                        String.valueOf(NumberUtils.format(user.getFollowersCount()))));
 
         artistLikesCountBtn.setText(
                 String.format(
                         "%s likes",
-                        String.valueOf(NumberUtils.format(userDescription.getTotalLikes()))));
+                        String.valueOf(NumberUtils.format(user.getTotalLikes()))));
 
-        if (!userDescription.getBio().equals("")) {
+        if (user.getBio() != null) {
 
             artistBioTv.setVisibility(View.VISIBLE);
-            artistBioTv.setText(userDescription.getBio().trim());
+            artistBioTv.setText(user.getBio().trim());
         }
 
-        if (!userDescription.getLocation().equals("")) {
+        if (user.getLocation() != null) {
 
             artistLocationFl.setVisibility(View.VISIBLE);
-            artistLocationTv.setText(userDescription.getLocation());
+            artistLocationTv.setText(user.getLocation());
         }
 
         itemsRv.scrollToPosition(0);
 
-        if (userDescription.getTags().length > 0) {
-            for (String tag : userDescription.getTags()) {
-                tagsParentLl.addView(getTagView(tag));
-            }
+        for (String tag : user.getUserTags().getCustom()) {
+            tagsParentLl.addView(getTagView(tag));
         }
 
+        for (String tag : user.getUserTags().getAggregated()) {
+            tagsParentLl.addView(getTagView(tag));
+        }
 
         artistPortfolioLinkIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if (!userDescription.getPortfolioUrl().equals("")) {
+                if (user.getPortfolioUrl() != null) {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
                     intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                    intent.setData(Uri.parse(userDescription.getPortfolioUrl()));
+                    intent.setData(Uri.parse(user.getPortfolioUrl()));
                     startActivity(intent);
                 } else {
                     Toast.makeText(UserDescriptionActivity.this, "No portfolio url", Toast.LENGTH_SHORT).show();
@@ -599,22 +512,11 @@ public class UserDescriptionActivity
 
     @Override
     public String getCurArtistUsername() {
-        if (getIntent().getParcelableExtra(UserDescriptionActivity.KEY_PHOTO) != null) {
-            return ((Photo)
-                    getIntent()
-                            .getParcelableExtra(
-                                    UserDescriptionActivity.KEY_PHOTO)).getArtistUsername();
-        } else if (getIntent().getParcelableExtra(UserDescriptionActivity.KEY_USER) != null) {
-            return ((UserDescription)
+
+            return ((User)
                     getIntent()
                             .getParcelableExtra(
                                     UserDescriptionActivity.KEY_USER)).getUsername();
-        } else {
-            return ((Collection)
-                    getIntent()
-                            .getParcelableExtra(
-                                    UserDescriptionActivity.KEY_COLLECTION)).getArtistUsername();
-        }
     }
 
     @Override
@@ -623,44 +525,4 @@ public class UserDescriptionActivity
         i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
         startActivity(i);
     }
-
-    // todo temp
-    DownloadManager downloadManager;
-    LongSparseArray<PhotoDownload> queuedDownloads = new LongSparseArray<>();
-    IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-
-    @Override
-    public void downloadPhoto(PhotoDownload photoDownload) {
-
-        DownloadManager.Request request =
-                new DownloadManager.Request(Uri.parse(photoDownload.getDownloadUrl()));
-
-        request.setTitle("Downloading photo");
-        request.setDescription(photoDownload.getDownloadedFileName());
-
-        request.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS,
-                photoDownload.getDownloadedFileName());
-
-        long downloadReference = downloadManager.enqueue(request);
-        queuedDownloads.append(downloadReference, photoDownload);
-    }
-
-    private BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            //check if the broadcast message is for our enqueued download
-            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-
-            Toast.makeText(
-                    UserDescriptionActivity.this,
-                    "Download complete "
-                            +queuedDownloads.get(referenceId).getDownloadedFileName(),
-                    Toast.LENGTH_SHORT).show();
-
-            queuedDownloads.remove(referenceId);
-        }
-    };
 }

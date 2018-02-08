@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.LargeHeader"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:text="Photos"
                 android:textColor="@color/secondaryText"/>
 
@@ -48,8 +48,8 @@
                     android:id="@+id/photosRv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:clipToPadding="false" />
                 
                 <me.zhanghai.android.materialprogressbar.MaterialProgressBar
@@ -77,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.LargeHeader"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:text="Collections"
                 android:textColor="@color/secondaryText"/>
 
@@ -89,8 +89,8 @@
                     android:id="@+id/collectionsRv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:clipToPadding="false"  />
 
                 <me.zhanghai.android.materialprogressbar.MaterialProgressBar
@@ -118,7 +118,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.LargeHeader"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:text="Users"
                 android:textColor="@color/secondaryText"/>
 
@@ -130,8 +130,8 @@
                     android:id="@+id/usersRv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:clipToPadding="false"  />
 
                 <me.zhanghai.android.materialprogressbar.MaterialProgressBar

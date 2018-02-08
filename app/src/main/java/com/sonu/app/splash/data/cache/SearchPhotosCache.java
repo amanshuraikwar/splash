@@ -5,7 +5,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
 
@@ -36,7 +36,7 @@ public class SearchPhotosCache extends SearchCache<Photo> {
 
     @Override
     Photo getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.getPhotoObj(element);
+        return UnsplashJsonUtils.buildPhotoObj(element.getAsJsonObject());
     }
 
     @Override

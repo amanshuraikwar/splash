@@ -1,12 +1,10 @@
 package com.sonu.app.splash.ui.user;
 
-import android.graphics.Color;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,9 +13,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.list.ViewHolder;
-import com.sonu.app.splash.ui.photo.PhotoHorizontalListItem;
-import com.sonu.app.splash.ui.widget.HeightRelativeAspectRatioImageView;
-import com.sonu.app.splash.util.DrawableUtils;
 import com.sonu.app.splash.util.LogUtils;
 
 import butterknife.BindView;
@@ -55,24 +50,24 @@ public class UserHorizontalViewHolder extends ViewHolder<UserHorizontalListItem>
     @Override
     public void bind(final UserHorizontalListItem listItem, FragmentActivity parentActivity) {
 
-        Log.i(TAG, "bind:userDescription="+listItem.getUserDescription());
+        Log.i(TAG, "bind:userDescription="+listItem.getUser());
 
         Glide.with(parentActivity)
-                .load(listItem.getUserDescription().getProfileImageUrl())
+                .load(listItem.getUser().getProfileImage().getLarge())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .apply(new RequestOptions().centerCrop().circleCrop())
                 .into(artistPicIv);
 
-        artistNameTv.setText(listItem.getUserDescription().getName());
-        artistUsernameTv.setText(String.format("@%s", listItem.getUserDescription().getUsername()));
+        artistNameTv.setText(listItem.getUser().getName());
+        artistUsernameTv.setText(String.format("@%s", listItem.getUser().getUsername()));
 
         // unique transition name
-        artistPicIv.setTransitionName(listItem.getUserDescription().getId());
+        artistPicIv.setTransitionName(listItem.getUser().getId());
 
         artistPicCv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getUserDescription(), artistPicIv);
+                listItem.getOnClickListener().onClick(listItem.getUser(), artistPicIv);
             }
         });
     }

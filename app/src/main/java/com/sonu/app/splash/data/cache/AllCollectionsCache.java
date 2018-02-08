@@ -3,7 +3,7 @@ package com.sonu.app.splash.data.cache;
 import com.google.gson.JsonElement;
 import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
-import com.sonu.app.splash.ui.collection.Collection;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
 
@@ -34,6 +34,6 @@ public class AllCollectionsCache extends SimpleContentCache<Collection> {
 
     @Override
     Collection getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.getCollectionObj(element);
+        return UnsplashJsonUtils.buildCollectionObj(element.getAsJsonObject());
     }
 }

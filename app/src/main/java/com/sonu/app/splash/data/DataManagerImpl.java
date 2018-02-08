@@ -5,24 +5,21 @@ import android.content.Context;
 import com.sonu.app.splash.data.cache.AllCollectionsCache;
 import com.sonu.app.splash.data.cache.AllPhotosCache;
 import com.sonu.app.splash.data.cache.CollectionPhotosCache;
-import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.data.cache.CuratedPhotosCache;
 import com.sonu.app.splash.data.cache.FeaturedCollectionsCache;
-import com.sonu.app.splash.data.cache.PhotosCache;
 import com.sonu.app.splash.data.cache.SearchCollectionsCache;
 import com.sonu.app.splash.data.cache.SearchPhotosCache;
 import com.sonu.app.splash.data.cache.SearchUsersCache;
 import com.sonu.app.splash.data.cache.UserPhotosCache;
 import com.sonu.app.splash.data.download.DownloadSession;
 import com.sonu.app.splash.data.download.Downloader;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.data.local.LocalDataManager;
 import com.sonu.app.splash.data.network.NetworkDataManager;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.di.ApplicationContext;
-import com.sonu.app.splash.ui.content.featuredcollections.FeaturedCollectionsContract;
-import com.sonu.app.splash.ui.photo.Photo;
-import com.sonu.app.splash.ui.photodescription.PhotoDescription;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.model.unsplash.User;
 
 import java.util.List;
 
@@ -72,6 +69,9 @@ public class DataManagerImpl implements DataManager {
 
     @Inject
     Downloader downloader;
+
+    @Inject
+    LocalDataManager localDataManager;
 
     @Inject
     public DataManagerImpl(){
@@ -128,17 +128,42 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public void downloadPhoto(PhotoDownload photoDownload) {
-        downloader.downloadPhoto(photoDownload);
+    public long downloadPhoto(Photo photo) {
+        return downloader.downloadPhoto(photo);
     }
 
     @Override
-    public Observable<PhotoDescription> getPhotoDescription(String photoId) {
+    public PhotoDownload.Status checkDownloadStatus(long downloadReference) {
+        return downloader.checkDownloadStatus(downloadReference);
+    }
+
+    @Override
+    public Observable<Photo> getPhotoDescription(String photoId) {
         return networkDataManager.getPhotoDescription(photoId);
     }
 
     @Override
-    public Observable<UserDescription> getUserDescription(String username) {
+    public Observable<User> getUserDescription(String username) {
         return networkDataManager.getUserDescription(username);
+    }
+
+    @Override
+    public Observable<List<PhotoDownload>> getPhotoDownloads() {
+        return localDataManager.getPhotoDownloads();
+    }
+
+    @Override
+    public Observable<Boolean> addPhotoDownload(PhotoDownload photoDownload) {
+        return localDataManager.addPhotoDownload(photoDownload);
+    }
+
+    @Override
+    public Observable<List<PhotoDownload>> getRunningPausedPendingDownloads() {
+        return localDataManager.getRunningPausedPendingDownloads();
+    }
+
+    @Override
+    public Observable<Boolean> updatePhotoDownload(PhotoDownload photoDownload) {
+        return localDataManager.updatePhotoDownload(photoDownload);
     }
 }

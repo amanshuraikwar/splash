@@ -22,13 +22,4 @@ public class AboutPresenter extends BasePresenterImpl<AboutContract.View>
     public AboutPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
         super(appBus, dataManager, activity);
     }
-
-    @Override
-    public void attachView(AboutContract.View view, boolean wasViewRecreated) {
-        super.attachView(view, wasViewRecreated);
-
-//        Log.d(TAG, "attachView:called");
-//
-//        getAppBus().onHomeNavItemVisible.onNext(getView().getHomeNavItemId());
-    }
 }

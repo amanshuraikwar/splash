@@ -20,6 +20,9 @@ public class AppBus {
     // general ui subjects
     public PublishSubject<String> sendQuickMessage;
 
+    // download notification
+    public PublishSubject<Long> downloadStarted;
+
     public AppBus() {
 
         // initialising all the publish subjects
@@ -29,5 +32,7 @@ public class AppBus {
         updateDownloadProgress = PublishSubject.create();
 
         sendQuickMessage = PublishSubject.create();
+
+        downloadStarted = PublishSubject.create();
     }
 }

@@ -1,44 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <com.pixelcan.inkpageindicator.InkPageIndicator
-            android:id="@+id/indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:layout_gravity="bottom"
-            app:dotDiameter="8dp"
-            app:dotGap="8dp"
-            app:animationDuration="320"
-            app:pageIndicatorColor="@color/grey3"
-            app:currentPageIndicatorColor="@color/darkGrey1" />
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        style="@style/Widget.Splash.AppBarLayout">
 
         <FrameLayout
-            android:id="@+id/overlayFl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/grey1Trans"
-            android:visibility="gone">
+            app:layout_scrollFlags="scroll|enterAlways">
 
-            <TextView
-                android:id="@+id/overlayTv"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="88dp"
-                android:paddingBottom="88dp"
-                android:layout_gravity="center"
-                android:textAppearance="@style/TextAppearance.OverlayLarge"
-                android:text="all photos" />
+                android:layout_height="?android:attr/actionBarSize"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="48dp"
+                android:clipToPadding="false"
+                style="@style/Widget.Splash.TabLayout" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_gravity="end|center_vertical"
+                android:src="@drawable/ic_sort_black_24dp"
+                style="@style/Widget.Splash.BorderlessImageButton"
+                tools:ignore="ContentDescription"
+                android:visibility="gone" />
         </FrameLayout>
-</FrameLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+</android.support.design.widget.CoordinatorLayout>

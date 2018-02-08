@@ -1,5 +1,9 @@
 package com.sonu.app.splash.ui.home;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
@@ -8,19 +12,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
 import com.sonu.app.splash.ui.collections.CollectionsFragment;
-import com.sonu.app.splash.ui.content.curatedphotos.CuratedPhotosFragment;
-import com.sonu.app.splash.ui.content.featuredcollections.FeaturedCollectionsFragment;
+import com.sonu.app.splash.ui.downloads.DownloadsFragment;
 import com.sonu.app.splash.ui.photos.PhotosFragment;
 import com.sonu.app.splash.ui.search.SearchFragment;
 import com.sonu.app.splash.util.AnimUtils;
@@ -48,9 +49,6 @@ public class HomeFragment
         FragNavController.RootFragmentListener {
 
     private static final String TAG = LogUtils.getLogTag(HomeFragment.class);
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
 
     @BindView(R.id.persistentMessage)
     View persistentMessage;
@@ -106,6 +104,9 @@ public class HomeFragment
     SearchFragment searchFragment;
 
     @Inject
+    DownloadsFragment downloadsFragment;
+
+    @Inject
     public HomeFragment() {
         // required empty constructor
     }
@@ -124,8 +125,6 @@ public class HomeFragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        animateToolbar();
 
         initTab();
 
@@ -190,6 +189,7 @@ public class HomeFragment
     }
 
     // this part is "stolen" from the inspirational app PLAID by legendary Nick Butcher
+    /*
     private void animateToolbar() {
 
         // this is gross but toolbar doesn't expose it's children to animate them :(
@@ -207,7 +207,7 @@ public class HomeFragment
                     .setDuration(600)
                     .setInterpolator(AnimUtils.getFastOutSlowInInterpolator(getContext()));
         }
-    }
+    }*/
 
     private void animateBottomTl() {
 
@@ -237,7 +237,7 @@ public class HomeFragment
     private View getTabView(int position) {
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.tab_item_bottom, null);
-        ImageView icon = view.findViewById(R.id.tab_icon);
+        ImageView icon = view.findViewById(R.id.tabIcon);
         icon.setImageDrawable(ContextCompat.getDrawable(getActivity(), mTabIconsDrawable[position]));
         return view;
     }
@@ -249,7 +249,6 @@ public class HomeFragment
     }
 
     private void updateToolbarTitle(int position) {
-        toolbar.setTitle(TABS[position]);
     }
 
     @Override
@@ -290,7 +289,6 @@ public class HomeFragment
         }
     }
 
-
     private void updateTabSelection(int currentTab){
 
         for (int i = 0; i <  TABS.length; i++) {
@@ -314,6 +312,11 @@ public class HomeFragment
     @Override
     public void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDownloadStarted(long downloadReference) {
+        // todo show some action
     }
 
     @Override
@@ -355,7 +358,7 @@ public class HomeFragment
             case FragNavController.TAB3:
                 return searchFragment;
             case FragNavController.TAB4:
-                return photosFragment;
+                return downloadsFragment;
             case FragNavController.TAB5:
                 return photosFragment;
         }

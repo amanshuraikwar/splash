@@ -10,6 +10,7 @@ import android.util.Pair;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
 import com.sonu.app.splash.util.LogUtils;
 
 import java.io.File;

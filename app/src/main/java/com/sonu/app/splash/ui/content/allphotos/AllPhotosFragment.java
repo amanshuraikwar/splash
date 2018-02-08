@@ -7,11 +7,11 @@ import android.util.Pair;
 import android.view.View;
 
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.content.ContentFragment;
 import com.sonu.app.splash.ui.content.curatedphotos.CuratedPhotosFragment;
 import com.sonu.app.splash.ui.list.ListItem;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.ui.photo.PhotoLight;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
@@ -36,7 +36,7 @@ public class AllPhotosFragment
 
                     Log.d(TAG, "onDownloadBtnClick:called");
 
-                    getPresenter().downloadPhoto(new PhotoDownload(photo));
+                    getPresenter().downloadPhoto(photo);
                 }
 
                 @Override

@@ -5,7 +5,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
 
@@ -15,7 +15,7 @@ import javax.inject.Inject;
  * Created by amanshuraikwar on 28/01/18.
  */
 
-public class SearchUsersCache extends SearchCache<UserDescription> {
+public class SearchUsersCache extends SearchCache<User> {
 
     @Inject
     public SearchUsersCache(RequestHandler requestHandler) {
@@ -33,8 +33,8 @@ public class SearchUsersCache extends SearchCache<UserDescription> {
     }
 
     @Override
-    UserDescription getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.getUserDescriptionObj(element.getAsJsonObject());
+    User getDataModelFromJson(JsonElement element) {
+        return UnsplashJsonUtils.buildUserObj(element.getAsJsonObject());
     }
 
     @Override

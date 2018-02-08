@@ -12,7 +12,6 @@ import android.widget.ImageView;
 
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
-import com.sonu.app.splash.ui.home.HomeNavItem;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
@@ -26,7 +25,7 @@ import butterknife.OnClick;
  */
 
 public class AboutFragment extends BaseFragment<AboutContract.Presenter>
-        implements AboutContract.View, HomeNavItem {
+        implements AboutContract.View {
 
     private static final String TAG = LogUtils.getLogTag(AboutFragment.class);
 

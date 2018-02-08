@@ -1,18 +1,20 @@
 package com.sonu.app.splash.ui.search.activity;
 
 import android.app.Activity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.SearchCollectionsCache;
 import com.sonu.app.splash.data.cache.SearchPhotosCache;
 import com.sonu.app.splash.data.cache.SearchUsersCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
+import com.sonu.app.splash.ui.architecture.PresenterPlugin;
 
 import javax.inject.Inject;
+
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by amanshuraikwar on 03/02/18.
@@ -21,6 +23,8 @@ import javax.inject.Inject;
 public class SearchPresenter
         extends BasePresenterImpl<SearchContract.View>
         implements SearchContract.Presenter {
+
+    private Disposable downloadPhotoDisp;
 
     @Inject
     public SearchPresenter(AppBus appBus,
@@ -61,16 +65,25 @@ public class SearchPresenter
         }
     }
 
-
-
     @Override
-    public void downloadPhoto(PhotoDownload photoDownload) {
+    public void downloadPhoto(Photo photo) {
 
-        getDataManager().downloadPhoto(photoDownload);
+        downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
     }
 
     @Override
     public void onQuerySubmit(String query) {
         updateAppropriateUi(query);
+    }
+
+    @Override
+    public void detachView() {
+        super.detachView();
+
+        if (downloadPhotoDisp != null) {
+            if (!downloadPhotoDisp.isDisposed()) {
+                downloadPhotoDisp.dispose();
+            }
+        }
     }
 }

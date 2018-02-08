@@ -24,6 +24,7 @@
             android:propertyName="translationZ"
             android:valueTo="8dp" />
     </item>
+
     <item>
         <objectAnimator
             android:duration="@android:integer/config_shortAnimTime"

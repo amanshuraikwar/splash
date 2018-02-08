@@ -3,6 +3,7 @@ package com.sonu.app.splash.ui.home;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
+import com.sonu.app.splash.R;
 import com.sonu.app.splash.util.ActivityUtils;
 
 import javax.inject.Inject;
@@ -31,7 +32,7 @@ public class HomeActivity extends DaggerAppCompatActivity {
         ButterKnife.bind(this);
 
         ActivityUtils.addFragmentToActivity(
-                getSupportFragmentManager(), homeFragment, com.sonu.app.splash.R.id.contentFl);
+                getSupportFragmentManager(), homeFragment, R.id.contentFl);
     }
 
     @Override

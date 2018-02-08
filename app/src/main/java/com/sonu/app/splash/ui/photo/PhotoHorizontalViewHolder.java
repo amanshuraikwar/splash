@@ -45,13 +45,12 @@ public class PhotoHorizontalViewHolder extends ViewHolder<PhotoHorizontalListIte
     public void bind(final PhotoHorizontalListItem listItem, FragmentActivity parentActivity) {
 
         Log.i(TAG, "bind:photo="+listItem.getPhoto());
-        Log.i(TAG, "bind:url="+listItem.getPhoto().getUrlRegular());
 
         photoIv.setAspectRatio(((float)listItem.getPhoto().getHeight())
                         / ((float)listItem.getPhoto().getWidth()));
 
         Glide.with(parentActivity)
-                .load(listItem.getPhoto().getUrlSmall())
+                .load(listItem.getPhoto().getPhotoUrls().getSmall())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 

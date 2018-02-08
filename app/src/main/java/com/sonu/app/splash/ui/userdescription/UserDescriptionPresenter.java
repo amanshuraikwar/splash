@@ -7,10 +7,12 @@ import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.UserPhotosCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.ui.architecture.PresenterPlugin;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.PermissionsHelper;
 
@@ -34,7 +36,7 @@ public class UserDescriptionPresenter
 
     private static final String TAG = LogUtils.getLogTag(UserDescriptionPresenter.class);
 
-    private Disposable userDescriptionDisp;
+    private Disposable userDescriptionDisp, downloadPhotoDisp;
     private boolean fetchingData;
 
     private UserPhotosCache userPhotosCache;
@@ -81,18 +83,18 @@ public class UserDescriptionPresenter
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Consumer<UserDescription>() {
+                            new Consumer<User>() {
                                 @Override
-                                public void accept(UserDescription userDescription) throws Exception {
-                                    Log.d(TAG, "getUserDescription:onNext:called");
-                                    getView().displayUserDescription(userDescription);
+                                public void accept(User user) throws Exception {
+                                    Log.d(TAG, "getUser:onNext:called");
+                                    getView().displayUserDescription(user);
                                 }
                             },
                             new Consumer<Throwable>() {
                                 @Override
                                 public void accept(Throwable throwable) throws Exception {
-                                    Log.d(TAG, "getUserDescription:onError:called");
-                                    Log.e(TAG, "getUserDescription:onError:error=" + throwable);
+                                    Log.d(TAG, "getUser:onError:called");
+                                    Log.e(TAG, "getUser:onError:error=" + throwable);
                                     throwable.printStackTrace();
                                     handleException(throwable);
                                     fetchingData = false;
@@ -101,7 +103,7 @@ public class UserDescriptionPresenter
                             new Action() {
                                 @Override
                                 public void run() throws Exception {
-                                    Log.d(TAG, "getUserDescription:onCompleted:called");
+                                    Log.d(TAG, "getUser:onCompleted:called");
                                     getView().hideLoading();
                                     fetchingData = false;
                                 }
@@ -109,18 +111,25 @@ public class UserDescriptionPresenter
                             new Consumer<Disposable>() {
                                 @Override
                                 public void accept(Disposable disposable) throws Exception {
-                                    Log.d(TAG, "getUserDescription:onSubscribe:called");
+                                    Log.d(TAG, "getUser:onSubscribe:called");
                                     getView().showLoading();
                                 }
                             });
         }
 
     }
+
     @Override
     public void detachView() {
         super.detachView();
 
         userDescriptionDisp.dispose();
+
+        if (downloadPhotoDisp != null) {
+            if (!downloadPhotoDisp.isDisposed()) {
+                downloadPhotoDisp.dispose();
+            }
+        }
     }
 
     private void handleException(Throwable e) {
@@ -151,9 +160,7 @@ public class UserDescriptionPresenter
 
     @Override
     public void onDownloadBtnClick(Photo photo) {
-        if (PermissionsHelper.checkStoragePermission(getActivity())) {
-            getView().downloadPhoto(new PhotoDownload(photo));
-        }
+        downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
     }
 
     @Override

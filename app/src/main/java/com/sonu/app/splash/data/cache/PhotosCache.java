@@ -1,13 +1,10 @@
 package com.sonu.app.splash.data.cache;
 
 import com.google.gson.JsonElement;
-import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
-
-import javax.inject.Inject;
 
 /**
  * Created by amanshuraikwar on 20/12/17.
@@ -62,6 +59,6 @@ public abstract class PhotosCache extends SimpleContentCache<Photo> {
 
     @Override
     Photo getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.getPhotoObj(element);
+        return UnsplashJsonUtils.buildPhotoObj(element.getAsJsonObject());
     }
 }

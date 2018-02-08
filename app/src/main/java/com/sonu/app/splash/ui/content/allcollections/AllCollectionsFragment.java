@@ -6,12 +6,11 @@ import android.util.Log;
 import android.view.View;
 
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.ui.collection.Collection;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.ui.collection.CollectionListItem;
 import com.sonu.app.splash.ui.collection.CollectionOnClickListener;
 import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionActivity;
 import com.sonu.app.splash.ui.content.ContentFragment;
-import com.sonu.app.splash.ui.content.featuredcollections.FeaturedCollectionsContract;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
@@ -74,9 +73,7 @@ public class AllCollectionsFragment
     private void startUserDescriptionActivity(Collection collection, View transitionView) {
 
         Intent i = new Intent(getActivity(), UserDescriptionActivity.class);
-        i.putExtra(UserDescriptionActivity.KEY_COLLECTION, collection);
-
-        transitionView.setTransitionName(collection.getArtistId());
+        i.putExtra(UserDescriptionActivity.KEY_USER, collection.getUser());
 
         ActivityOptions options =
                 ActivityOptions.makeSceneTransitionAnimation(getActivity(),

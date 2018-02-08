@@ -5,7 +5,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
-import com.sonu.app.splash.ui.collection.Collection;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
 
@@ -36,7 +36,7 @@ public class SearchCollectionsCache extends SearchCache<Collection> {
 
     @Override
     Collection getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.getCollectionObj(element);
+        return UnsplashJsonUtils.buildCollectionObj(element.getAsJsonObject());
     }
 
     @Override

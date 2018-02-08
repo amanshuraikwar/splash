@@ -48,14 +48,13 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
     @Override
     public void bind(final PhotoListItem listItem, FragmentActivity parentActivity) {
 
-        Log.i(TAG, "bind:photo="+listItem.getPhoto());
-        Log.i(TAG, "bind:url="+listItem.getPhoto().getUrlRegular());
+//        Log.i(TAG, "bind:photo="+listItem.getPhoto());
 
         photoIv.setAspectRatio(((float)listItem.getPhoto().getHeight())
                         / ((float)listItem.getPhoto().getWidth()));
 
         Glide.with(parentActivity)
-                .load(listItem.getPhoto().getUrlSmall())
+                .load(listItem.getPhoto().getPhotoUrls().getSmall())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 
@@ -73,7 +72,7 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
 
         parent.setBackgroundColor(color);
 
-        // unique transition name
+//         unique transition name
         photoIv.setTransitionName(listItem.getPhoto().getId());
 
         parent.setOnClickListener(new View.OnClickListener() {

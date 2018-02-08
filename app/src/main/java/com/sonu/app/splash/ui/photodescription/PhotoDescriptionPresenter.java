@@ -6,19 +6,17 @@ import android.util.Log;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
-import com.sonu.app.splash.ui.about.AboutContract;
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.ui.architecture.PresenterPlugin;
 import com.sonu.app.splash.util.LogUtils;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -34,7 +32,7 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
     private static final String TAG = LogUtils.getLogTag(PhotoDescriptionPresenter.class);
 
-    private Disposable photoDescriptionDesc;
+    private Disposable photoDescriptionDesc, downloadPhotoDisp;
     private boolean fetchingData;
 
     @Inject
@@ -65,11 +63,11 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Consumer<PhotoDescription>() {
+                            new Consumer<Photo>() {
                                 @Override
-                                public void accept(PhotoDescription photoDescription) throws Exception {
+                                public void accept(Photo photo) throws Exception {
                                     Log.d(TAG, "getPhotoDescription:onNext:called");
-                                    getView().displayPhotoDescription(photoDescription);
+                                    getView().displayPhotoDescription(photo);
                                 }
                             },
                             new Consumer<Throwable>() {
@@ -102,8 +100,8 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
     }
 
     @Override
-    public void downloadPhoto(PhotoDownload photoDownload) {
-        getDataManager().downloadPhoto(photoDownload);
+    public void downloadPhoto(Photo photo) {
+        downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
     }
 
     @Override
@@ -111,6 +109,12 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
         super.detachView();
 
         photoDescriptionDesc.dispose();
+
+        if (downloadPhotoDisp != null) {
+            if (!downloadPhotoDisp.isDisposed()) {
+                downloadPhotoDisp.dispose();
+            }
+        }
     }
 
     private void handleException(Throwable e) {

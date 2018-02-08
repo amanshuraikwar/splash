@@ -1,7 +1,5 @@
 package com.sonu.app.splash.data.cache;
 
-import com.sonu.app.splash.ui.photo.Photo;
-
 import java.util.List;
 
 import io.reactivex.Observable;

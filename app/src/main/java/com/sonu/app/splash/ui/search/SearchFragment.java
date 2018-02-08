@@ -19,10 +19,11 @@ import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.cache.SearchCollectionsCache;
 import com.sonu.app.splash.data.cache.SearchPhotosCache;
 import com.sonu.app.splash.data.cache.SearchUsersCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
 import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
-import com.sonu.app.splash.ui.collection.Collection;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.ui.collection.CollectionHorizontalListItem;
 import com.sonu.app.splash.ui.collection.CollectionOnClickListener;
 import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionActivity;
@@ -31,7 +32,7 @@ import com.sonu.app.splash.ui.list.ContentListAdapter;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.ui.list.SimpleListItemOnClickListener;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.photo.PhotoHorizontalListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
@@ -39,7 +40,6 @@ import com.sonu.app.splash.ui.search.activity.SearchActivity;
 import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
 import com.sonu.app.splash.ui.user.UserHorizontalListItem;
 import com.sonu.app.splash.ui.user.UserOnClickListener;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
 
@@ -93,7 +93,7 @@ public class SearchFragment
 
     private ContentListAdapter<Photo> photosAdapter;
     private ContentListAdapter<Collection> collectionsAdapter;
-    private ContentListAdapter<UserDescription> usersAdapter;
+    private ContentListAdapter<User> usersAdapter;
 
     private SimpleListItemOnClickListener morePhotosOnClickListener =
             new SimpleListItemOnClickListener() {
@@ -117,7 +117,7 @@ public class SearchFragment
 
                     Log.d(TAG, "onDownloadBtnClick:called");
 
-                    getPresenter().downloadPhoto(new PhotoDownload(photo));
+                    getPresenter().downloadPhoto(photo);
                 }
 
                 @Override
@@ -205,7 +205,13 @@ public class SearchFragment
 
                     Intent i = new Intent(getActivity(), CollectionDescriptionActivity.class);
                     i.putExtra(CollectionDescriptionActivity.KEY_COLLECTION, collection);
-                    startActivity(i);
+
+                    ActivityOptions options =
+                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                                    transitionView,
+                                    getString(R.string.transition_artist_pic));
+
+                    startActivity(i, options.toBundle());
                 }
 
                 @Override
@@ -276,11 +282,11 @@ public class SearchFragment
     private UserOnClickListener userOnClickListener =
             new UserOnClickListener() {
                 @Override
-                public void onClick(UserDescription userDescription,
+                public void onClick(User user,
                                     View transitionView) {
 
                     Intent i = new Intent(getActivity(), UserDescriptionActivity.class);
-                    i.putExtra(UserDescriptionActivity.KEY_USER, userDescription);
+                    i.putExtra(UserDescriptionActivity.KEY_USER, user);
 
                     ActivityOptions options =
                             ActivityOptions.makeSceneTransitionAnimation(getActivity(),
@@ -291,18 +297,18 @@ public class SearchFragment
                 }
             };
 
-    private ContentListAdapter.AdapterListener<UserDescription> usersListener =
-            new ContentListAdapter.AdapterListener<UserDescription>() {
+    private ContentListAdapter.AdapterListener<User> usersListener =
+            new ContentListAdapter.AdapterListener<User>() {
 
                 @Override
-                public ListItem createListItem(UserDescription userDescription) {
-                    UserHorizontalListItem listItem = new UserHorizontalListItem(userDescription);
+                public ListItem createListItem(User user) {
+                    UserHorizontalListItem listItem = new UserHorizontalListItem(user);
                     listItem.setOnClickListener(userOnClickListener);
                     return listItem;
                 }
 
                 @Override
-                public List<ListItem> createListItems(List<UserDescription> userDescriptions) {
+                public List<ListItem> createListItems(List<User> userDescriptions) {
                     List<ListItem> list = super.createListItems(userDescriptions);
                     if (userDescriptions.size() == ApiEndpoints.PER_PAGE) {
                         HeaderHorizontalListItem listItem =
@@ -536,9 +542,9 @@ public class SearchFragment
     private void startUserDescriptionActivity(Collection collection, View transitionView) {
 
         Intent i = new Intent(getActivity(), UserDescriptionActivity.class);
-        i.putExtra(UserDescriptionActivity.KEY_COLLECTION, collection);
+        i.putExtra(UserDescriptionActivity.KEY_USER, collection.getUser());
 
-        transitionView.setTransitionName(collection.getArtistId());
+        transitionView.setTransitionName(collection.getUser().getId());
 
         ActivityOptions options =
                 ActivityOptions.makeSceneTransitionAnimation(getActivity(),

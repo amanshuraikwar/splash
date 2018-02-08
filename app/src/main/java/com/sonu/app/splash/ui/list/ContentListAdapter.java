@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UiExceptionUtils;
 

@@ -8,8 +8,8 @@ import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
 import com.sonu.app.splash.data.network.unsplashapi.RequestGenerator;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
-import com.sonu.app.splash.ui.photodescription.PhotoDescription;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
 
@@ -37,33 +37,33 @@ public class NetworkDataManagerImpl implements NetworkDataManager {
     }
 
     @Override
-    public Observable<PhotoDescription> getPhotoDescription(final String photoId) {
-        return Observable.fromCallable(new Callable<PhotoDescription>() {
+    public Observable<Photo> getPhotoDescription(final String photoId) {
+        return Observable.fromCallable(new Callable<Photo>() {
             @Override
-            public PhotoDescription call() throws Exception {
-                return getPhotoDescriptionAct(photoId);
+            public Photo call() throws Exception {
+                return getPhotoAct(photoId);
             }
         });
     }
 
-    private PhotoDescription getPhotoDescriptionAct(String photoId)
+    private Photo getPhotoAct(String photoId)
             throws IOException, UnsplashApiException {
 
         try {
 
             // giving page number to fetch
-            String url = String.format(ApiEndpoints.GET_PHOTO_DESCRIPTION, photoId);
+            String url = String.format(ApiEndpoints.GET_PHOTO, photoId);
 
             Request request = RequestGenerator.get(url);
 
             String body = requestHandler.request(request).string();
-            Log.i(TAG, "getPhotoDescriptionAct:response-body:"+body);
+            Log.i(TAG, "getPhotoAct:response-body:"+body);
 
             JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
 
-            Log.i(TAG, "getPhotoDescriptionAct:response-body-json:"+jsonObject);
+            Log.i(TAG, "getPhotoAct:response-body-json:"+jsonObject);
 
-            return UnsplashJsonUtils.getPhotoDescriptionObj(jsonObject);
+            return UnsplashJsonUtils.buildPhotoObj(jsonObject);
 
         } catch (IOException | UnsplashApiException e) {
             throw e;
@@ -71,33 +71,33 @@ public class NetworkDataManagerImpl implements NetworkDataManager {
     }
 
     @Override
-    public Observable<UserDescription> getUserDescription(final String username) {
-        return Observable.fromCallable(new Callable<UserDescription>() {
+    public Observable<User> getUserDescription(final String username) {
+        return Observable.fromCallable(new Callable<User>() {
             @Override
-            public UserDescription call() throws Exception {
-                return getUserDescriptionAct(username);
+            public User call() throws Exception {
+                return getUserAct(username);
             }
         });
     }
 
-    private UserDescription getUserDescriptionAct(String username)
+    private User getUserAct(String username)
             throws IOException, UnsplashApiException {
 
         try {
 
             // giving page number to fetch
-            String url = String.format(ApiEndpoints.GET_USER_DESCRIPTION, username);
+            String url = String.format(ApiEndpoints.GET_USER, username);
 
             Request request = RequestGenerator.get(url);
 
             String body = requestHandler.request(request).string();
-            Log.i(TAG, "getPhotoDescriptionAct:response-body:"+body);
+            Log.i(TAG, "getPhotoAct:response-body:"+body);
 
             JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
 
-            Log.i(TAG, "getPhotoDescriptionAct:response-body-json:"+jsonObject);
+            Log.i(TAG, "getPhotoAct:response-body-json:"+jsonObject);
 
-            return UnsplashJsonUtils.getUserDescriptionObj(jsonObject);
+            return UnsplashJsonUtils.buildUserObj(jsonObject);
 
         } catch (IOException | UnsplashApiException e) {
             throw e;

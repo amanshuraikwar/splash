@@ -4,7 +4,6 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -15,36 +14,28 @@ import android.widget.Button;
 import android.widget.SearchView;
 
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.data.cache.SearchCache;
 import com.sonu.app.splash.data.cache.SearchCollectionsCache;
 import com.sonu.app.splash.data.cache.SearchPhotosCache;
 import com.sonu.app.splash.data.cache.SearchUsersCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
-import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
-import com.sonu.app.splash.ui.collection.Collection;
-import com.sonu.app.splash.ui.collection.CollectionHorizontalListItem;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.ui.collection.CollectionListItem;
 import com.sonu.app.splash.ui.collection.CollectionOnClickListener;
 import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionActivity;
-import com.sonu.app.splash.ui.header.HeaderHorizontalListItem;
 import com.sonu.app.splash.ui.list.ContentListAdapter;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.list.SimpleListItemOnClickListener;
-import com.sonu.app.splash.ui.photo.Photo;
-import com.sonu.app.splash.ui.photo.PhotoHorizontalListItem;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.ui.photo.PhotoLight;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
-import com.sonu.app.splash.ui.user.UserHorizontalListItem;
 import com.sonu.app.splash.ui.user.UserListItem;
 import com.sonu.app.splash.ui.user.UserOnClickListener;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,7 +60,7 @@ public class SearchActivity
 
     private ContentListAdapter<Photo> photosAdapter;
     private ContentListAdapter<Collection> collectionsAdapter;
-    private ContentListAdapter<UserDescription> usersAdapter;
+    private ContentListAdapter<User> usersAdapter;
 
     private PhotoOnClickListener photoOnClickListener =
             new PhotoOnClickListener() {
@@ -78,7 +69,7 @@ public class SearchActivity
 
                     Log.d(TAG, "onDownloadBtnClick:called");
 
-                    getPresenter().downloadPhoto(new PhotoDownload(photo));
+                    getPresenter().downloadPhoto(photo);
                 }
 
                 @Override
@@ -143,7 +134,13 @@ public class SearchActivity
 
                     Intent i = new Intent(SearchActivity.this, CollectionDescriptionActivity.class);
                     i.putExtra(CollectionDescriptionActivity.KEY_COLLECTION, collection);
-                    startActivity(i);
+
+                    ActivityOptions options =
+                            ActivityOptions.makeSceneTransitionAnimation(SearchActivity.this,
+                                    transitionView,
+                                    getString(R.string.transition_artist_pic));
+
+                    startActivity(i, options.toBundle());
                 }
 
                 @Override
@@ -191,11 +188,11 @@ public class SearchActivity
     private UserOnClickListener userOnClickListener =
             new UserOnClickListener() {
                 @Override
-                public void onClick(UserDescription userDescription,
+                public void onClick(User user,
                                     View transitionView) {
 
                     Intent i = new Intent(SearchActivity.this, UserDescriptionActivity.class);
-                    i.putExtra(UserDescriptionActivity.KEY_USER, userDescription);
+                    i.putExtra(UserDescriptionActivity.KEY_USER, user);
 
                     ActivityOptions options =
                             ActivityOptions.makeSceneTransitionAnimation(SearchActivity.this,
@@ -206,12 +203,12 @@ public class SearchActivity
                 }
             };
 
-    private ContentListAdapter.AdapterListener<UserDescription> usersListener =
-            new ContentListAdapter.AdapterListener<UserDescription>() {
+    private ContentListAdapter.AdapterListener<User> usersListener =
+            new ContentListAdapter.AdapterListener<User>() {
 
                 @Override
-                public ListItem createListItem(UserDescription userDescription) {
-                    UserListItem listItem = new UserListItem(userDescription);
+                public ListItem createListItem(User user) {
+                    UserListItem listItem = new UserListItem(user);
                     listItem.setOnClickListener(userOnClickListener);
                     return listItem;
                 }
@@ -477,9 +474,9 @@ public class SearchActivity
     private void startUserDescriptionActivity(Collection collection, View transitionView) {
 
         Intent i = new Intent(SearchActivity.this, UserDescriptionActivity.class);
-        i.putExtra(UserDescriptionActivity.KEY_COLLECTION, collection);
+        i.putExtra(UserDescriptionActivity.KEY_USER, collection.getUser());
 
-        transitionView.setTransitionName(collection.getArtistId());
+        transitionView.setTransitionName(collection.getUser().getId());
 
         ActivityOptions options =
                 ActivityOptions.makeSceneTransitionAnimation(SearchActivity.this,

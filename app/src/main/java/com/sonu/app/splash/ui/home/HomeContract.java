@@ -11,6 +11,7 @@ public interface HomeContract {
 
     interface View extends BaseView {
         void showToast(String message);
+        void onDownloadStarted(long downloadReference);
     }
 
     interface Presenter extends BasePresenter<View> {

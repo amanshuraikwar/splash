@@ -32,8 +32,8 @@ public class PermissionsHelper {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
+                // Show an explanation to the User *asynchronously* -- don't block
+                // this thread waiting for the User's response! After the User
                 // sees the explanation, try again to request the permission.
                 MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
                 messageDialogConfig

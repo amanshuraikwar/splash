@@ -1,10 +1,8 @@
 package com.sonu.app.splash.ui.user;
 
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.photo.Photo;
-import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 /**
  * Created by amanshuraikwar on 20/12/17.
@@ -12,14 +10,14 @@ import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 public class UserHorizontalListItem extends ListItem<UserOnClickListener> {
 
-    private UserDescription userDescription;
+    private User user;
 
-    public UserHorizontalListItem(UserDescription userDescription) {
-        this.userDescription = userDescription;
+    public UserHorizontalListItem(User user) {
+        this.user = user;
     }
 
-    public UserDescription getUserDescription() {
-        return userDescription;
+    public User getUser() {
+        return user;
     }
 
     @Override

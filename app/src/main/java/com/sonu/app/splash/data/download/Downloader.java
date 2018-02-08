@@ -1,46 +1,14 @@
 package com.sonu.app.splash.data.download;
 
-import android.app.DownloadManager;
-import android.content.Context;
-import android.net.Uri;
-import android.os.Environment;
-import android.util.LongSparseArray;
-
-import com.sonu.app.splash.di.ApplicationContext;
-
-import javax.inject.Inject;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.model.unsplash.Photo;
 
 /**
- * Created by amanshuraikwar on 28/01/18.
+ * Created by amanshuraikwar on 07/02/18.
  */
 
-public class Downloader {
+public interface Downloader {
 
-    private DownloadManager downloadManager;
-    LongSparseArray<PhotoDownload> queuedDownloads;
-
-    @Inject
-    public Downloader(@ApplicationContext Context applicationContext) {
-
-        downloadManager =
-                (DownloadManager) applicationContext.getSystemService(Context.DOWNLOAD_SERVICE);
-
-        queuedDownloads = new LongSparseArray<>();
-    }
-
-    public void downloadPhoto(PhotoDownload photoDownload) {
-
-        DownloadManager.Request request =
-                new DownloadManager.Request(Uri.parse(photoDownload.getDownloadUrl()));
-
-        request.setTitle("Downloading photo");
-        request.setDescription(photoDownload.getDownloadedFileName());
-
-        request.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS,
-                photoDownload.getDownloadedFileName());
-
-        long downloadReference = downloadManager.enqueue(request);
-        queuedDownloads.append(downloadReference, photoDownload);
-    }
+    long downloadPhoto(Photo photo);
+    PhotoDownload.Status checkDownloadStatus(long downloadReference);
 }

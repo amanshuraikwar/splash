@@ -3,10 +3,19 @@ package com.sonu.app.splash.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.sonu.app.splash.ui.collection.Collection;
-import com.sonu.app.splash.ui.photo.Photo;
-import com.sonu.app.splash.ui.photodescription.PhotoDescription;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
+import com.sonu.app.splash.model.unsplash.Badge;
+import com.sonu.app.splash.model.unsplash.Collection;
+import com.sonu.app.splash.model.unsplash.CollectionLinks;
+import com.sonu.app.splash.model.unsplash.CollectionPreviewPhoto;
+import com.sonu.app.splash.model.unsplash.Exif;
+import com.sonu.app.splash.model.unsplash.Location;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.model.unsplash.PhotoLinks;
+import com.sonu.app.splash.model.unsplash.PhotoUrls;
+import com.sonu.app.splash.model.unsplash.ProfileImage;
+import com.sonu.app.splash.model.unsplash.User;
+import com.sonu.app.splash.model.unsplash.UserLinks;
+import com.sonu.app.splash.model.unsplash.UserTags;
 
 /**
  * Created by amanshuraikwar on 12/01/18.
@@ -14,422 +23,310 @@ import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 public class UnsplashJsonUtils {
 
-    public static Photo getPhotoObj(JsonElement element) {
+    public static Photo buildPhotoObj(JsonObject jsonObject) {
 
         Photo.Builder builder =
-                new Photo.Builder(element.getAsJsonObject().get("id").getAsString());
+                new Photo.Builder(jsonObject.get("id").getAsString());
 
-        builder.createdAt(element.getAsJsonObject().get("created_at").getAsString());
-        builder.updatedAt(element.getAsJsonObject().get("updated_at").getAsString());
+        builder.createdAt(jsonObject.get("created_at").getAsString());
+        builder.updatedAt(jsonObject.get("updated_at").getAsString());
 
-        builder.width(element.getAsJsonObject().get("width").getAsInt());
-        builder.height(element.getAsJsonObject().get("height").getAsInt());
+        builder.width(jsonObject.get("width").getAsInt());
+        builder.height(jsonObject.get("height").getAsInt());
 
-        builder.color(element.getAsJsonObject().get("color").getAsString());
-        builder.likes(element.getAsJsonObject().get("likes").getAsInt());
+        builder.color(jsonObject.get("color").getAsString());
 
         try {
-            builder.description(element.getAsJsonObject().get("description").getAsString());
+            builder.description(jsonObject.get("description").getAsString());
         } catch (Exception e) {
             builder.description("- photo on Unsplash");
         }
 
-        builder.artistId(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("id").getAsString()
-        );
+        builder.urls(buildPhotoUrlsObj(jsonObject.get("urls").getAsJsonObject()));
 
-        builder.artistName(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("name").getAsString()
-        );
+        builder.links(buildPhotoLinks(jsonObject.get("links").getAsJsonObject()));
 
-        builder.artistUsername(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("username").getAsString()
-        );
+        builder.likes(jsonObject.get("likes").getAsInt());
 
-        builder.artistProfileImageUrl(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject()
-                        .get("profile_image")
-                        .getAsJsonObject()
-                        .get("large").getAsString()
-        );
+        builder.user(buildUserObj(jsonObject.get("user").getAsJsonObject()));
 
-        builder.urlRaw(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("raw").getAsString());
+        try {
+            builder.location(buildLocationObj(jsonObject.get("location").getAsJsonObject()));
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.urlFull(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("full").getAsString());
+        try {
+            builder.exif(buildExifObj(jsonObject.get("exif").getAsJsonObject()));
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.urlRegular(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("regular").getAsString());
+        try {
+            builder.views(jsonObject.get("views").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.urlSmall(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("small").getAsString());
-
-        builder.urlThumb(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("thumb").getAsString());
-
-        builder.urlThumb(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject()
-                        .get("thumb")
-                        .getAsString());
-
-        builder.linkSelf(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("self").getAsString());
-
-        builder.linkHtml(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("html").getAsString());
-
-        builder.linkDownload(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("download").getAsString());
-
-        builder.linkDownloadLocation(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("download_location").getAsString());
+        try {
+            builder.downloads(jsonObject.get("downloads").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         return builder.build();
     }
 
+    private static PhotoUrls buildPhotoUrlsObj(JsonObject jsonObject) {
 
+        PhotoUrls.Builder builder = new PhotoUrls.Builder();
 
-    public static PhotoDescription getPhotoDescriptionObj(JsonObject element) {
+        builder.raw(jsonObject.get("raw").getAsString());
 
-        PhotoDescription.Builder builder =
-                new PhotoDescription.Builder(element.getAsJsonObject().get("id").getAsString());
+        builder.full(jsonObject.get("full").getAsString());
 
-        builder.createdAt(element.getAsJsonObject().get("created_at").getAsString());
-        builder.updatedAt(element.getAsJsonObject().get("updated_at").getAsString());
+        builder.regular(jsonObject.get("regular").getAsString());
 
-        builder.width(element.getAsJsonObject().get("width").getAsInt());
-        builder.height(element.getAsJsonObject().get("height").getAsInt());
+        builder.small(jsonObject.get("small").getAsString());
 
-        builder.color(element.getAsJsonObject().get("color").getAsString());
-        builder.likes(element.getAsJsonObject().get("likes").getAsInt());
-
-        builder.views(element.getAsJsonObject().get("views").getAsInt());
-        builder.downloads(element.getAsJsonObject().get("downloads").getAsInt());
-
-        try {
-            builder.description(element.getAsJsonObject().get("description").getAsString());
-        } catch (Exception e) {
-            builder.description("- photo on Unsplash");
-        }
-
-        builder.artistId(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("id").getAsString()
-        );
-
-        builder.artistName(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("name").getAsString()
-        );
-
-        builder.artistProfileImageUrl(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject()
-                        .get("profile_image")
-                        .getAsJsonObject()
-                        .get("large").getAsString()
-        );
-
-        builder.artistUsername(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("username").getAsString()
-        );
-
-        builder.urlRaw(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("raw").getAsString());
-
-        builder.urlFull(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("full").getAsString());
-
-        builder.urlRegular(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("regular").getAsString());
-
-        builder.urlSmall(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("small").getAsString());
-
-        builder.urlThumb(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject().get("thumb").getAsString());
-
-        builder.urlThumb(
-                element
-                        .getAsJsonObject()
-                        .get("urls")
-                        .getAsJsonObject()
-                        .get("thumb")
-                        .getAsString());
-
-        builder.linkSelf(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("self").getAsString());
-
-        builder.linkHtml(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("html").getAsString());
-
-        builder.linkDownload(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("download").getAsString());
-
-        builder.linkDownloadLocation(
-                element
-                        .getAsJsonObject()
-                        .get("links")
-                        .getAsJsonObject().get("download_location").getAsString());
-
-        try {
-
-            builder.locationTitle(
-                    element
-                            .get("location")
-                            .getAsJsonObject().get("title").getAsString());
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        try {
-            builder.locationLat(
-                    element
-                            .get("location")
-                            .getAsJsonObject()
-                            .get("position")
-                            .getAsJsonObject()
-                            .get("latitude")
-                            .getAsDouble());
-
-            builder.locationLon(
-                    element
-                            .get("location")
-                            .getAsJsonObject()
-                            .get("position")
-                            .getAsJsonObject()
-                            .get("longitude")
-                            .getAsDouble());
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        try {
-            builder.exifMake(
-                    element
-                            .getAsJsonObject()
-                            .get("exif")
-                            .getAsJsonObject().get("make").getAsString());
-
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        try {
-
-            builder.exifModel(
-                    element
-                            .getAsJsonObject()
-                            .get("exif")
-                            .getAsJsonObject().get("model").getAsString());
-
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        try {
-
-            builder.exifExposureTime(
-                    element
-                            .getAsJsonObject()
-                            .get("exif")
-                            .getAsJsonObject().get("exposure_time").getAsString());
-
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        try {
-
-            builder.exifAperture(
-                    element
-                            .getAsJsonObject()
-                            .get("exif")
-                            .getAsJsonObject().get("aperture").getAsString());
-
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        try {
-
-            builder.exifFocalLength(
-                    element
-                            .getAsJsonObject()
-                            .get("exif")
-                            .getAsJsonObject().get("focal_length").getAsString());
-
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        try {
-
-            builder.exifIso(
-                    element
-                            .getAsJsonObject()
-                            .get("exif")
-                            .getAsJsonObject().get("iso").getAsInt());
-
-        } catch (Exception e) {
-            // do nothing
-        }
-
+        builder.thumb(jsonObject.get("thumb").getAsString());
 
         return builder.build();
     }
 
-    public static UserDescription getUserDescriptionObj(JsonObject element) {
+    private static PhotoLinks buildPhotoLinks(JsonObject jsonObject) {
 
-        UserDescription.Builder builder =
-                new UserDescription.Builder(element.getAsJsonObject().get("id").getAsString());
+        PhotoLinks.Builder builder = new PhotoLinks.Builder();
 
-        builder.updatedAt(element.getAsJsonObject().get("updated_at").getAsString());
+        builder.self(jsonObject.get("self").getAsString());
 
-        builder.username(element.getAsJsonObject().get("username").getAsString());
+        builder.html(jsonObject.get("html").getAsString());
 
-        builder.name(element.getAsJsonObject().get("name").getAsString());
+        builder.download(jsonObject.get("download").getAsString());
+
+        builder.downloadLocation(jsonObject.get("download_location").getAsString());
+
+        return builder.build();
+    }
+
+    private static Location buildLocationObj(JsonObject jsonObject) {
+
+        Location.Builder builder = new Location.Builder();
 
         try {
-            builder.portfolioUrl(element.getAsJsonObject().get("portfolio_url").getAsString());
+            builder.title(jsonObject.get("title").getAsString());
         } catch (Exception e) {
             // do nothing
         }
 
         try {
-            builder.bio(element.getAsJsonObject().get("bio").getAsString());
+            builder.name(jsonObject.get("name").getAsString());
         } catch (Exception e) {
             // do nothing
         }
 
         try {
-            builder.location(element.getAsJsonObject().get("location").getAsString());
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        builder.totalLikes(element.getAsJsonObject().get("total_likes").getAsInt());
-
-        builder.totalPhotos(element.getAsJsonObject().get("total_photos").getAsInt());
-
-        builder.totalCollections(element.getAsJsonObject().get("total_collections").getAsInt());
-
-        try {
-            builder.followersCount(element.getAsJsonObject().get("followers_count").getAsInt());
+            builder.city(jsonObject.get("city").getAsString());
         } catch (Exception e) {
             // do nothing
         }
 
         try {
-            builder.downloads(element.getAsJsonObject().get("downloads").getAsInt());
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        builder.profileImageUrl(
-                element.getAsJsonObject()
-                        .get("profile_image")
-                        .getAsJsonObject().get("large").getAsString());
-
-        try {
-            builder.badgeTitle(
-                    element.getAsJsonObject()
-                            .get("badge")
-                            .getAsJsonObject().get("title").getAsString());
+            builder.country(jsonObject.get("country").getAsString());
         } catch (Exception e) {
             // do nothing
         }
 
         try {
-            builder.badgeLink(
-                    element.getAsJsonObject()
-                            .get("badge")
-                            .getAsJsonObject().get("link").getAsString());
+            builder.lat(jsonObject.get("position").getAsJsonObject().get("latitude").getAsDouble());
         } catch (Exception e) {
             // do nothing
         }
 
+        try {
+            builder.lon(jsonObject.get("position").getAsJsonObject().get("longitude").getAsDouble());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        return builder.build();
+    }
+
+    private static Exif buildExifObj(JsonObject jsonObject) {
+
+        Exif.Builder builder = new Exif.Builder();
+
+        try {
+            builder.make(jsonObject.get("make").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.model(jsonObject.get("model").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.exposureTime(jsonObject.get("exposure_time").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.aperture(jsonObject.get("aperture").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.focalLength(jsonObject.get("focal_length").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.iso(jsonObject.get("iso").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        return builder.build();
+    }
+
+    public static User buildUserObj(JsonObject jsonObject) {
+
+        User.Builder builder =
+                new User.Builder(jsonObject.get("id").getAsString());
+
+        builder.updatedAt(jsonObject.get("updated_at").getAsString());
+
+        try {
+            builder.numericId(jsonObject.get("numeric_id").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        builder.username(jsonObject.get("username").getAsString());
+
+        builder.name(jsonObject.get("name").getAsString());
 
         try {
 
-            JsonArray jsonTags = element.getAsJsonObject()
-                    .get("tags")
+            builder.firstName(jsonObject.get("first_name").getAsString());
+            builder.lastName(jsonObject.get("last_name").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.twitterUsername(jsonObject.get("twitter_username").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.portfolioUrl(jsonObject.get("portfolio_url").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.bio(jsonObject.get("bio").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.location(jsonObject.get("location").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        builder.totalLikes(jsonObject.get("total_likes").getAsInt());
+
+        builder.totalPhotos(jsonObject.get("total_photos").getAsInt());
+
+        builder.totalCollections(jsonObject.get("total_collections").getAsInt());
+
+        try {
+            builder.followingCount(jsonObject.get("following_count").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.followersCount(jsonObject.get("followers_count").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.downloads(jsonObject.get("downloads").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        builder.profileImage(buildProfileImageObj(jsonObject.get("profile_image").getAsJsonObject()));
+
+        try {
+            builder.badge(buildBadgeObj(jsonObject.get("badge").getAsJsonObject()));
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+
+            builder.tags(buildUserTags(jsonObject.get("tags").getAsJsonObject()));
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        builder.userLinks(buildUserLinks(jsonObject.get("links").getAsJsonObject()));
+
+        return builder.build();
+    }
+
+    private static ProfileImage buildProfileImageObj(JsonObject jsonObject) {
+
+        ProfileImage.Builder builder = new ProfileImage.Builder();
+
+        builder.small(jsonObject.get("small").getAsString());
+
+        builder.meduim(jsonObject.get("medium").getAsString());
+
+        builder.large(jsonObject.get("large").getAsString());
+
+        return builder.build();
+    }
+
+    private static Badge buildBadgeObj(JsonObject jsonObject) {
+
+        Badge.Builder builder = new Badge.Builder(jsonObject.get("title").getAsString());
+
+        builder.primary(jsonObject.get("primary").getAsBoolean());
+
+        try {
+            builder.slug(jsonObject.get("slug").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        builder.link(jsonObject.get("link").getAsString());
+
+        return builder.build();
+    }
+
+    private static UserTags buildUserTags(JsonObject jsonObject) {
+
+        UserTags.Builder builder = new UserTags.Builder();
+
+        JsonArray jsonTags;
+
+        try {
+
+            jsonTags = jsonObject
                     .getAsJsonObject()
                     .get("custom")
                     .getAsJsonArray();
@@ -442,7 +339,27 @@ public class UnsplashJsonUtils {
                 index++;
             }
 
-            builder.tags(tags);
+            builder.custom(tags);
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+
+            jsonTags = jsonObject
+                    .getAsJsonObject()
+                    .get("aggregated")
+                    .getAsJsonArray();
+
+            String tags[] = new String[jsonTags.size()];
+
+            int index = 0;
+            for (JsonElement tag : jsonTags) {
+                tags[index] = tag.getAsJsonObject().get("title").getAsString();
+                index++;
+            }
+
+            builder.aggregated(tags);
         } catch (Exception e) {
             // do nothing
         }
@@ -450,107 +367,51 @@ public class UnsplashJsonUtils {
         return builder.build();
     }
 
-    public static Collection getCollectionObj(JsonElement element) {
+    private static UserLinks buildUserLinks(JsonObject jsonObject) {
+
+        UserLinks.Builder builder = new UserLinks.Builder();
+
+        builder.self(jsonObject.get("self").getAsString());
+
+        builder.html(jsonObject.get("html").getAsString());
+
+        builder.photos(jsonObject.get("photos").getAsString());
+
+        builder.likes(jsonObject.get("likes").getAsString());
+
+        builder.portfolio(jsonObject.get("portfolio").getAsString());
+
+        builder.following(jsonObject.get("following").getAsString());
+
+        builder.followers(jsonObject.get("followers").getAsString());
+
+        return builder.build();
+    }
+
+    public static Collection buildCollectionObj(JsonObject jsonObject) {
 
 
         Collection.Builder builder =
-                new Collection.Builder(element.getAsJsonObject().get("id").getAsInt());
+                new Collection.Builder(jsonObject.get("id").getAsInt());
 
-        builder.title(element.getAsJsonObject().get("title").getAsString());
+        builder.title(jsonObject.get("title").getAsString());
 
-        builder.publishedAt(element.getAsJsonObject().get("published_at").getAsString());
-        builder.updatedAt(element.getAsJsonObject().get("updated_at").getAsString());
+        builder.publishedAt(jsonObject.get("published_at").getAsString());
+        builder.updatedAt(jsonObject.get("updated_at").getAsString());
 
-        try {
-            builder.description(element.getAsJsonObject().get("description").getAsString());
-        } catch (Exception e) {
-            builder.description("- collection on Unsplash");
-        }
+        builder.curated(jsonObject.get("curated").getAsBoolean());
 
-        builder.curated(element.getAsJsonObject().get("curated").getAsBoolean());
+        builder.featured(jsonObject.get("featured").getAsBoolean());
 
-        builder.shareKey(element.getAsJsonObject().get("share_key").getAsString());
+        builder.totalPhotos(jsonObject.get("total_photos").getAsInt());
 
-        builder.totalPhotos(element.getAsJsonObject().get("total_photos").getAsInt());
+        builder.privateC(jsonObject.get("private").getAsBoolean());
 
-        Photo coverPhoto = getPhotoObj(element.getAsJsonObject().get("cover_photo").getAsJsonObject());
-
-        builder.coverPhoto(coverPhoto);
-
-        builder.previewPhoto(coverPhoto);
+        builder.shareKey(jsonObject.get("share_key").getAsString());
 
         try {
 
-            JsonArray previewPhotos = element.getAsJsonObject()
-                    .get("preview_photos")
-                    .getAsJsonArray();
-
-            for (JsonElement previewPhoto : previewPhotos) {
-
-                Photo.Builder builder1 =
-                        new Photo.Builder(previewPhoto.getAsJsonObject().get("id").getAsString());
-                builder1.urlRaw(
-                        previewPhoto
-                                .getAsJsonObject()
-                                .get("urls").getAsJsonObject().get("raw").getAsString());
-                builder1.urlFull(
-                        previewPhoto
-                                .getAsJsonObject()
-                                .get("urls").getAsJsonObject().get("full").getAsString());
-                builder1.urlRegular(
-                        previewPhoto
-                                .getAsJsonObject()
-                                .get("urls").getAsJsonObject().get("regular").getAsString());
-                builder1.urlSmall(
-                        previewPhoto
-                                .getAsJsonObject()
-                                .get("urls").getAsJsonObject().get("small").getAsString());
-                builder1.urlThumb(
-                        previewPhoto
-                                .getAsJsonObject()
-                                .get("urls").getAsJsonObject().get("thumb").getAsString());
-                builder.previewPhoto(builder1.build());
-            }
-        } catch (Exception e) {
-            // do nothing
-        }
-
-        builder.artistId(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("id").getAsString()
-        );
-
-        builder.artistName(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("name").getAsString()
-        );
-
-        builder.artistUsername(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject().get("username").getAsString()
-        );
-
-        builder.artistProfileImageUrl(
-                element
-                        .getAsJsonObject()
-                        .get("user")
-                        .getAsJsonObject()
-                        .get("profile_image")
-                        .getAsJsonObject()
-                        .get("large").getAsString()
-        );
-
-        try {
-
-            JsonArray jsonTags = element.getAsJsonObject()
-                    .get("tags")
-                    .getAsJsonArray();
+            JsonArray jsonTags = jsonObject.get("tags").getAsJsonArray();
 
             String tags[] = new String[jsonTags.size()];
 
@@ -565,7 +426,58 @@ public class UnsplashJsonUtils {
             // do nothing
         }
 
+        builder.coverPhoto(buildPhotoObj(jsonObject.get("cover_photo").getAsJsonObject()));
+
+        try {
+
+            JsonArray jsonPreviewPhotos = jsonObject.get("preview_photos").getAsJsonArray();
+
+            CollectionPreviewPhoto[] previewPhotos =
+                    new CollectionPreviewPhoto[jsonPreviewPhotos.size()];
+
+            int index = 0;
+            for (JsonElement previewPhoto : jsonPreviewPhotos) {
+
+                previewPhotos[index] =
+                        buildCollectionPreviewPhotoObj(previewPhoto.getAsJsonObject());
+                index++;
+            }
+
+            builder.previewPhotos(previewPhotos);
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        builder.user(buildUserObj(jsonObject.get("user").getAsJsonObject()));
+
+        builder.collectionLinks(
+                buildCollectionLinksObj(jsonObject.get("links").getAsJsonObject()));
+
         return builder.build();
     }
 
+    private static CollectionPreviewPhoto buildCollectionPreviewPhotoObj(JsonObject jsonObject) {
+
+        CollectionPreviewPhoto.Builder builder =
+                new CollectionPreviewPhoto.Builder(jsonObject.get("id").getAsInt());
+
+        builder.photoUrls(buildPhotoUrlsObj(jsonObject.get("urls").getAsJsonObject()));
+
+        return builder.build();
+    }
+
+    private static CollectionLinks buildCollectionLinksObj(JsonObject jsonObject) {
+
+        CollectionLinks.Builder builder = new CollectionLinks.Builder();
+
+        builder.self(jsonObject.get("self").getAsString());
+
+        builder.html(jsonObject.get("html").getAsString());
+
+        builder.photos(jsonObject.get("photos").getAsString());
+
+        builder.related(jsonObject.get("related").getAsString());
+
+        return builder.build();
+    }
 }

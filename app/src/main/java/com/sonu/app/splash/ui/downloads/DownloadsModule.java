@@ -1,4 +1,4 @@
-package com.sonu.app.splash.ui.downloadinfo;
+package com.sonu.app.splash.ui.downloads;
 
 import com.sonu.app.splash.di.ActivityScoped;
 import com.sonu.app.splash.di.FragmentScoped;
@@ -12,13 +12,13 @@ import dagger.android.ContributesAndroidInjector;
  */
 
 @Module
-public abstract class DownloadInfoModule {
+public abstract class DownloadsModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract DownloadInfoFragment getDownloadInfoFragment();
+    abstract DownloadsFragment getDownloadsFragment();
 
     @ActivityScoped
     @Binds
-    abstract DownloadInfoContract.Presenter getDownloadInfoPresenter(DownloadInfoPresenter presenter);
+    abstract DownloadsContract.Presenter getDownloadsPresenter(DownloadsPresenter presenter);
 }

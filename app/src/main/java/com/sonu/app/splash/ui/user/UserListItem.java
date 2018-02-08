@@ -1,8 +1,8 @@
 package com.sonu.app.splash.ui.user;
 
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 /**
  * Created by amanshuraikwar on 20/12/17.
@@ -10,14 +10,14 @@ import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 public class UserListItem extends ListItem<UserOnClickListener> {
 
-    private UserDescription userDescription;
+    private User user;
 
-    public UserListItem(UserDescription userDescription) {
-        this.userDescription = userDescription;
+    public UserListItem(User user) {
+        this.user = user;
     }
 
-    public UserDescription getUserDescription() {
-        return userDescription;
+    public User getUser() {
+        return user;
     }
 
     @Override

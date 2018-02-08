@@ -96,13 +96,19 @@
             @android:style/TextAppearance.Material.Widget.ActionBar.Title</item>
         <item name="titleTextAppearance">
             @android:style/TextAppearance.Material.Widget.ActionBar.Title</item>
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@color/grey1</item>
     </style>
 
     <style name="Widget.Splash.Toolbar.SmallCapsTitle">
 
         <item name="android:titleTextAppearance">@style/TextAppearance.ToolbarTitleSmallCaps</item>
         <item name="titleTextAppearance">@style/TextAppearance.ToolbarTitleSmallCaps</item>
+    </style>
+
+    <style name="Widget.Splash.Toolbar.BlackTitle">
+
+        <item name="android:titleTextAppearance">@style/TextAppearance.ToolbarTitleBlack</item>
+        <item name="titleTextAppearance">@style/TextAppearance.ToolbarTitleBlack</item>
     </style>
 
     <style name="Widget.Splash.ImageView" parent="">
@@ -199,6 +205,22 @@
         <item name="android:queryBackground">@android:color/transparent</item>
     </style>
 
+    <style name="Widget.Splash.TabLayout"
+        parent="@style/Widget.Design.TabLayout">
+
+        <item name="tabBackground">@color/grey1</item>
+        <item name="android:background">@color/grey1</item>
+        <item name="tabGravity">center</item>
+        <item name="tabIndicatorColor">@color/darkGrey1</item>
+        <item name="tabTextAppearance">@style/TextAppearance.TabTextAppearance</item>
+    </style>
+
+    <style name="Widget.Splash.AppBarLayout"
+        parent="@style/Widget.Design.AppBarLayout">
+
+        <item name="android:background">@color/grey1</item>
+    </style>
+
     <!-- text appearance-->
     <style
         name="TextAppearance.Display4"
@@ -266,6 +288,16 @@
         <item name="android:textColor">@color/primaryText</item>
         <item name="android:fontFeatureSettings">smcp</item>
         <item name="android:letterSpacing">0.2</item>
+    </style>
+
+    <style name="TextAppearance.ToolbarTitleBlack"
+        parent="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
+
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style
@@ -501,6 +533,51 @@
 
     <style
         name="TextAppearance.CollectionTitle.AllCaps">
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style
+        name="TextAppearance.FileName"
+        parent="@style/TextAppearance.Headline">
+
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.FileSize"
+        parent="@style/TextAppearance.Body2">
+
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style
+        name="TextAppearance.TabTextAppearance"
+        parent="@style/TextAppearance.Design.Tab">
+
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextAppearance.DownloadStatus"
+        parent="@style/TextAppearance.Caption">
+
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.15</item>
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
+    <style name="TextAppearance.DownloadTimestamp"
+        parent="@style/TextAppearance.Caption">
+
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/disableHintText</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
         <item name="android:textAllCaps">true</item>
     </style>
 

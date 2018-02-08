@@ -2,7 +2,7 @@ package com.sonu.app.splash.ui.user;
 
 import android.view.View;
 
-import com.sonu.app.splash.ui.userdescription.UserDescription;
+import com.sonu.app.splash.model.unsplash.User;
 
 /**
  * Created by amanshuraikwar on 02/02/18.
@@ -10,5 +10,5 @@ import com.sonu.app.splash.ui.userdescription.UserDescription;
 
 public interface UserOnClickListener {
 
-    void onClick(UserDescription userDescription, View transitionView);
+    void onClick(User userDescription, View transitionView);
 }

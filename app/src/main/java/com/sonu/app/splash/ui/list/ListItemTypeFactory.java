@@ -6,8 +6,8 @@ import com.sonu.app.splash.ui.collection.CollectionHorizontalListItem;
 import com.sonu.app.splash.ui.collection.CollectionHorizontalViewHolder;
 import com.sonu.app.splash.ui.collection.CollectionListItem;
 import com.sonu.app.splash.ui.collection.CollectionViewHolder;
-import com.sonu.app.splash.ui.filter.FilterListItem;
-import com.sonu.app.splash.ui.filter.FilterViewHolder;
+import com.sonu.app.splash.ui.download.DownloadListItem;
+import com.sonu.app.splash.ui.download.DownloadViewHolder;
 import com.sonu.app.splash.ui.header.HeaderHorizontalListItem;
 import com.sonu.app.splash.ui.header.HeaderHorizontalViewHolder;
 import com.sonu.app.splash.ui.loading.LoadingListItem;
@@ -35,10 +35,6 @@ public class ListItemTypeFactory {
         return 1;
     }
 
-    public int type(FilterListItem item) {
-        return 2;
-    }
-
     public int type(HeaderHorizontalListItem item) {
         return 3;
     }
@@ -63,14 +59,16 @@ public class ListItemTypeFactory {
         return 8;
     }
 
+    public int type(DownloadListItem item) {
+        return 9;
+    }
+
     public int getLayout(int viewType) {
         switch (viewType) {
             case 0:
                 return PhotoViewHolder.LAYOUT;
             case 1:
                 return LoadingViewHolder.LAYOUT;
-            case 2:
-                return FilterViewHolder.LAYOUT;
             case 3:
                 return HeaderHorizontalViewHolder.LAYOUT;
             case 4:
@@ -83,6 +81,8 @@ public class ListItemTypeFactory {
                 return UserHorizontalViewHolder.LAYOUT;
             case 8:
                 return UserViewHolder.LAYOUT;
+            case 9:
+                return DownloadViewHolder.LAYOUT;
             default:
                 return 0;
         }
@@ -98,9 +98,6 @@ public class ListItemTypeFactory {
                 break;
             case 1:
                 viewHolder = new LoadingViewHolder(parent);
-                break;
-            case 2:
-                viewHolder = new FilterViewHolder(parent);
                 break;
             case 3:
                 viewHolder = new HeaderHorizontalViewHolder(parent);
@@ -119,6 +116,9 @@ public class ListItemTypeFactory {
                 break;
             case 8:
                 viewHolder = new UserViewHolder(parent);
+                break;
+            case 9:
+                viewHolder = new DownloadViewHolder(parent);
                 break;
         }
 

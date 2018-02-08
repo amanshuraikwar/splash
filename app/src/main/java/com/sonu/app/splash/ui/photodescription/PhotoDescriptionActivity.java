@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.Uri;
@@ -16,11 +17,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
-import android.util.Log;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
@@ -37,13 +34,11 @@ import com.bumptech.glide.request.target.Target;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
-import com.sonu.app.splash.ui.photo.Photo;
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.photofullscreen.PhotoFullscreenActivity;
-import com.sonu.app.splash.ui.photoinfodialog.PhotoInfoDialog;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.ColorHelper;
@@ -62,7 +57,7 @@ public class PhotoDescriptionActivity
         extends BaseActivity<PhotoDescriptionContract.Presenter>
         implements PhotoDescriptionContract.View {
 
-    public static final String KEY_PHOTO = "photo";
+    public static final String KEY_PHOTO = "curPhoto";
 
     @BindView(R.id.eddfl)
     ElasticDragDismissFrameLayout eddfl;
@@ -144,8 +139,6 @@ public class PhotoDescriptionActivity
     FloatingActionButton downloadFab;
 
     private int loadCount;
-    private PhotoDescription photoDescription;
-    private Photo photo;
 
     private MessageDialog messageDialog;
     private boolean dataLoaded;
@@ -180,181 +173,27 @@ public class PhotoDescriptionActivity
 
         messageDialog = new MessageDialog(this);
 
-        this.photo = getIntent().getParcelableExtra(KEY_PHOTO);
-
-        int color = Color.parseColor(photo.getColor());
-
-        getWindow().setStatusBarColor(color);
-
-        downloadFab.setBackgroundTintList(ColorStateList.valueOf(color));
-
-        if (!ColorHelper.isDark(color)) {
-
-                getWindow()
-                    .getDecorView()
-                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-
-                downloadFab.setImageTintList(
-                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.activeIcon)));
-        }
-
-        picParentFl.setBackgroundColor(color);
+        updateUi(getCurPhoto());
 
         downloadFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getPresenter()
-                        .downloadPhoto(
-                                new PhotoDownload(
-                                        (Photo) getIntent().getParcelableExtra(KEY_PHOTO)));
+                        .downloadPhoto(getCurPhoto());
             }
         });
-
-        if (photo.getDescription().equals("")) {
-            photoDescriptionTv.setVisibility(View.GONE);
-        } else {
-            photoDescriptionTv.setText(photo.getDescription().trim());
-        }
-
-        photoLikesCountBtn.setText(
-                String.format(
-                        "%s likes",
-                        String.valueOf(NumberUtils.format(photo.getLikes()))));
-
-        artistNameTv.setText(photo.getArtistName().toLowerCase());
-
-        artistUsernameTv.setText(
-                String.format("@%s", photo.getArtistUsername()));
-
-        Glide.with(this)
-                .load(photo.getArtistProfileImageUrl())
-                .apply(new RequestOptions().centerCrop().circleCrop())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(artistPicIv);
 
         artistPicCv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startUserDescriptionActivity(
-                        (Photo) getIntent().getParcelableExtra(PhotoDescriptionActivity.KEY_PHOTO));
+                startUserDescriptionActivity(getCurPhoto());
             }
         });
-
-        photoIv.setAspectRatio(((float)photo.getHeight())
-                / ((float)photo.getWidth()));
-
-        Glide.with(this)
-                .asBitmap()
-                .load(photo.getUrlSmall())
-                .apply(new RequestOptions().centerCrop())
-                .listener(new RequestListener<Bitmap>() {
-
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e,
-                                                Object model,
-                                                Target<Bitmap> target,
-                                                boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(final Bitmap resource,
-                                                   Object model,
-                                                   Target<Bitmap> target,
-                                                   DataSource dataSource, boolean isFirstResource) {
-                        hideLoading();
-
-                        topGradientView.setVisibility(View.GONE);
-
-                        final int twentyFourDip =
-                                (int) TypedValue.applyDimension(
-                                        TypedValue.COMPLEX_UNIT_DIP,
-                                        24,
-                                        getResources().getDisplayMetrics());
-
-                        final int sixteenDip =
-                                (int) TypedValue.applyDimension(
-                                        TypedValue.COMPLEX_UNIT_DIP,
-                                        16,
-                                        getResources().getDisplayMetrics());
-
-                        Palette.from(resource)
-                                .maximumColorCount(3)
-                                .clearFilters()
-                                .setRegion(
-                                        sixteenDip,
-                                        sixteenDip,
-                                        sixteenDip + twentyFourDip,
-                                        sixteenDip + twentyFourDip)
-                                .generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(@NonNull Palette palette) {
-
-                                        backIb.setImageTintList(
-                                                ColorStateList.valueOf(
-                                                        getDrawableColor(palette, resource)
-                                                ));
-                                    }
-                                });
-
-                        Palette.from(resource)
-                                .maximumColorCount(3)
-                                .clearFilters()
-                                .setRegion(
-                                        picParentFl.getWidth() - 1 - sixteenDip - twentyFourDip,
-                                        sixteenDip,
-                                        picParentFl.getWidth() - 1 - sixteenDip,
-                                        sixteenDip + twentyFourDip)
-                                .generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(@NonNull Palette palette) {
-
-                                        ColorStateList drawableColorStateList =
-                                                ColorStateList.valueOf(
-                                                        getDrawableColor(palette, resource));
-
-                                        mainProgressBar.setIndeterminateTintList(
-                                                drawableColorStateList);
-                                    }
-                                });
-
-                        Palette.from(resource)
-                                .maximumColorCount(3)
-                                .clearFilters()
-                                .setRegion(
-                                        picParentFl.getWidth() - 1 - sixteenDip - twentyFourDip,
-                                        picParentFl.getHeight() - sixteenDip - twentyFourDip,
-                                        picParentFl.getWidth() - 1 - sixteenDip,
-                                        picParentFl.getHeight() - sixteenDip)
-                                .generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(@NonNull Palette palette) {
-
-                                        ColorStateList drawableColorStateList =
-                                                ColorStateList.valueOf(
-                                                        getDrawableColor(palette, resource));
-
-                                        fullScreenIb.setImageTintList(
-                                                drawableColorStateList);
-                                    }
-                                });
-
-                        return false;
-                    }
-                })
-                .into(photoIv);
 
         backIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finishAfterTransition();
-            }
-        });
-
-        photoInfoIb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new PhotoInfoDialog(PhotoDescriptionActivity.this, photoDescription).show();
             }
         });
 
@@ -376,11 +215,162 @@ public class PhotoDescriptionActivity
         fullScreenIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startPhotoFullscreenActivity();
+                startPhotoFullscreenActivity(getCurPhoto());
             }
         });
+    }
 
+    private Photo getCurPhoto() {
+        return getIntent().getParcelableExtra(KEY_PHOTO);
+    }
 
+    private void updateUi(final Photo photo) {
+
+        int color = Color.parseColor(photo.getColor());
+
+        getWindow().setStatusBarColor(color);
+
+        downloadFab.setBackgroundTintList(ColorStateList.valueOf(color));
+
+        if (!ColorHelper.isDark(color)) {
+
+            getWindow()
+                    .getDecorView()
+                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+            downloadFab.setImageTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.activeIcon)));
+        }
+
+        picParentFl.setBackgroundColor(color);
+
+        if (photo.getDescription() == null) {
+            photoDescriptionTv.setVisibility(View.GONE);
+        } else {
+            photoDescriptionTv.setText(photo.getDescription().trim());
+        }
+
+        photoLikesCountBtn.setText(
+                String.format(
+                        "%s likes",
+                        String.valueOf(NumberUtils.format(photo.getLikes()))));
+
+        artistNameTv.setText(photo.getUser().getName().toLowerCase());
+
+        artistUsernameTv.setText(
+                String.format("@%s", photo.getUser().getUsername()));
+
+        Glide.with(this)
+                .load(photo.getUser().getProfileImage().getLarge())
+                .apply(new RequestOptions().centerCrop().circleCrop())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(artistPicIv);
+
+        photoIv.setAspectRatio(((float) photo.getHeight())
+                / ((float) photo.getWidth()));
+
+        Glide.with(this)
+                .asBitmap()
+                .load(photo.getPhotoUrls().getSmall())
+                .apply(new RequestOptions().centerCrop())
+                .listener(new RequestListener<Bitmap>() {
+
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e,
+                                                Object model,
+                                                Target<Bitmap> target,
+                                                boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource,
+                                                   Object model,
+                                                   Target<Bitmap> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+                        hideLoading();
+                        topGradientView.setVisibility(View.GONE);
+                        updateIconColors(resource);
+                        return false;
+                    }
+                })
+                .into(photoIv);
+    }
+
+    private void updateIconColors(final Bitmap resource) {
+
+        final int twentyFourDip =
+                (int) TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        24,
+                        getResources().getDisplayMetrics());
+
+        final int sixteenDip =
+                (int) TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        16,
+                        getResources().getDisplayMetrics());
+
+        Palette.from(resource)
+                .maximumColorCount(3)
+                .clearFilters()
+                .setRegion(
+                        sixteenDip,
+                        sixteenDip,
+                        sixteenDip + twentyFourDip,
+                        sixteenDip + twentyFourDip)
+                .generate(new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(@NonNull Palette palette) {
+
+                        backIb.setImageTintList(
+                                ColorStateList.valueOf(
+                                        getDrawableColor(palette, resource)
+                                ));
+                    }
+                });
+
+        Palette.from(resource)
+                .maximumColorCount(3)
+                .clearFilters()
+                .setRegion(
+                        picParentFl.getWidth() - 1 - sixteenDip - twentyFourDip,
+                        sixteenDip,
+                        picParentFl.getWidth() - 1 - sixteenDip,
+                        sixteenDip + twentyFourDip)
+                .generate(new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(@NonNull Palette palette) {
+
+                        ColorStateList drawableColorStateList =
+                                ColorStateList.valueOf(
+                                        getDrawableColor(palette, resource));
+
+                        mainProgressBar.setIndeterminateTintList(
+                                drawableColorStateList);
+                    }
+                });
+
+        Palette.from(resource)
+                .maximumColorCount(3)
+                .clearFilters()
+                .setRegion(
+                        picParentFl.getWidth() - 1 - sixteenDip - twentyFourDip,
+                        picParentFl.getHeight() - sixteenDip - twentyFourDip,
+                        picParentFl.getWidth() - 1 - sixteenDip,
+                        picParentFl.getHeight() - sixteenDip)
+                .generate(new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(@NonNull Palette palette) {
+
+                        ColorStateList drawableColorStateList =
+                                ColorStateList.valueOf(
+                                        getDrawableColor(palette, resource));
+
+                        fullScreenIb.setImageTintList(
+                                drawableColorStateList);
+                    }
+                });
     }
 
     @Override
@@ -447,33 +437,33 @@ public class PhotoDescriptionActivity
     }
 
     @Override
-    public void displayPhotoDescription(final PhotoDescription photoDescription) {
-
-        this.photoDescription = photoDescription;
+    public void displayPhotoDescription(final Photo photo) {
 
         photoViewsCountBtn
                 .setText(
                         String.format("%s views",
                                 String.valueOf(
-                                        NumberUtils.format(photoDescription.getViews()))));
+                                        NumberUtils.format(photo.getViews()))));
 
         photoDownloadsCountBtn
                 .setText(
                         String.format("%s downloads",
                                 String.valueOf(
-                                        NumberUtils.format(photoDescription.getDownloads()))));
+                                        NumberUtils.format(photo.getDownloads()))));
 
-        if (!photoDescription.getLocationTitle().equals("")) {
-            photoLocationTv.setText(photoDescription.getLocationTitle());
+        if (photo.getLocation().getTitle() != null) {
+
+            photoLocationTv.setText(photo.getLocation().getTitle());
+
             photoLocationFl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Uri location =
                             Uri.parse(
                                     "geo:"
-                                            + photoDescription.getLocationLat()
+                                            + photo.getLocation().getLat()
                                             + ","
-                                            + photoDescription.getLocationLon()
+                                            + photo.getLocation().getLon()
                                             + "?z=14");
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
                     startActivity(mapIntent);
@@ -482,31 +472,33 @@ public class PhotoDescriptionActivity
         }
 
 
-        if (!photoDescription.getExifMake().equals("")) {
-            exifMakeBtn.setText(photoDescription.getExifMake());
+        if (photo.getExif().getMake()!=null) {
+            exifMakeBtn.setText(
+                    photo.getExif().getMake() != null ? photo.getExif().getMake() : "--");
         }
 
-        if (!photoDescription.getExifModel().equals("")) {
-            exifModelBtn.setText(photoDescription.getExifModel());
+        if (photo.getExif().getModel()!=null) {
+            exifModelBtn.setText(
+                    photo.getExif().getModel() != null ? photo.getExif().getModel() : "--");
         }
 
-        if (!photoDescription.getExifExposureTime().equals("")) {
-            exifExposureTimeBtn.setText(String.format("%ss", photoDescription.getExifExposureTime()));
+        if (photo.getExif().getExposureTime() != null) {
+            exifExposureTimeBtn.setText(String.format("%ss", photo.getExif().getExposureTime()));
         }
 
-        if (!photoDescription.getExifAperture().equals("")) {
-            exifApertureBtn.setText(String.format("f/%s", photoDescription.getExifAperture()));
+        if (photo.getExif().getAperture() != null) {
+            exifApertureBtn.setText(String.format("f/%s", photo.getExif().getAperture()));
         }
 
-        if (photoDescription.getExifIso() != 0) {
-            exifIsoBtn.setText(String.format("%d", photoDescription.getExifIso()));
+        if (photo.getExif().getIso() != 0) {
+            exifIsoBtn.setText(String.format("%d", photo.getExif().getIso()));
         }
 
-        if (!photoDescription.getExifFocalLength().equals("")) {
-            exifFocalLengthBtn.setText(String.format("%smm", photoDescription.getExifFocalLength()));
+        if (photo.getExif().getFocalLength() != null) {
+            exifFocalLengthBtn.setText(String.format("%smm", photo.getExif().getFocalLength()));
         }
 
-        photoResolutionBtn.setText(String.format("%d x %d", photoDescription.getWidth(), photoDescription.getHeight()));
+        photoResolutionBtn.setText(String.format("%d x %d", photo.getWidth(), photo.getHeight()));
 
         dataLoaded = true;
     }
@@ -552,7 +544,7 @@ public class PhotoDescriptionActivity
     public void startUserDescriptionActivity(Photo photo) {
 
         Intent i = new Intent(this, UserDescriptionActivity.class);
-        i.putExtra(UserDescriptionActivity.KEY_PHOTO, photo);
+        i.putExtra(UserDescriptionActivity.KEY_USER, photo.getUser());
 
         artistPicIv.setTransitionName(getCurPhotoId());
 
@@ -564,7 +556,7 @@ public class PhotoDescriptionActivity
         startActivity(i, options.toBundle());
     }
 
-    public void startPhotoFullscreenActivity() {
+    public void startPhotoFullscreenActivity(Photo photo) {
 
         Intent i = new Intent(this, PhotoFullscreenActivity.class);
         i.putExtra(PhotoFullscreenActivity.KEY_PHOTO, photo);

@@ -1,12 +1,8 @@
 package com.sonu.app.splash.ui.content;
 
-import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.data.cache.PhotosCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BaseView;
-import com.sonu.app.splash.ui.photo.Photo;
 
 /**
  * Created by amanshuraikwar on 19/12/17.

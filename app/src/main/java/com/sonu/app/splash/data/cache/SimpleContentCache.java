@@ -4,12 +4,12 @@ import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.sonu.app.splash.data.network.unsplashapi.RequestGenerator;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
-import com.sonu.app.splash.ui.photo.Photo;
 
 import java.io.IOException;
 import java.util.ArrayList;

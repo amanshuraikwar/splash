@@ -1,8 +1,8 @@
 package com.sonu.app.splash.ui.collectiondecription;
 
-import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
+import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BaseView;
 
@@ -22,6 +22,6 @@ public interface CollectionDescriptionContract {
 
     interface Presenter extends BasePresenter<View> {
 
-        void downloadImage(PhotoDownload photoDownload);
+        void downloadImage(Photo photo);
     }
 }

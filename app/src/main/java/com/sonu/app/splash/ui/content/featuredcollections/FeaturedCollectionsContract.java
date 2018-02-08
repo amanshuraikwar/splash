@@ -5,10 +5,8 @@ import android.app.Activity;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.data.download.PhotoDownload;
 import com.sonu.app.splash.ui.content.ContentContract;
 import com.sonu.app.splash.ui.content.ContentPresenter;
-import com.sonu.app.splash.ui.content.curatedphotos.CuratedPhotosContract;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;

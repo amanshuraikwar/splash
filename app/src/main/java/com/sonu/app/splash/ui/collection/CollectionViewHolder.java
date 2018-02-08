@@ -13,7 +13,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.list.ViewHolder;
-import com.sonu.app.splash.ui.photo.Photo;
 import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.DrawableUtils;
 import com.sonu.app.splash.util.LogUtils;
@@ -65,7 +64,7 @@ public class CollectionViewHolder extends ViewHolder<CollectionListItem> {
                 / ((float)listItem.getCollection().getCoverPhoto().getWidth()));
 
         Glide.with(parentActivity)
-                .load(listItem.getCollection().getCoverPhoto().getUrlRegular())
+                .load(listItem.getCollection().getCoverPhoto().getPhotoUrls().getRegular())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 
@@ -94,10 +93,10 @@ public class CollectionViewHolder extends ViewHolder<CollectionListItem> {
                         "%s photos",
                         String.valueOf(NumberUtils.format(listItem.getCollection().getTotalPhotos()))));
 
-        artistNameTv.setText(listItem.getCollection().getArtistName().toLowerCase());
+        artistNameTv.setText(listItem.getCollection().getUser().getName().toLowerCase());
 
         Glide.with(parentActivity)
-                .load(listItem.getCollection().getArtistProfileImageUrl())
+                .load(listItem.getCollection().getUser().getProfileImage().getLarge())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .apply(new RequestOptions().circleCrop())
                 .into(artistProfileImageIv);

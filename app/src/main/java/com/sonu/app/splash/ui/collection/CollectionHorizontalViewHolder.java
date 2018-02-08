@@ -64,7 +64,7 @@ public class CollectionHorizontalViewHolder extends ViewHolder<CollectionHorizon
                 / ((float)listItem.getCollection().getCoverPhoto().getWidth()));
 
         Glide.with(parentActivity)
-                .load(listItem.getCollection().getCoverPhoto().getUrlRegular())
+                .load(listItem.getCollection().getCoverPhoto().getPhotoUrls().getRegular())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 
@@ -76,12 +76,12 @@ public class CollectionHorizontalViewHolder extends ViewHolder<CollectionHorizon
         parent.setBackgroundColor(color);
 
         // unique transition name
-        photoIv.setTransitionName(listItem.getCollection().getId()+"");
+        artistProfileImageIv.setTransitionName(listItem.getCollection().getId()+"");
 
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getCollection(), parent);
+                listItem.getOnClickListener().onClick(listItem.getCollection(), artistProfileImageIv);
             }
         });
 
@@ -89,10 +89,10 @@ public class CollectionHorizontalViewHolder extends ViewHolder<CollectionHorizon
 
         photosCountTv.setText(String.format("%d photos", listItem.getCollection().getTotalPhotos()));
 
-        artistNameTv.setText(listItem.getCollection().getArtistName().toLowerCase());
+        artistNameTv.setText(listItem.getCollection().getUser().getName().toLowerCase());
 
         Glide.with(parentActivity)
-                .load(listItem.getCollection().getArtistProfileImageUrl())
+                .load(listItem.getCollection().getUser().getProfileImage().getLarge())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .apply(new RequestOptions().circleCrop())
                 .into(artistProfileImageIv);

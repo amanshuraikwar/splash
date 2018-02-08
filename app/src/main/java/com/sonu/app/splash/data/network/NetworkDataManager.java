@@ -1,10 +1,7 @@
 package com.sonu.app.splash.data.network;
 
-import com.sonu.app.splash.ui.photo.Photo;
-import com.sonu.app.splash.ui.photodescription.PhotoDescription;
-import com.sonu.app.splash.ui.userdescription.UserDescription;
-
-import java.util.List;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.model.unsplash.User;
 
 import io.reactivex.Observable;
 
@@ -14,7 +11,7 @@ import io.reactivex.Observable;
 
 public interface NetworkDataManager {
 
-    Observable<PhotoDescription> getPhotoDescription(String photoId);
+    Observable<Photo> getPhotoDescription(String photoId);
 
-    Observable<UserDescription> getUserDescription(String username);
+    Observable<User> getUserDescription(String username);
 }

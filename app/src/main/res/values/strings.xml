@@ -34,7 +34,7 @@
         <item>photos</item>
         <item>collections</item>
         <item>search</item>
-        <!--<item>downloads</item>-->
+        <item>downloads</item>
         <!--<item>profile</item>-->
     </array>
 </resources>

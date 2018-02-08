@@ -10,13 +10,6 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/persistentMessage">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:actionBarSize"
-            app:title="@string/app_name"
-            style="@style/Widget.Splash.Toolbar.SmallCapsTitle" />
-
         <FrameLayout
             android:id="@+id/contentFl"
             android:layout_width="match_parent"

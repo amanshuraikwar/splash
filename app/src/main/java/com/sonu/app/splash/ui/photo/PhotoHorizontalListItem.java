@@ -1,5 +1,6 @@
 package com.sonu.app.splash.ui.photo;
 
+import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 
