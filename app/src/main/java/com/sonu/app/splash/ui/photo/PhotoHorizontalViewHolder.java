@@ -54,12 +54,8 @@ public class PhotoHorizontalViewHolder extends ViewHolder<PhotoHorizontalListIte
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 
-        downloadIb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onDownloadBtnClick(listItem.getPhoto());
-            }
-        });
+        downloadIb.setOnClickListener(
+                view -> listItem.getOnClickListener().onDownloadBtnClick(listItem.getPhoto()));
 
         int color = Color.parseColor(listItem.getPhoto().getColor());
 
@@ -71,11 +67,7 @@ public class PhotoHorizontalViewHolder extends ViewHolder<PhotoHorizontalListIte
         // unique transition name
         photoIv.setTransitionName(listItem.getPhoto().getId());
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getPhoto(), photoIv);
-            }
-        });
+        parent.setOnClickListener(
+                view -> listItem.getOnClickListener().onClick(listItem.getPhoto(), photoIv));
     }
 }

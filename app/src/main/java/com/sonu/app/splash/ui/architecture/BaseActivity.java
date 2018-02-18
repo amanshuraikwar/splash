@@ -4,10 +4,6 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-/**
- * Created by amanshuraikwar on 24/01/18.
- */
-
 public abstract class BaseActivity<Presenter extends BasePresenter>
         extends DaggerAppCompatActivity implements BaseView {
 
@@ -28,6 +24,7 @@ public abstract class BaseActivity<Presenter extends BasePresenter>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onResume() {
         super.onResume();
 

@@ -11,8 +11,10 @@ import com.sonu.app.splash.model.unsplash.Exif;
 import com.sonu.app.splash.model.unsplash.Location;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.model.unsplash.PhotoLinks;
+import com.sonu.app.splash.model.unsplash.PhotoStats;
 import com.sonu.app.splash.model.unsplash.PhotoUrls;
 import com.sonu.app.splash.model.unsplash.ProfileImage;
+import com.sonu.app.splash.model.unsplash.StatsValues;
 import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.model.unsplash.UserLinks;
 import com.sonu.app.splash.model.unsplash.UserTags;
@@ -407,7 +409,11 @@ public class UnsplashJsonUtils {
 
         builder.privateC(jsonObject.get("private").getAsBoolean());
 
-        builder.shareKey(jsonObject.get("share_key").getAsString());
+        try {
+            builder.shareKey(jsonObject.get("share_key").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         try {
 
@@ -426,7 +432,11 @@ public class UnsplashJsonUtils {
             // do nothing
         }
 
-        builder.coverPhoto(buildPhotoObj(jsonObject.get("cover_photo").getAsJsonObject()));
+        try {
+            builder.coverPhoto(buildPhotoObj(jsonObject.get("cover_photo").getAsJsonObject()));
+        } catch (Exception e) {
+            // do nothing
+        }
 
         try {
 
@@ -476,7 +486,47 @@ public class UnsplashJsonUtils {
 
         builder.photos(jsonObject.get("photos").getAsString());
 
-        builder.related(jsonObject.get("related").getAsString());
+        try {
+            builder.related(jsonObject.get("related").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        return builder.build();
+    }
+
+    public static PhotoStats buildPhotoStatsObj(JsonObject jsonObject) {
+
+        PhotoStats.Builder builder = new PhotoStats.Builder(jsonObject.get("id").getAsString());
+
+        builder.downloads(buildIntStatsValues(jsonObject.get("downloads").getAsJsonObject()));
+        builder.views(buildIntStatsValues(jsonObject.get("views").getAsJsonObject()));
+        builder.likes(buildIntStatsValues(jsonObject.get("likes").getAsJsonObject()));
+
+        return builder.build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static StatsValues<Integer> buildIntStatsValues(JsonObject jsonObject) {
+
+        StatsValues.Builder<Integer> builder = new StatsValues.Builder<>();
+
+        builder.total(jsonObject.get("total").getAsInt());
+
+        jsonObject = jsonObject.get("historical").getAsJsonObject();
+
+        builder.change(jsonObject.get("change").getAsInt());
+
+        builder.resolution(jsonObject.get("resolution").getAsString());
+
+        builder.quantity(jsonObject.get("quantity").getAsInt());
+
+        JsonArray jsonArray = jsonObject.get("values").getAsJsonArray();
+
+        for (JsonElement jsonElement : jsonArray) {
+            JsonObject jsonObject1 = jsonElement.getAsJsonObject();
+            builder.value(jsonObject1.get("date").getAsString(), jsonObject1.get("value").getAsInt());
+        }
 
         return builder.build();
     }

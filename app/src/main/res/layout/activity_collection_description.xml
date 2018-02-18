@@ -103,30 +103,31 @@
                     android:text="Amanshu Raikwar"/>
             </LinearLayout>
         </FrameLayout>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="?android:attr/actionBarSize"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="48dp"
+            android:clipToPadding="false"
+            style="@style/Widget.Splash.TabLayout" />
     </com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout>
 
-    <FrameLayout
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/itemsRv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:paddingTop="8dp" />
-
-        <include
-            layout="@layout/layout_error_minimal_light"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_gravity="center_horizontal" />
-
-    </FrameLayout>
-
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addToFavFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:clickable="false"
+        android:focusable="true"
+        android:tint="@color/activeIconLight"
+        android:src="@drawable/bookmark_plus_outline_black_24dp" />
 </com.sonu.app.splash.ui.widget.SwipeBackCoordinatorLayout>

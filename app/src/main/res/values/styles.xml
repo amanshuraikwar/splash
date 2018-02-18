@@ -15,6 +15,8 @@
         <item name="android:windowSharedElementsUseOverlay">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
+
+        <item name="colorControlActivated">@color/darkGrey1</item>
     </style>
 
     <!-- activity themes-->
@@ -32,6 +34,8 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <item name="colorControlActivated">@color/darkGrey1</item>
     </style>
 
     <style name="Splash.Translucent.About">
@@ -71,10 +75,10 @@
         <item name="android:windowSharedElementReturnTransition">@transition/photo_fullscreen_shared_exit</item>
     </style>
 
-    <style name="Splash.Translucent.Search">
+    <style name="Splash.Translucent.AllSearch">
     </style>
 
-    <style name="Splash.Translucent.AllSearch">
+    <style name="Splash.Translucent.PhotoStats">
     </style>
 
     <style name="Splash.Translucent.CollectionDescription">
@@ -184,6 +188,20 @@
         parent="@android:style/Widget.Material.Button.Borderless">
 
         <item name="android:textAppearance">@style/TextAppearance.Button</item>
+    </style>
+
+    <style
+        name="Widget.Splash.Button"
+        parent="@android:style/Widget.Material.Button">
+
+        <item name="android:textAppearance">@style/TextAppearance.Button</item>
+    </style>
+
+    <style
+        name="Widget.Splash.Button.Small"
+        parent="@android:style/Widget.Material.Button">
+
+        <item name="android:textAppearance">@style/TextAppearance.Button.Small</item>
     </style>
 
     <style
@@ -453,6 +471,17 @@
     </style>
 
     <style
+        name="TextAppearance.Button.Small"
+        parent="@android:style/TextAppearance.Material.Widget.Button">
+
+        <item name="android:fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style
         name="TextAppearance.Button.Light"
         parent="@style/TextAppearance.Button">
 
@@ -581,4 +610,81 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="TextAppearance.SearchQuery"
+        parent="@style/TextAppearance.Title">
+
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChange"
+        parent="@style/TextAppearance.Display3">
+
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChange.Light">
+
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChangeText"
+        parent="@style/TextAppearance.Headline">
+
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChangeText.Light">
+
+        <item name="android:textColor">@color/secondaryTextLight</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChangeQuantity"
+        parent="@style/TextAppearance.Headline">
+
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChangeQuantity.Light">
+
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChangeResolution"
+        parent="@style/TextAppearance.Headline">
+
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsChangeResolution.Light">
+
+        <item name="android:textColor">@color/primaryTextLight</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsLimits"
+        parent="@style/TextAppearance.Caption">
+
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFeatureSettings">smcp, onum</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/secondaryText</item>
+    </style>
+
+    <style name="TextAppearance.PhotoStatsLimits.Light">
+
+        <item name="android:textColor">@color/secondaryTextLight</item>
+    </style>
+
+    <style
+        name="TextAppearance.FavDate"
+        parent="@style/TextAppearance.Display1">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
 </resources>

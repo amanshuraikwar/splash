@@ -2,7 +2,7 @@ package com.sonu.app.splash.ui.architecture;
 
 import android.support.annotation.NonNull;
 
-import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.NumberUtils;
 import com.sonu.app.splash.util.PermissionsHelper;

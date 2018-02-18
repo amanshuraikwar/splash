@@ -9,6 +9,7 @@ import com.sonu.app.splash.data.network.unsplashapi.RequestGenerator;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
 import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.model.unsplash.PhotoStats;
 import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
@@ -19,6 +20,9 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.exceptions.UndeliverableException;
 import okhttp3.Request;
 
 /**
@@ -38,69 +42,91 @@ public class NetworkDataManagerImpl implements NetworkDataManager {
 
     @Override
     public Observable<Photo> getPhotoDescription(final String photoId) {
-        return Observable.fromCallable(new Callable<Photo>() {
-            @Override
-            public Photo call() throws Exception {
-                return getPhotoAct(photoId);
+        return Observable.create(e -> {
+            try {
+                e.onNext(getPhotoAct(photoId));
+                e.onComplete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                e.tryOnError(ex);
             }
         });
     }
 
     private Photo getPhotoAct(String photoId)
-            throws IOException, UnsplashApiException {
+            throws IOException, UnsplashApiException, UndeliverableException {
 
-        try {
+        String url = String.format(ApiEndpoints.GET_PHOTO, photoId);
 
-            // giving page number to fetch
-            String url = String.format(ApiEndpoints.GET_PHOTO, photoId);
+        Request request = RequestGenerator.get(url);
 
-            Request request = RequestGenerator.get(url);
+        String body = requestHandler.request(request).string();
+        Log.i(TAG, "getPhotoAct:response-body:"+body);
 
-            String body = requestHandler.request(request).string();
-            Log.i(TAG, "getPhotoAct:response-body:"+body);
+        JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
 
-            JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
+        Log.i(TAG, "getPhotoAct:response-body-json:"+jsonObject);
 
-            Log.i(TAG, "getPhotoAct:response-body-json:"+jsonObject);
-
-            return UnsplashJsonUtils.buildPhotoObj(jsonObject);
-
-        } catch (IOException | UnsplashApiException e) {
-            throw e;
-        }
+        return UnsplashJsonUtils.buildPhotoObj(jsonObject);
     }
 
     @Override
     public Observable<User> getUserDescription(final String username) {
-        return Observable.fromCallable(new Callable<User>() {
-            @Override
-            public User call() throws Exception {
-                return getUserAct(username);
+        return Observable.create(e -> {
+            try {
+                e.onNext(getUserAct(username));
+                e.onComplete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                e.tryOnError(ex);
             }
         });
     }
 
     private User getUserAct(String username)
-            throws IOException, UnsplashApiException {
+            throws IOException, UnsplashApiException, UndeliverableException {
 
-        try {
+        String url = String.format(ApiEndpoints.GET_USER, username);
 
-            // giving page number to fetch
-            String url = String.format(ApiEndpoints.GET_USER, username);
+        Request request = RequestGenerator.get(url);
 
-            Request request = RequestGenerator.get(url);
+        String body = requestHandler.request(request).string();
+        Log.i(TAG, "getPhotoAct:response-body:"+body);
 
-            String body = requestHandler.request(request).string();
-            Log.i(TAG, "getPhotoAct:response-body:"+body);
+        JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
 
-            JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
+        Log.i(TAG, "getPhotoAct:response-body-json:"+jsonObject);
 
-            Log.i(TAG, "getPhotoAct:response-body-json:"+jsonObject);
+        return UnsplashJsonUtils.buildUserObj(jsonObject);
+    }
 
-            return UnsplashJsonUtils.buildUserObj(jsonObject);
+    @Override
+    public Observable<PhotoStats> getPhotoStats(String photoId) {
+        return Observable.create(e -> {
+            try {
+                e.onNext(getPhotoStatsAct(photoId));
+                e.onComplete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                e.tryOnError(ex);
+            }
+        });
+    }
 
-        } catch (IOException | UnsplashApiException e) {
-            throw e;
-        }
+    private PhotoStats getPhotoStatsAct(String photoId)
+            throws IOException, UnsplashApiException, UndeliverableException {
+
+        String url = String.format(ApiEndpoints.GET_PHOTO_STATISTICS, photoId);
+
+        Request request = RequestGenerator.get(url);
+
+        String body = requestHandler.request(request).string();
+        Log.i(TAG, "getPhotoAct:response-body:"+body);
+
+        JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
+
+        Log.i(TAG, "getPhotoAct:response-body-json:"+jsonObject);
+
+        return UnsplashJsonUtils.buildPhotoStatsObj(jsonObject);
     }
 }

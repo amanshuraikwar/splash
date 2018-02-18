@@ -48,8 +48,6 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
     @Override
     public void bind(final PhotoListItem listItem, FragmentActivity parentActivity) {
 
-//        Log.i(TAG, "bind:photo="+listItem.getPhoto());
-
         photoIv.setAspectRatio(((float)listItem.getPhoto().getHeight())
                         / ((float)listItem.getPhoto().getWidth()));
 
@@ -58,12 +56,8 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(photoIv);
 
-        downloadIb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onDownloadBtnClick(listItem.getPhoto());
-            }
-        });
+        downloadIb.setOnClickListener(
+                view -> listItem.getOnClickListener().onDownloadBtnClick(listItem.getPhoto()));
 
         int color = Color.parseColor(listItem.getPhoto().getColor());
 
@@ -72,14 +66,10 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
 
         parent.setBackgroundColor(color);
 
-//         unique transition name
+        // unique transition name
         photoIv.setTransitionName(listItem.getPhoto().getId());
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getPhoto(), photoIv);
-            }
-        });
+        parent.setOnClickListener(
+                view -> listItem.getOnClickListener().onClick(listItem.getPhoto(), photoIv));
     }
 }

@@ -40,33 +40,66 @@
             android:layout_marginBottom="8dp"
             android:textAppearance="@style/TextAppearance.DownloadTimestamp" />
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/downloadStatusCv"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardCornerRadius="2dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/grey3">
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/downloadStatusTv"
+            <android.support.v7.widget.CardView
+                android:id="@+id/downloadStatusCv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:textAppearance="@style/TextAppearance.DownloadStatus" />
-        </android.support.v7.widget.CardView>
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/grey3">
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="4dp"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_open_in_new_black_24dp"
-            style="@style/Widget.Splash.BorderlessImageButton"/>
+                <TextView
+                    android:id="@+id/downloadStatusTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.DownloadStatus" />
+            </android.support.v7.widget.CardView>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="4dp"
+                android:indeterminateTint="@color/blue"
+                android:visibility="gone"/>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/openFileCv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:stateListAnimator="@animator/raise_small"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/grey3"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/openFileTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.DownloadStatus"
+                    android:textColor="@color/primaryText"
+                    android:text="open file"
+                    android:drawableEnd="@drawable/ic_navigate_next_black_16dp"/>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
     </LinearLayout>
 
     <View

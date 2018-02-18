@@ -1,10 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textAppearance="@style/TextAppearance.Header"
-    android:padding="12dp"
-    android:text="Heading"
-    android:textColor="@color/secondaryText"/>
+    android:layout_height="wrap_content">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Body2"
+            android:text="bookmarked on"
+            android:textColor="@color/disableHintText"/>
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="2018-02-17"
+            android:textAppearance="@style/TextAppearance.FavDate"/>
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,7 +1,7 @@
 package com.sonu.app.splash.ui.collectiondecription;
 
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenter;
 import com.sonu.app.splash.ui.architecture.BaseView;
@@ -15,13 +15,13 @@ public interface CollectionDescriptionContract {
     interface View extends BaseView {
 
         String getCollectionId();
-        void setupList(ContentCache contentCache);
-        void getAllPhotos();
-        boolean isListEmpty();
+        Collection getCollection();
+        void setFavActive();
+        void setFavInactive();
     }
 
     interface Presenter extends BasePresenter<View> {
 
-        void downloadImage(Photo photo);
+        void onAddToFavClick();
     }
 }

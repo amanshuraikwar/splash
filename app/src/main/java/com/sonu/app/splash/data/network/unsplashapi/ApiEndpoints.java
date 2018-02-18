@@ -6,7 +6,9 @@ package com.sonu.app.splash.data.network.unsplashapi;
 
 public interface ApiEndpoints {
 
-    int PER_PAGE = 30;
+    int PER_PAGE = 30, STATS_QUANTITY = 30;
+    String STATS_RESOLUTION = "days";
+
 
     String BASE_ENDPOINT = "https://api.unsplash.com/";
 
@@ -22,6 +24,8 @@ public interface ApiEndpoints {
 
     String GET_USER_PHOTOS = BASE_ENDPOINT + "users/%s/photos?page=%s&order_by=%s&per_page="+PER_PAGE;
 
+    String GET_USER_COLLECTIONS = BASE_ENDPOINT + "users/%s/collections?page=%s&per_page="+PER_PAGE;
+
     String SEARCH_USERS = BASE_ENDPOINT + "search/users?query=%s&page=%s&per_page="+PER_PAGE;
 
     String GET_ALL_COLLECTIONS = BASE_ENDPOINT + "collections?page=%s&per_page="+PER_PAGE;
@@ -35,4 +39,6 @@ public interface ApiEndpoints {
     String COLLECTION_DESCRIPTION = BASE_ENDPOINT + "collections/%s";
 
     String GET_COLLECTION_PHOTOS = BASE_ENDPOINT + "collections/%s/photos?page=%s&per_page="+PER_PAGE;
+
+    String GET_PHOTO_STATISTICS = BASE_ENDPOINT + "photos/%s/statistics?resolution="+STATS_RESOLUTION+"&quantity="+STATS_QUANTITY;
 }

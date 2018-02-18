@@ -2,6 +2,7 @@ package com.sonu.app.splash.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,5 +47,12 @@ public class NumberUtils {
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    public static String getCurrentDate() {
+
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        return df.format(c);
     }
 }

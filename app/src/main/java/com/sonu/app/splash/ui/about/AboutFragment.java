@@ -43,47 +43,27 @@ public class AboutFragment extends BaseFragment<AboutContract.Presenter>
 
     @OnClick(R.id.slLinkIv)
     void onSlIvClick() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse("https://developer.android.com/topic/libraries/support-library"));
-        startActivity(intent);
+        startBrowserActivity("https://developer.android.com/topic/libraries/support-library");
     }
 
     @OnClick(R.id.bnLinkIv)
     void onBnIvClick() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse("http://jakewharton.github.io/butterknife/"));
-        startActivity(intent);
+        startBrowserActivity("http://jakewharton.github.io/butterknife/");
     }
 
     @OnClick(R.id.glideLinkIv)
     void onGlideIvClick() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse("https://github.com/bumptech/glide"));
-        startActivity(intent);
+        startBrowserActivity("https://github.com/bumptech/glide");
     }
 
     @OnClick(R.id.okhttpLinkIv)
     void onOkhttpIvClick() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse("http://square.github.io/okhttp/"));
-        startActivity(intent);
+        startBrowserActivity("http://square.github.io/okhttp/");
     }
 
     @OnClick(R.id.rfLinkIv)
     void onRfIvClick() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse("http://square.github.io/retrofit/"));
-        startActivity(intent);
+        startBrowserActivity("http://square.github.io/retrofit/");
     }
 
     @Inject
@@ -103,68 +83,30 @@ public class AboutFragment extends BaseFragment<AboutContract.Presenter>
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        projectGithubIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse(getString(R.string.project_github)));
-                startActivity(intent);
-            }
-        });
+        projectGithubIv.setOnClickListener(
+                v -> startBrowserActivity(getString(R.string.project_github)));
 
-        arLinkedinIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse(getString(R.string.developer_linkedin)));
-                startActivity(intent);
-            }
-        });
+        arLinkedinIv.setOnClickListener(
+                v -> startBrowserActivity(getString(R.string.developer_linkedin)));
 
-        arGithubIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse(getString(R.string.developer_github)));
-                startActivity(intent);
-            }
-        });
+        arGithubIv.setOnClickListener(
+                v -> startBrowserActivity(getString(R.string.developer_github)));
 
-        arInstagramIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse(getString(R.string.developer_instagram)));
-                startActivity(intent);
-            }
-        });
+        arInstagramIv.setOnClickListener(
+                v -> startBrowserActivity(getString(R.string.developer_instagram)));
+    }
+
+    private void startBrowserActivity(String url) {
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 
     @Override
     public int getHomeNavItemId() {
         return AboutFragment.class.hashCode();
-    }
-
-    @Override
-    public void showIoException(int titleStringRes, int messageStringRes) {
-
-    }
-
-    @Override
-    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-
-    }
-
-    @Override
-    public void showUnknownException(String message) {
-
     }
 }

@@ -24,7 +24,7 @@ public abstract class SearchCache<DataModel> extends SimpleContentCache<DataMode
         resetCache();
     }
 
-    protected synchronized String getQuery() {
+    public synchronized String getQuery() {
         return query;
     }
 }

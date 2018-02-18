@@ -37,11 +37,6 @@ public class HeaderHorizontalViewHolder extends ViewHolder<HeaderHorizontalListI
 
         textTv.setText(listItem.getText());
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onClick();
-            }
-        });
+        parent.setOnClickListener(view -> listItem.getOnClickListener().onClick());
     }
 }

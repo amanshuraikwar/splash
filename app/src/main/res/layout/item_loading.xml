@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:animateLayoutChanges="true">
-
-    <TextView
-        android:id="@+id/infoTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:text="click button to load more photos"/>
+    android:layout_height="wrap_content">
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center_horizontal"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-        android:visibility="gone"/>
+        android:layout_margin="32dp"
+        android:indeterminateTint="@color/inactiveIcon" />
+
+    <View
+        android:id="@+id/errorOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="112dp"
+        android:visibility="invisible"
+        android:background="@color/grey1" />
 
     <Button
         android:id="@+id/actionBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_margin="32dp"
         android:layout_gravity="center_horizontal"
-        android:text="load more"/>
-</LinearLayout>
+        android:src="@drawable/ic_replay_black_24dp"
+        style="@style/Widget.Splash.Button"
+        android:text="@string/retry_btn_text"
+        tools:ignore="ContentDescription"
+        android:visibility="invisible"/>
+</FrameLayout>

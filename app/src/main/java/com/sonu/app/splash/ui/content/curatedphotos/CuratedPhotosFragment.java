@@ -1,5 +1,6 @@
 package com.sonu.app.splash.ui.content.curatedphotos;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.util.Log;
@@ -43,19 +44,12 @@ public class CuratedPhotosFragment
 
                     Log.d(TAG, "onPhotoClick:called");
 
-                    Intent i = new Intent(getActivity(), PhotoDescriptionActivity.class);
-                    i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
-
-                    ActivityOptions options =
-                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                                    Pair.create(itemView,
-                                            getActivity().getString(R.string.transition_photo)),
-                                    Pair.create(itemView,
-                                            getActivity().getString(R.string.transition_photo_description_background)));
-
-                    startActivity(i, options.toBundle());
+                    startPhotoDescriptionActivity(photo, itemView);
                 }
             };
+
+    @Inject
+    Activity host;
 
     @Inject
     public CuratedPhotosFragment() {
@@ -67,5 +61,20 @@ public class CuratedPhotosFragment
         PhotoListItem listItem = new PhotoListItem(photo);
         listItem.setOnClickListener(photoOnClickListener);
         return listItem;
+    }
+
+    private void startPhotoDescriptionActivity(Photo photo, View transitionView) {
+
+        Intent i = new Intent(host, PhotoDescriptionActivity.class);
+        i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
+
+        ActivityOptions options =
+                ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                        Pair.create(transitionView,
+                                host.getString(R.string.transition_photo)),
+                        Pair.create(transitionView,
+                                host.getString(R.string.transition_photo_description_background)));
+
+        startActivity(i, options.toBundle());
     }
 }

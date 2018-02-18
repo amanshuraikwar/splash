@@ -12,42 +12,21 @@ public class LoadingListItem extends ListItem<LoadingOnClickListener> {
     public enum STATE {LOADING, ERROR, NORMAL}
 
     private STATE state;
-    private String infoText, actionText;
 
-    public LoadingListItem(String infoText, String actionText) {
-        this.infoText = infoText;
-        this.actionText = actionText;
+    public LoadingListItem() {
         state = STATE.NORMAL;
     }
 
-    public LoadingListItem(String infoText, String actionText, STATE state) {
-        this.infoText = infoText;
-        this.actionText = actionText;
+    public LoadingListItem(STATE state) {
         this.state = state;
     }
 
-    public STATE getState() {
+    public synchronized STATE getState() {
         return state;
     }
 
-    public void setState(STATE state) {
+    public synchronized void setState(STATE state) {
         this.state = state;
-    }
-
-    public String getInfoText() {
-        return infoText;
-    }
-
-    public void setInfoText(String infoText) {
-        this.infoText = infoText;
-    }
-
-    public String getActionText() {
-        return actionText;
-    }
-
-    public void setActionText(String actionText) {
-        this.actionText = actionText;
     }
 
     @Override

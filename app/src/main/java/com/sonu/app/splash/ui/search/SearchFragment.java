@@ -1,55 +1,35 @@
 package com.sonu.app.splash.ui.search;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.SearchView;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.data.cache.SearchCollectionsCache;
-import com.sonu.app.splash.data.cache.SearchPhotosCache;
-import com.sonu.app.splash.data.cache.SearchUsersCache;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
-import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
-import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
-import com.sonu.app.splash.model.unsplash.Collection;
-import com.sonu.app.splash.ui.collection.CollectionHorizontalListItem;
-import com.sonu.app.splash.ui.collection.CollectionOnClickListener;
-import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionActivity;
-import com.sonu.app.splash.ui.header.HeaderHorizontalListItem;
-import com.sonu.app.splash.ui.list.ContentListAdapter;
-import com.sonu.app.splash.ui.list.ListItem;
-import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.list.SimpleListItemOnClickListener;
-import com.sonu.app.splash.model.unsplash.Photo;
-import com.sonu.app.splash.ui.photo.PhotoHorizontalListItem;
-import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
-import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
-import com.sonu.app.splash.ui.search.activity.SearchActivity;
+import com.sonu.app.splash.ui.content.searchcollections.SearchCollectionsFragment;
+import com.sonu.app.splash.ui.content.searchphotos.SearchPhotosFragment;
+import com.sonu.app.splash.ui.content.searchusers.SearchUsersFragment;
+import com.sonu.app.splash.ui.home.ViewPagerAdapter;
 import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
-import com.sonu.app.splash.ui.user.UserHorizontalListItem;
-import com.sonu.app.splash.ui.user.UserOnClickListener;
-import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
  * Created by amanshuraikwar on 01/02/18.
@@ -61,289 +41,44 @@ public class SearchFragment
 
     private static final String TAG = LogUtils.getLogTag(SearchFragment.class);
 
-    @BindView(R.id.searchView)
-    SearchView searchView;
+    @BindView(R.id.searchIb)
+    ImageButton searchIb;
 
-    @BindView(R.id.photosRv)
-    RecyclerView photosRv;
+    @BindView(R.id.searchEt)
+    EditText searchEt;
 
-    @BindView(R.id.collectionsRv)
-    RecyclerView collectionsRv;
+    @BindView(R.id.clearIb)
+    ImageButton clearIb;
 
-    @BindView(R.id.usersRv)
-    RecyclerView usersRv;
+    @BindView(R.id.tabLayout)
+    TabLayout tabLayout;
 
-    @BindView(R.id.photosPb)
-    MaterialProgressBar photosPb;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
 
-    @BindView(R.id.photosBtn)
-    Button photosBtn;
+    @Inject
+    SearchPhotosFragment searchPhotosFragment;
 
-    @BindView(R.id.collectionsPb)
-    MaterialProgressBar collectionsPb;
+    @Inject
+    SearchCollectionsFragment searchCollectionsFragment;
 
-    @BindView(R.id.collectionsBtn)
-    Button collectionsBtn;
+    @Inject
+    SearchUsersFragment searchUsersFragment;
 
-    @BindView(R.id.usersPb)
-    MaterialProgressBar usersPb;
+    private ViewPagerAdapter adapter;
+    private boolean firstQuery = true;
 
-    @BindView(R.id.usersBtn)
-    Button usersBtn;
-
-    private ContentListAdapter<Photo> photosAdapter;
-    private ContentListAdapter<Collection> collectionsAdapter;
-    private ContentListAdapter<User> usersAdapter;
-
-    private SimpleListItemOnClickListener morePhotosOnClickListener =
-            new SimpleListItemOnClickListener() {
+    private int searchIconDrawableId = R.drawable.ic_search_active_24dp;
+    private View.OnClickListener searchIbOnClickListener =
+            new View.OnClickListener() {
                 @Override
-                public void onClick() {
-
-                    Log.d(TAG, "morePhotosOnClick:called");
-                    Log.i(TAG, "morePhotosOnClick:query="+searchView.getQuery());
-
-                    Intent i = new Intent(getActivity(), SearchActivity.class);
-                    i.putExtra(SearchActivity.KEY_SEARCH_TYPE, SearchActivity.TYPE_PHOTOS);
-                    i.putExtra(SearchActivity.KEY_QUERY, searchView.getQuery().toString());
-                    startActivity(i);
+                public void onClick(View view) {
+                    // do nothing
                 }
             };
 
-    private PhotoOnClickListener photoOnClickListener =
-            new PhotoOnClickListener() {
-                @Override
-                public void onDownloadBtnClick(Photo photo) {
-
-                    Log.d(TAG, "onDownloadBtnClick:called");
-
-                    getPresenter().downloadPhoto(photo);
-                }
-
-                @Override
-                public void onClick(Photo photo, View itemView) {
-
-                    Log.d(TAG, "onPhotoClick:called");
-
-                    Intent i = new Intent(getActivity(), PhotoDescriptionActivity.class);
-                    i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
-
-                    ActivityOptions options =
-                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                                    Pair.create(itemView,
-                                            getActivity().getString(R.string.transition_photo)),
-                                    Pair.create(itemView,
-                                            getActivity().getString(R.string.transition_photo_description_background)));
-
-                    startActivity(i, options.toBundle());
-                }
-            };
-
-    private ContentListAdapter.AdapterListener<Photo> photosListener =
-            new ContentListAdapter.AdapterListener<Photo>() {
-
-                @Override
-                public ListItem createListItem(Photo photo) {
-                    PhotoHorizontalListItem listItem = new PhotoHorizontalListItem(photo);
-                    listItem.setOnClickListener(photoOnClickListener);
-                    return listItem;
-                }
-
-                @Override
-                public List<ListItem> createListItems(List<Photo> photos) {
-                    List<ListItem> list = super.createListItems(photos);
-                    if (photos.size() == ApiEndpoints.PER_PAGE) {
-                        HeaderHorizontalListItem listItem =
-                                new HeaderHorizontalListItem("MORE PHOTOS");
-                        listItem.setOnClickListener(morePhotosOnClickListener);
-                        list.add(listItem);
-                    }
-                    return list;
-                }
-
-                @Override
-                public void showIoException(int titleStringRes, int messageStringRes) {
-                    showPhotosError();
-                }
-
-                @Override
-                public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-                    showPhotosError();
-                }
-
-                @Override
-                public void showUnknownException(String message) {
-                    showPhotosError();
-                }
-
-                @Override
-                public void showLoading() {
-                    showPhotosLoading();
-                }
-
-                @Override
-                public void hideLoading() {
-                    photosPb.setVisibility(View.GONE);
-                }
-    };
-
-    private SimpleListItemOnClickListener moreCollectionsOnClickListener =
-            new SimpleListItemOnClickListener() {
-                @Override
-                public void onClick() {
-                    Intent i = new Intent(getActivity(), SearchActivity.class);
-                    i.putExtra(SearchActivity.KEY_SEARCH_TYPE, SearchActivity.TYPE_COLLECTIONS);
-                    i.putExtra(SearchActivity.KEY_QUERY, searchView.getQuery().toString());
-                    startActivity(i);
-                }
-            };
-
-    private CollectionOnClickListener collectionOnClickListener =
-            new CollectionOnClickListener() {
-                @Override
-                public void onClick(Collection collection, View transitionView) {
-
-                    Intent i = new Intent(getActivity(), CollectionDescriptionActivity.class);
-                    i.putExtra(CollectionDescriptionActivity.KEY_COLLECTION, collection);
-
-                    ActivityOptions options =
-                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                                    transitionView,
-                                    getString(R.string.transition_artist_pic));
-
-                    startActivity(i, options.toBundle());
-                }
-
-                @Override
-                public void onArtistClick(Collection collection, View transitionView) {
-                    startUserDescriptionActivity(collection, transitionView);
-                }
-    };
-
-    private ContentListAdapter.AdapterListener<Collection> collectionsListener =
-            new ContentListAdapter.AdapterListener<Collection>() {
-
-                @Override
-                public ListItem createListItem(Collection collection) {
-                    CollectionHorizontalListItem listItem = new CollectionHorizontalListItem(collection);
-                    listItem.setOnClickListener(collectionOnClickListener);
-                    return listItem;
-                }
-
-                @Override
-                public List<ListItem> createListItems(List<Collection> collections) {
-                    List<ListItem> list = super.createListItems(collections);
-                    if (collections.size() == ApiEndpoints.PER_PAGE) {
-                        HeaderHorizontalListItem listItem =
-                                new HeaderHorizontalListItem("MORE COLLECTIONS");
-                        listItem.setOnClickListener(moreCollectionsOnClickListener);
-                        list.add(listItem);
-                    }
-                    return list;
-                }
-
-                @Override
-                public void showIoException(int titleStringRes, int messageStringRes) {
-                    showCollectionsError();
-                }
-
-                @Override
-                public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-                    showCollectionsError();
-                }
-
-                @Override
-                public void showUnknownException(String message) {
-                    showCollectionsError();
-                }
-
-                @Override
-                public void showLoading() {
-                    showCollectionsLoading();
-                }
-
-                @Override
-                public void hideLoading() {
-                    collectionsPb.setVisibility(View.GONE);
-                }
-            };
-
-    private SimpleListItemOnClickListener moreUsersOnClickListener =
-            new SimpleListItemOnClickListener() {
-                @Override
-                public void onClick() {
-                    Intent i = new Intent(getActivity(), SearchActivity.class);
-                    i.putExtra(SearchActivity.KEY_SEARCH_TYPE, SearchActivity.TYPE_USERS);
-                    i.putExtra(SearchActivity.KEY_QUERY, searchView.getQuery().toString());
-                    startActivity(i);
-                }
-            };
-
-    private UserOnClickListener userOnClickListener =
-            new UserOnClickListener() {
-                @Override
-                public void onClick(User user,
-                                    View transitionView) {
-
-                    Intent i = new Intent(getActivity(), UserDescriptionActivity.class);
-                    i.putExtra(UserDescriptionActivity.KEY_USER, user);
-
-                    ActivityOptions options =
-                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                                    transitionView,
-                                    getString(R.string.transition_artist_pic));
-
-                    startActivity(i, options.toBundle());
-                }
-            };
-
-    private ContentListAdapter.AdapterListener<User> usersListener =
-            new ContentListAdapter.AdapterListener<User>() {
-
-                @Override
-                public ListItem createListItem(User user) {
-                    UserHorizontalListItem listItem = new UserHorizontalListItem(user);
-                    listItem.setOnClickListener(userOnClickListener);
-                    return listItem;
-                }
-
-                @Override
-                public List<ListItem> createListItems(List<User> userDescriptions) {
-                    List<ListItem> list = super.createListItems(userDescriptions);
-                    if (userDescriptions.size() == ApiEndpoints.PER_PAGE) {
-                        HeaderHorizontalListItem listItem =
-                                new HeaderHorizontalListItem("MORE USERS");
-                        listItem.setOnClickListener(moreUsersOnClickListener);
-                        list.add(listItem);
-                    }
-                    return list;
-                }
-
-                @Override
-                public void showIoException(int titleStringRes, int messageStringRes) {
-                    showUsersError();
-                }
-
-                @Override
-                public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-                    showUsersError();
-                }
-
-                @Override
-                public void showUnknownException(String message) {
-                    showUsersError();
-                }
-
-                @Override
-                public void showLoading() {
-                    showUsersLoading();
-                }
-
-                @Override
-                public void hideLoading() {
-                    usersPb.setVisibility(View.GONE);
-                }
-            };
+    @Inject
+    Activity host;
 
     @Inject
     public SearchFragment() {
@@ -365,138 +100,111 @@ public class SearchFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (getArguments() != null) {
+        if (getInitialQuery() != null) {
 
-            if (getArguments().getString(AllSearchActivity.KEY_QUERY) != null) {
-
-                searchView.setQuery(getArguments().getString(AllSearchActivity.KEY_QUERY), false);
-            }
+            searchEt.setText(getInitialQuery());
         }
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                Log.d(TAG, "onSearchClick:called");
-                Log.i(TAG, "onSearchClick:query="+s);
+        searchEt.setOnEditorActionListener((textView, i, keyEvent) -> {
 
-                getPresenter().onSearchClick(s);
+            boolean handled = false;
+            if (i == EditorInfo.IME_ACTION_SEARCH) {
 
-                return true;
+                getPresenter().onSearchClick(textView.getText().toString());
+                handled = true;
             }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
+            return handled;
         });
 
-        photosRv.setLayoutManager(
-                new LinearLayoutManager(
-                        getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        collectionsRv.setLayoutManager(
-                new LinearLayoutManager(
-                        getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        usersRv.setLayoutManager(
-                new LinearLayoutManager(
-                        getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        photosBtn.setOnClickListener(new View.OnClickListener() {
+        searchEt.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if (photosAdapter != null) {
+            }
 
-                    photosAdapter.getAllContent();
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (i2 == 0) {
+                    clearIb.setVisibility(View.GONE);
+                } else {
+                    clearIb.setVisibility(View.VISIBLE);
                 }
             }
-        });
 
-        collectionsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void afterTextChanged(Editable editable) {
 
-                if (collectionsAdapter != null) {
-
-                    collectionsAdapter.getAllContent();
-                }
             }
         });
 
-        usersBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        clearIb.setOnClickListener(view1 -> searchEt.setText(""));
 
-                if (usersAdapter != null) {
+        searchIb.setImageDrawable(ContextCompat.getDrawable(host, searchIconDrawableId));
+        searchIb.setOnClickListener(searchIbOnClickListener);
+    }
 
-                    usersAdapter.getAllContent();
-                }
-            }
-        });
+    public void setSearchIconDrawableId(int searchIconDrawableId) {
+        this.searchIconDrawableId = searchIconDrawableId;
+    }
+
+    public void setSearchIbOnClickListener(View.OnClickListener searchIbOnClickListener) {
+        this.searchIbOnClickListener = searchIbOnClickListener;
     }
 
     @Override
-    public void showIoException(int titleStringRes, int messageStringRes) {
+    public void initViewPager(String query) {
 
+        Bundle b = new Bundle();
+        b.putString(
+                SearchPhotosFragment.KEY_QUERY,
+                query);
+        b.putString(
+                SearchCollectionsFragment.KEY_QUERY,
+                query);
+        b.putString(
+                SearchUsersFragment.KEY_QUERY,
+                query);
+
+        searchPhotosFragment.setArguments(b);
+        searchCollectionsFragment.setArguments(b);
+        searchUsersFragment.setArguments(b);
+
+        if (adapter == null) {
+
+            adapter = new ViewPagerAdapter(getChildFragmentManager());
+            adapter.addFragment(searchPhotosFragment, "photos");
+            adapter.addFragment(searchCollectionsFragment, "collections");
+            adapter.addFragment(searchUsersFragment, "users");
+        }
+
+        viewPager.setOffscreenPageLimit(2);
+
+        viewPager.setAdapter(adapter);
+
+        tabLayout.setupWithViewPager(viewPager);
+
+        firstQuery = false;
     }
 
     @Override
-    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
+    public void setQuery(String query) {
 
+        searchPhotosFragment.setQuery(query);
+        searchCollectionsFragment.setQuery(query);
+        searchUsersFragment.setQuery(query);
     }
 
     @Override
-    public void showUnknownException(String message) {
-
+    public boolean isFirstQuery() {
+        return firstQuery;
     }
 
     @Override
-    public void updatePhotos(SearchPhotosCache searchPhotosCache) {
+    public void onDestroyView() {
+        super.onDestroyView();
 
-        Log.d(TAG, "updatePhotos:called");
-        Log.i(TAG, "updatePhotos:cache="+searchPhotosCache);
-
-        photosAdapter =
-                new ContentListAdapter<>(
-                        getActivity(),
-                        new ListItemTypeFactory(),
-                        searchPhotosCache,
-                        photosListener);
-        photosRv.setAdapter(photosAdapter);
-        photosAdapter.getAllContent();
-    }
-
-    @Override
-    public void updateCollections(SearchCollectionsCache searchCollectionsCache) {
-
-        Log.d(TAG, "updateCollections:called");
-        Log.i(TAG, "updateCollections:cache="+searchCollectionsCache);
-
-        collectionsAdapter =
-                new ContentListAdapter<>(
-                        getActivity(),
-                        new ListItemTypeFactory(),
-                        searchCollectionsCache,
-                        collectionsListener);
-        collectionsRv.setAdapter(collectionsAdapter);
-        collectionsAdapter.getAllContent();
-    }
-
-    @Override
-    public void updateUsers(SearchUsersCache searchUsersCache) {
-
-        Log.d(TAG, "updateUsers:called");
-        Log.i(TAG, "updateUsers:cache="+searchUsersCache);
-
-        usersAdapter =
-                new ContentListAdapter<>(
-                        getActivity(),
-                        new ListItemTypeFactory(),
-                        searchUsersCache,
-                        usersListener);
-        usersRv.setAdapter(usersAdapter);
-        usersAdapter.getAllContent();
+        Log.d(TAG, "onDestroyView:called");
+        firstQuery = true;
     }
 
     @Override
@@ -507,50 +215,5 @@ public class SearchFragment
             return null;
         }
 
-    }
-
-    private void showPhotosError() {
-        photosPb.setVisibility(View.GONE);
-        photosBtn.setVisibility(View.VISIBLE);
-    }
-
-    private void showPhotosLoading() {
-        photosPb.setVisibility(View.VISIBLE);
-        photosBtn.setVisibility(View.GONE);
-    }
-
-    private void showCollectionsError() {
-        collectionsPb.setVisibility(View.GONE);
-        collectionsBtn.setVisibility(View.VISIBLE);
-    }
-
-    private void showCollectionsLoading() {
-        collectionsPb.setVisibility(View.VISIBLE);
-        collectionsBtn.setVisibility(View.GONE);
-    }
-
-    private void showUsersError() {
-        usersPb.setVisibility(View.GONE);
-        usersBtn.setVisibility(View.VISIBLE);
-    }
-
-    private void showUsersLoading() {
-        usersPb.setVisibility(View.VISIBLE);
-        usersBtn.setVisibility(View.GONE);
-    }
-
-    private void startUserDescriptionActivity(Collection collection, View transitionView) {
-
-        Intent i = new Intent(getActivity(), UserDescriptionActivity.class);
-        i.putExtra(UserDescriptionActivity.KEY_USER, collection.getUser());
-
-        transitionView.setTransitionName(collection.getUser().getId());
-
-        ActivityOptions options =
-                ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                        transitionView,
-                        getString(R.string.transition_artist_pic));
-
-        startActivity(i, options.toBundle());
     }
 }

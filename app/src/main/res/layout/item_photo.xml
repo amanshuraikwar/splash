@@ -38,4 +38,13 @@
         android:src="@drawable/ic_file_download_black_24dp"
         style="@style/Widget.Splash.BorderlessImageButton.Light"
         tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_landscape_black_24dp"
+        android:tint="@color/white"
+        android:layout_gravity="end"
+        android:layout_margin="8dp"
+        tools:ignore="ContentDescription" />
 </FrameLayout>

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
+import io.reactivex.exceptions.UndeliverableException;
 import okhttp3.Request;
 
 /**
@@ -44,15 +45,18 @@ public abstract class SimpleContentCache<DataModel> implements ContentCache<Data
     // synchronized to give thread safety
     @Override
     public synchronized Observable<List<DataModel>> getMoreContent() {
-        return Observable.fromCallable(new Callable<List<DataModel>>() {
-            @Override
-            public List<DataModel> call() throws Exception {
-
+        return Observable.create(e -> {
+            try {
                 if (state == STATE.FETCHING) {
-                    return Collections.emptyList();
+                    e.onNext(Collections.emptyList());
+                    e.onComplete();
                 }
 
-                return getMoreContentAct();
+                e.onNext(getMoreContentAct());
+                e.onComplete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                e.tryOnError(ex);
             }
         });
     }
@@ -113,7 +117,7 @@ public abstract class SimpleContentCache<DataModel> implements ContentCache<Data
 
             // updating cache
             updateCache(contentList);
-        } catch (IOException | UnsplashApiException e) {
+        } catch (IOException | UnsplashApiException |UndeliverableException e) {
             setState(STATE.NORMAL);
             throw e;
         }

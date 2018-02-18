@@ -11,7 +11,7 @@ public class RequestGenerator {
     private static void addDefaultHeaders(@NonNull Request.Builder builder) {
         builder.header("Accept", "application/json");
         builder.header("Accept-Version", "v1");
-        builder.header("Authorization", "Client-ID 96e8d2b149988175467047ea39fd0f8425426e2d0d85f1ded61f06ae28bc2203");
+        builder.header("Authorization", "Client-ID d0e90a33fc21f29f62b102fd9a330de94dcc490aa45de1dc8d8daa34306b41b6");
     }
 
     public static Request get(@NonNull String url) {

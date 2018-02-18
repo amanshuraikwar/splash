@@ -30,14 +30,19 @@ public abstract class ContentPresenter<View extends ContentContract.View>
 
         if (wasViewRecreated) {
 
-            getView().setupList(getContentCache());
-            getView().getAllContent();
+            resetList();
         } else {
 
             if (getView().isListEmpty()) {
                 getView().getAllContent();
             }
         }
+    }
+
+    @Override
+    public void resetList() {
+        getView().setupList(getContentCache());
+        getView().getAllContent();
     }
 
     public abstract String getTag();

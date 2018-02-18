@@ -27,25 +27,17 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end">
 
-                <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_margin="8dp"
-                    app:mpb_progressStyle="circular"
-                    app:mpb_indeterminateTint="@color/activeIcon" />
-
                 <ImageButton
                     android:id="@+id/artistPortfolioLinkIb"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
                     android:layout_gravity="center"
                     style="@style/Widget.Splash.BorderlessImageButton"
                     android:src="@drawable/ic_open_in_new_black_24dp"
                     tools:ignore="ContentDescription"
-                    android:visibility="gone"/>
+                    android:visibility="visible" />
             </FrameLayout>
-
 
             <ImageView
                 android:id="@+id/userPicIv"
@@ -78,137 +70,186 @@
                 android:layout_gravity="center_horizontal"
                 android:text="\@amanshuraikwar" />
 
-            <HorizontalScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:clipToPadding="false"
-                android:scrollbars="none"
-                android:layout_gravity="center_horizontal">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/tagsParentLl"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/artistBioTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="7"
-                android:paddingBottom="0dp"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:layout_gravity="center_horizontal"
-                android:text="photographer from india"
-                android:textAppearance="@style/TextAppearance.ArtistBio"
-                android:visibility="gone" />
-
-            <FrameLayout
-                android:id="@+id/artistLocationFl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:visibility="visible"
-                android:background="@color/grey2">
-
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_gravity="center_horizontal">
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp"
-                        android:src="@drawable/ic_place_black_24dp"
-                        style="@style/Widget.Splash.ImageView"
-                        tools:ignore="ContentDescription"
-                        android:tint="@color/green"/>
-
-                    <TextView
-                        android:id="@+id/artistLocationTv"
+                    <HorizontalScrollView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="24dp"
-                        android:textAppearance="@style/TextAppearance.LocationTitle"
-                        android:lines="1"
-                        android:text="Unknown location"/>
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:clipToPadding="false"
+                        android:scrollbars="none"
+                        android:layout_gravity="center_horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/tagsParentLl"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        </LinearLayout>
+                    </HorizontalScrollView>
+
+                    <TextView
+                        android:id="@+id/artistBioTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="7"
+                        android:paddingBottom="0dp"
+                        android:paddingEnd="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="8dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="photographer from india"
+                        android:textAppearance="@style/TextAppearance.ArtistBio"
+                        android:visibility="gone" />
+
+                    <FrameLayout
+                        android:id="@+id/artistLocationFl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:visibility="visible"
+                        android:background="@color/grey2">
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_gravity="center_horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginBottom="12dp"
+                                android:src="@drawable/ic_place_black_24dp"
+                                style="@style/Widget.Splash.ImageView"
+                                tools:ignore="ContentDescription"
+                                android:tint="@color/green"/>
+
+                            <TextView
+                                android:id="@+id/artistLocationTv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginStart="24dp"
+                                android:textAppearance="@style/TextAppearance.LocationTitle"
+                                android:lines="1"
+                                android:text="Unknown location"/>
+                        </FrameLayout>
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:id="@+id/photoActionsLl"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:paddingStart="16dp"
+                        android:paddingTop="24dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="16dp"
+                        android:clipToPadding="false"
+                        android:visibility="gone">
+
+                        <Button
+                            android:id="@+id/artistPhotosCountBtn"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:drawableTop="@drawable/ic_image_black_24dp"
+                            android:drawableTint="@color/teal"
+                            style="@style/Widget.Splash.InlineActionButton"
+                            android:background="@null"
+                            android:text="--"/>
+
+                        <Button
+                            android:id="@+id/artistFollowersCountBtn"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:drawableTop="@drawable/ic_group_black_24dp"
+                            android:drawableTint="@color/indigo"
+                            style="@style/Widget.Splash.InlineActionButton"
+                            android:background="@null"
+                            android:text="--"/>
+
+                        <Button
+                            android:id="@+id/artistLikesCountBtn"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:drawableTop="@drawable/ic_heart_solid_black_24dp"
+                            android:drawableTint="@color/pink"
+                            style="@style/Widget.Splash.InlineActionButton"
+                            android:background="@null"
+                            android:text="--" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/userInfoLoadingWrapperFl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/grey1">
+
+                    <ProgressBar
+                        android:id="@+id/userInfoPb"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="32dp"
+                        android:indeterminateTint="@color/inactiveIcon" />
+
+                    <Button
+                        android:id="@+id/userInfoRetryBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_replay_black_24dp"
+                        style="@style/Widget.Splash.Button"
+                        android:text="@string/retry_btn_text"
+                        tools:ignore="ContentDescription"
+                        android:visibility="invisible"/>
                 </FrameLayout>
             </FrameLayout>
-
-            <LinearLayout
-                android:id="@+id/photoActionsLl"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:paddingStart="16dp"
-                android:paddingTop="24dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="16dp"
-                android:clipToPadding="false">
-
-                <Button
-                    android:id="@+id/artistPhotosCountBtn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_image_black_24dp"
-                    android:drawableTint="@color/teal"
-                    style="@style/Widget.Splash.InlineActionButton"
-                    android:background="@null"
-                    android:text="--"/>
-
-                <Button
-                    android:id="@+id/artistFollowersCountBtn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_group_black_24dp"
-                    android:drawableTint="@color/indigo"
-                    style="@style/Widget.Splash.InlineActionButton"
-                    android:background="@null"
-                    android:text="--"/>
-
-                <Button
-                    android:id="@+id/artistLikesCountBtn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_heart_solid_black_24dp"
-                    android:drawableTint="@color/pink"
-                    style="@style/Widget.Splash.InlineActionButton"
-                    android:background="@null"
-                    android:text="--" />
-            </LinearLayout>
         </LinearLayout>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="?android:attr/actionBarSize"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="48dp"
+            android:clipToPadding="false"
+            style="@style/Widget.Splash.TabLayout" />
     </com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout>
 
-    <View
-        android:id="@+id/overlay"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey1"
-        android:visibility="gone"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/itemsRv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:paddingTop="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addToFavFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:clickable="false"
+        android:focusable="true"
+        android:tint="@color/activeIconLight"
+        android:src="@drawable/bookmark_plus_outline_black_24dp"
+        app:backgroundTint="@color/darkGrey1"
+        android:backgroundTint="@color/darkGrey1" />
 </com.sonu.app.splash.ui.widget.SwipeBackCoordinatorLayout>

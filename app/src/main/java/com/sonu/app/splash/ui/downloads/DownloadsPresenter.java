@@ -1,28 +1,21 @@
 package com.sonu.app.splash.ui.downloads;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.util.Log;
 import android.util.Pair;
 
-import com.sonu.app.splash.data.local.room.PhotoDownload;
-import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.util.LogUtils;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -35,7 +28,10 @@ public class DownloadsPresenter
 
     private static final String TAG = LogUtils.getLogTag(DownloadsPresenter.class);
 
-    private Disposable getDownloadedPhotosDisp;
+    private Disposable
+            getDownloadedPhotosDisp,
+            updatePhotoDownloadDisp,
+            downloadFilePathDisp;
 
     @Inject
     public DownloadsPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
@@ -57,52 +53,40 @@ public class DownloadsPresenter
         getDownloadedPhotosDisp = getDataManager()
                 .getRunningPausedPendingDownloads()
                 .flatMapIterable(items -> items)
-                .flatMap(item -> check(item), (item1, item2) -> getPair(item1, item2))
-                .flatMap(item3 -> update(item3))
+                .flatMap(this::check, this::getPair)
+                .flatMap(this::update)
                 .toList()
                 .flatMapObservable(item4 -> getDataManager().getPhotoDownloads())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        new Consumer<List<PhotoDownload>>() {
-                               @Override
-                               public void accept(List<PhotoDownload> photoDownloads)
-                                       throws Exception {
+                        photoDownloads -> {
 
-                                   Log.i(TAG,
-                                           "getPhotoDownloads:accept:photosNo="
-                                                   +photoDownloads.size());
-                                   getView().displayPhotos(photoDownloads);
-                               }
-                           },
-                        new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
+                            Log.i(TAG,
+                                    "getPhotoDownloads:accept:photosNo="
+                                            +photoDownloads.size());
+                            getView().displayPhotos(photoDownloads);
+                        },
+                        throwable -> {
 
-                                throwable.printStackTrace();
-                                getView().showError();
-                            }
+                            throwable.printStackTrace();
+                            getView().showError();
                         },
-                        new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                getView().hideLoading();
-                            }
-                        },
-                        new Consumer<Disposable>() {
-                            @Override
-                            public void accept(Disposable disposable) throws Exception {
-                                getView().showLoading();
-                            }
-                        });
+                        () -> getView().hideLoading(),
+                        disposable -> getView().showLoading());
     }
 
     private Observable<PhotoDownload.Status> check(PhotoDownload photoDownload) {
 
-        return Observable.fromCallable(new Callable<PhotoDownload.Status>() {
-            @Override
-            public PhotoDownload.Status call() throws Exception {
-                return getDataManager().checkDownloadStatus(photoDownload.getDownloadReference());
+        return Observable.create(e -> {
+            try {
+                e.onNext(
+                        getDataManager()
+                                .checkDownloadStatus(photoDownload.getDownloadReference()));
+                e.onComplete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                e.tryOnError(ex);
             }
         });
     }
@@ -125,9 +109,76 @@ public class DownloadsPresenter
     }
 
     @Override
+    public void onDownloadComplete(long downloadReference) {
+
+        updatePhotoDownloadDisp = getDataManager()
+                .getPhotoDownloadByDownloadReference(downloadReference)
+                .flatMap(this::check, this::getPair)
+                .flatMap(this::update, this::getPair)
+                .filter(item -> item.second)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(item -> getView().updatePhotoDownload(item.first));
+    }
+
+    @Override
+    public void onOpenFileClick(long downloadReference) {
+
+        downloadFilePathDisp =
+                downloadFilePath(downloadReference)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                item -> {
+
+                                    Log.i(TAG,
+                                            "getFilePath:accept:path="
+                                                    +item);
+                                    getView().sendFileIntent(item);
+                                },
+                                Throwable::printStackTrace);
+    }
+
+    private Observable<Uri> downloadFilePath(long downloadReference) {
+
+        return Observable.create(e -> {
+            try {
+                e.onNext(
+                        getDataManager()
+                                .getDownloadedFilePath(downloadReference));
+                e.onComplete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                e.tryOnError(ex);
+            }
+        });
+    }
+
+    private boolean check(long downloadReference, PhotoDownload photoDownload) {
+        return photoDownload.getDownloadReference() == downloadReference;
+    }
+
+    private Pair<PhotoDownload, Boolean> getPair(Pair<PhotoDownload, PhotoDownload.Status> pair,
+                                                 boolean updated) {
+        return new Pair<>(pair.first, updated);
+    }
+
+    @Override
     public void detachView() {
         super.detachView();
 
         getDownloadedPhotosDisp.dispose();
+
+        if (updatePhotoDownloadDisp != null) {
+            if (!updatePhotoDownloadDisp.isDisposed()) {
+                updatePhotoDownloadDisp.dispose();
+            }
+        }
+
+        if (downloadFilePathDisp != null) {
+            if (!downloadFilePathDisp.isDisposed()) {
+                downloadFilePathDisp.dispose();
+            }
+        }
     }
 }

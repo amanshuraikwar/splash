@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="downloads"
-            app:layout_scrollFlags="scroll|enterAlways"
             style="@style/Widget.Splash.Toolbar.BlackTitle" />
     </android.support.design.widget.AppBarLayout>
 

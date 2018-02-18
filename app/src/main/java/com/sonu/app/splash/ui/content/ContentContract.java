@@ -21,6 +21,6 @@ public interface ContentContract {
 
     // cannot set the template variable name to 'View' because it gives compilation error >_>
     interface Presenter<StupidView extends ContentContract.View> extends BasePresenter<StupidView> {
-
+        void resetList();
     }
 }

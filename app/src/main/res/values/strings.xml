@@ -29,12 +29,15 @@
     <string name="transition_photo_description_background">photo_description_background</string>
     <string name="transition_artist_pic">artist_pic</string>
     <string name="transition_photo_fullscreen">photo_fullscreen</string>
+    <string name="transition_stats_button">stats_button</string>
+    <string name="transition_stats_background">stats_background</string>
+    <string name="content_error_text">Unable to load content!</string>
 
     <array name="tab_name">
         <item>photos</item>
         <item>collections</item>
         <item>search</item>
         <item>downloads</item>
-        <!--<item>profile</item>-->
+        <item>favs</item>
     </array>
 </resources>

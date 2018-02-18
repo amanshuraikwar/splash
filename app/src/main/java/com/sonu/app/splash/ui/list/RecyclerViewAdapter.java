@@ -60,6 +60,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         return listItems.size();
     }
 
+    public boolean isEmpty() {
+        return listItems.size() == 0;
+    }
+
     @Override
     public int getItemViewType(int position) {
         return listItems.get(position).type(typeFactory);
@@ -73,11 +77,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         return listItems;
     }
 
+    public ListItem getListItem(int index) {
+        return listItems.get(index);
+    }
+
     public void setListItems(List<ListItem> listItems) {
         this.listItems = listItems;
     }
 
     public void addListItems(List<ListItem> newListItems) {
         listItems.addAll(newListItems);
+    }
+
+    public void addListItem(ListItem newListItem) {
+        listItems.add(newListItem);
+    }
+
+    public void removeListItem(int index) {
+        listItems.remove(index);
     }
 }

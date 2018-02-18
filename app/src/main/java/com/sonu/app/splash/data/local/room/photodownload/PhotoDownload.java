@@ -1,9 +1,7 @@
-package com.sonu.app.splash.data.local.room;
+package com.sonu.app.splash.data.local.room.photodownload;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.TypeConverter;
-import android.arch.persistence.room.TypeConverters;
 
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.PhotoUtils;

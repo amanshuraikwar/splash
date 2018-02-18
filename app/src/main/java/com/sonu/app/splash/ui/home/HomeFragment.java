@@ -22,6 +22,7 @@ import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
 import com.sonu.app.splash.ui.collections.CollectionsFragment;
 import com.sonu.app.splash.ui.downloads.DownloadsFragment;
+import com.sonu.app.splash.ui.favs.FavsFragment;
 import com.sonu.app.splash.ui.photos.PhotosFragment;
 import com.sonu.app.splash.ui.search.SearchFragment;
 import com.sonu.app.splash.util.AnimUtils;
@@ -88,7 +89,7 @@ public class HomeFragment
             R.drawable.burst_mode_drawable_selector,
             R.drawable.search_drawable_selector,
             R.drawable.downloads_drawable_selector,
-            R.drawable.person_drawable_selector};
+            R.drawable.bookmark_drawable_selector};
 
     private FragNavController navController;
 
@@ -105,6 +106,9 @@ public class HomeFragment
 
     @Inject
     DownloadsFragment downloadsFragment;
+
+    @Inject
+    FavsFragment favsFragment;
 
     @Inject
     public HomeFragment() {
@@ -188,27 +192,6 @@ public class HomeFragment
         ConnectionUtil.unregisterNetworkCallback(getContext(), networkCallback);
     }
 
-    // this part is "stolen" from the inspirational app PLAID by legendary Nick Butcher
-    /*
-    private void animateToolbar() {
-
-        // this is gross but toolbar doesn't expose it's children to animate them :(
-        View t = toolbar.getChildAt(0);
-        if (t != null && t instanceof TextView) {
-            TextView title = (TextView) t;
-
-            title.setAlpha(0f);
-            title.setTranslationX(100f);
-
-            title.animate()
-                    .alpha(1f)
-                    .translationXBy(-100f)
-                    .setStartDelay(300)
-                    .setDuration(600)
-                    .setInterpolator(AnimUtils.getFastOutSlowInInterpolator(getContext()));
-        }
-    }*/
-
     private void animateBottomTl() {
 
         bottomTl.setAlpha(0f);
@@ -246,6 +229,7 @@ public class HomeFragment
 
         navController.switchTab(position);
         updateToolbarTitle(position);
+        hideBottomDot(position);
     }
 
     private void updateToolbarTitle(int position) {
@@ -316,22 +300,22 @@ public class HomeFragment
 
     @Override
     public void onDownloadStarted(long downloadReference) {
-        // todo show some action
+
+        showBottomDot(3);
     }
 
-    @Override
-    public void showIoException(int titleStringRes, int messageStringRes) {
+    private void showBottomDot(int index) {
 
+        TabLayout.Tab selectedTab = bottomTl.getTabAt(index);
+        View view = selectedTab.getCustomView();
+        view.findViewById(R.id.bottomDotView).setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
+    private void hideBottomDot(int index) {
 
-    }
-
-    @Override
-    public void showUnknownException(String message) {
-
+        TabLayout.Tab selectedTab = bottomTl.getTabAt(index);
+        View view = selectedTab.getCustomView();
+        view.findViewById(R.id.bottomDotView).setVisibility(View.GONE);
     }
 
     @Override
@@ -360,7 +344,7 @@ public class HomeFragment
             case FragNavController.TAB4:
                 return downloadsFragment;
             case FragNavController.TAB5:
-                return photosFragment;
+                return favsFragment;
         }
 
         throw new IllegalStateException("Need to send an index that we know");

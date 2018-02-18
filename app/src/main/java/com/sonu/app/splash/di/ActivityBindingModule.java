@@ -7,12 +7,14 @@ import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionActivity
 import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionModule;
 import com.sonu.app.splash.ui.content.ContentModule;
 import com.sonu.app.splash.ui.downloads.DownloadsModule;
+import com.sonu.app.splash.ui.favs.FavsModule;
 import com.sonu.app.splash.ui.home.HomeActivity;
 import com.sonu.app.splash.ui.home.HomeModule;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionModule;
+import com.sonu.app.splash.ui.photostats.PhotoStatsActivity;
+import com.sonu.app.splash.ui.photostats.PhotoStatsModule;
 import com.sonu.app.splash.ui.search.SearchModule;
-import com.sonu.app.splash.ui.search.activity.SearchActivity;
 import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
 import com.sonu.app.splash.ui.search.allsearch.AllSearchModule;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
@@ -36,7 +38,8 @@ public abstract class ActivityBindingModule {
             HomeModule.class,
             ContentModule.class,
             DownloadsModule.class,
-            SearchModule.class})
+            SearchModule.class,
+            FavsModule.class})
     abstract HomeActivity homeActivity();
 
     @ActivityScoped
@@ -51,26 +54,30 @@ public abstract class ActivityBindingModule {
 
     @ActivityScoped
     @ContributesAndroidInjector(modules = {
-            UserDescriptionModule.class})
+            UserDescriptionModule.class,
+            ContentModule.class})
     abstract UserDescriptionActivity userDescriptionActivity();
-
+    
     @ActivityScoped
     @ContributesAndroidInjector(modules = {
-            com.sonu.app.splash.ui.search.activity.SearchModule.class})
-    abstract SearchActivity searchActivity();
-
-    @ActivityScoped
-    @ContributesAndroidInjector(modules = {
-            CollectionDescriptionModule.class
+            CollectionDescriptionModule.class,
+            ContentModule.class
     })
     abstract CollectionDescriptionActivity getCollectionDescriptionActivity();
 
     @ActivityScoped
     @ContributesAndroidInjector(modules = {
             AllSearchModule.class,
-            SearchModule.class
+            SearchModule.class,
+            ContentModule.class
     })
     abstract AllSearchActivity getAllSearchActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = {
+            PhotoStatsModule.class
+    })
+    abstract PhotoStatsActivity getPhotoStatsActivity();
 
     @ActivityScoped
     @ContributesAndroidInjector

@@ -44,13 +44,7 @@ public class HomePresenter
                             .downloadStarted
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Consumer<Long>() {
-                                @Override
-                                public void accept(Long aLong) throws Exception {
-
-                                    getView().onDownloadStarted(aLong);
-                                }
-                            });
+                            .subscribe(getView()::onDownloadStarted);
         }
     }
 

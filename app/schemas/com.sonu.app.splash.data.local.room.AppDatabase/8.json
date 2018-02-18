@@ -1,0 +1,351 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 8,
+    "identityHash": "731eb61eb86593527e28e0009bfbeab8",
+    "entities": [
+      {
+        "tableName": "PhotoDownload",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`downloadReference` INTEGER NOT NULL, `downloadTimestamp` TEXT, `status` INTEGER, `photoId` TEXT, `downloadUrl` TEXT, `downloadedFileName` TEXT, `photoUrl` TEXT, `width` INTEGER NOT NULL, `height` INTEGER NOT NULL, `color` TEXT, PRIMARY KEY(`downloadReference`))",
+        "fields": [
+          {
+            "fieldPath": "downloadReference",
+            "columnName": "downloadReference",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "downloadTimestamp",
+            "columnName": "downloadTimestamp",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photoId",
+            "columnName": "photoId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "downloadUrl",
+            "columnName": "downloadUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "downloadedFileName",
+            "columnName": "downloadedFileName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photoUrl",
+            "columnName": "photoUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "width",
+            "columnName": "width",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "downloadReference"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "FavPhoto",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `likedAt` TEXT, `createdAt` TEXT, `updatedAt` TEXT, `width` INTEGER NOT NULL, `height` INTEGER NOT NULL, `color` TEXT, `description` TEXT, `photoUrls` TEXT, `photoLinks` TEXT, `user` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "likedAt",
+            "columnName": "likedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "width",
+            "columnName": "width",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photoUrls",
+            "columnName": "photoUrls",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photoLinks",
+            "columnName": "photoLinks",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "user",
+            "columnName": "user",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "FavCollection",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `title` TEXT, `description` TEXT, `publishedAt` TEXT, `updatedAt` TEXT, `likedAt` TEXT, `curated` INTEGER NOT NULL, `featured` INTEGER NOT NULL, `totalPhotos` INTEGER NOT NULL, `privateC` INTEGER NOT NULL, `shareKey` TEXT, `tags` TEXT, `coverPhoto` TEXT, `previewPhotos` TEXT, `user` TEXT, `collectionLinks` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "publishedAt",
+            "columnName": "publishedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "likedAt",
+            "columnName": "likedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "curated",
+            "columnName": "curated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "featured",
+            "columnName": "featured",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalPhotos",
+            "columnName": "totalPhotos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "privateC",
+            "columnName": "privateC",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shareKey",
+            "columnName": "shareKey",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tags",
+            "columnName": "tags",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "coverPhoto",
+            "columnName": "coverPhoto",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "previewPhotos",
+            "columnName": "previewPhotos",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "user",
+            "columnName": "user",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "collectionLinks",
+            "columnName": "collectionLinks",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "FavUser",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `updatedAt` TEXT, `likedAt` TEXT, `username` TEXT, `name` TEXT, `totalLikes` INTEGER NOT NULL, `totalPhotos` INTEGER NOT NULL, `totalCollections` INTEGER NOT NULL, `profileImage` TEXT, `userLinks` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "likedAt",
+            "columnName": "likedAt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "totalLikes",
+            "columnName": "totalLikes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalPhotos",
+            "columnName": "totalPhotos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalCollections",
+            "columnName": "totalCollections",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileImage",
+            "columnName": "profileImage",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userLinks",
+            "columnName": "userLinks",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"731eb61eb86593527e28e0009bfbeab8\")"
+    ]
+  }
+}

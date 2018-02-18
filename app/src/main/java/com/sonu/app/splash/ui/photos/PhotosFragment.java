@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.content.allphotos.AllPhotosFragment;
 import com.sonu.app.splash.ui.content.curatedphotos.CuratedPhotosFragment;

@@ -1,6 +1,6 @@
 package com.sonu.app.splash.ui.download;
 
-import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 

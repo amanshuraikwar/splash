@@ -6,14 +6,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
 import com.sonu.app.splash.ui.list.ViewHolder;
 import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.DrawableUtils;
@@ -50,6 +49,12 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
     @BindView(R.id.downloadStatusCv)
     CardView downloadStatusCv;
 
+    @BindView(R.id.openFileCv)
+    CardView openFileCv;
+
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+
     public DownloadViewHolder(View itemView) {
         super(itemView);
     }
@@ -71,6 +76,8 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
                                 parentActivity.getColor(R.color.yellow));
                 downloadStatusTv.setTextColor(
                         parentActivity.getColor(R.color.primaryText));
+                openFileCv.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 break;
             case FAILED:
                 downloadStatusTv.setText("failed");
@@ -79,6 +86,8 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
                                 parentActivity.getColor(R.color.red));
                 downloadStatusTv.setTextColor(
                         parentActivity.getColor(R.color.primaryTextLight));
+                openFileCv.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 break;
             case PAUSED:
                 downloadStatusTv.setText("paused");
@@ -87,6 +96,8 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
                                 parentActivity.getColor(R.color.orange));
                 downloadStatusTv.setTextColor(
                         parentActivity.getColor(R.color.primaryTextLight));
+                openFileCv.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 break;
             case RUNNING:
                 downloadStatusTv.setText("downloading");
@@ -95,6 +106,8 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
                                 parentActivity.getColor(R.color.lightBlueN));
                 downloadStatusTv.setTextColor(
                         parentActivity.getColor(R.color.primaryTextLight));
+                openFileCv.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
                 break;
             case SUCCESSFUL:
                 downloadStatusTv.setText("downloaded");
@@ -103,6 +116,8 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
                                 parentActivity.getColor(R.color.green));
                 downloadStatusTv.setTextColor(
                         parentActivity.getColor(R.color.primaryTextLight));
+                openFileCv.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 break;
 
         }
@@ -127,11 +142,15 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
         // unique transition name
         photoIv.setTransitionName(photoDownload.getPhotoId());
 
-        photoIv.setOnClickListener(new View.OnClickListener() {
+        photoIv.setOnClickListener(
+                view ->
+                        listItem.getOnClickListener().onPhotoClick(
+                                listItem.getPhotoDownload(), photoIv));
 
+        openFileCv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listItem.getOnClickListener().onPhotoClick(listItem.getPhotoDownload(), photoIv);
+                listItem.getOnClickListener().onOpenFileClick(listItem.getPhotoDownload());
             }
         });
 

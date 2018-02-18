@@ -7,19 +7,22 @@ import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.cache.UserPhotosCache;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.data.local.room.favourites.FavCollection;
+import com.sonu.app.splash.data.local.room.favourites.FavUser;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
 import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.PresenterPlugin;
 import com.sonu.app.splash.util.LogUtils;
-import com.sonu.app.splash.util.PermissionsHelper;
+import com.sonu.app.splash.util.NumberUtils;
+import com.sonu.app.splash.util.UiExceptionUtils;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -36,10 +39,8 @@ public class UserDescriptionPresenter
 
     private static final String TAG = LogUtils.getLogTag(UserDescriptionPresenter.class);
 
-    private Disposable userDescriptionDisp, downloadPhotoDisp;
+    private Disposable userDescriptionDisp, favUserDisp, bookmarkDisp;
     private boolean fetchingData;
-
-    private UserPhotosCache userPhotosCache;
 
     @Inject
     public UserDescriptionPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
@@ -54,19 +55,23 @@ public class UserDescriptionPresenter
 
             getData();
 
-            if (userPhotosCache == null) {
-                userPhotosCache =
-                        getDataManager().getUserPhotosCache(getView().getCurArtistUsername());
-            }
-
-            getView().setupList(getDataManager(), userPhotosCache);
-            getView().getAllPhotos();
-        } else {
-
-            if (getView().isListEmpty()) {
-                getView().getAllPhotos();
-            }
+            checkForBookmark();
         }
+    }
+
+    private void checkForBookmark() {
+
+        bookmarkDisp = getDataManager()
+                .isUserFav(getView().getCurArtistId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(value -> {
+                    if (value) {
+                        getView().setFavActive();
+                    } else {
+                        getView().setFavInactive();
+                    }
+                });
     }
 
     @Override
@@ -74,6 +79,7 @@ public class UserDescriptionPresenter
 
         Log.d(TAG, "getData:called");
         Log.i(TAG, "getData:locked="+fetchingData);
+
 
         if (!fetchingData) {
             fetchingData = true;
@@ -83,40 +89,70 @@ public class UserDescriptionPresenter
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Consumer<User>() {
-                                @Override
-                                public void accept(User user) throws Exception {
-                                    Log.d(TAG, "getUser:onNext:called");
-                                    getView().displayUserDescription(user);
-                                }
+                            user -> {
+                                Log.d(TAG, "getUser:onNext:called");
+                                getView().displayUserDescription(user);
                             },
-                            new Consumer<Throwable>() {
-                                @Override
-                                public void accept(Throwable throwable) throws Exception {
-                                    Log.d(TAG, "getUser:onError:called");
-                                    Log.e(TAG, "getUser:onError:error=" + throwable);
-                                    throwable.printStackTrace();
-                                    handleException(throwable);
-                                    fetchingData = false;
-                                }
+                            throwable -> {
+                                Log.d(TAG, "getUser:onError:called");
+                                Log.e(TAG, "getUser:onError:error=" + throwable);
+                                throwable.printStackTrace();
+                                getView().showError();
+                                fetchingData = false;
                             },
-                            new Action() {
-                                @Override
-                                public void run() throws Exception {
-                                    Log.d(TAG, "getUser:onCompleted:called");
-                                    getView().hideLoading();
-                                    fetchingData = false;
-                                }
+                            () -> {
+                                Log.d(TAG, "getUser:onCompleted:called");
+                                getView().hideLoading();
+                                fetchingData = false;
                             },
-                            new Consumer<Disposable>() {
-                                @Override
-                                public void accept(Disposable disposable) throws Exception {
-                                    Log.d(TAG, "getUser:onSubscribe:called");
-                                    getView().showLoading();
-                                }
+                            disposable -> {
+                                Log.d(TAG, "getUser:onSubscribe:called");
+                                getView().showLoading();
                             });
         }
 
+    }
+
+    @Override
+    public void onAddToFavClick() {
+
+        favUserDisp =
+                getDataManager()
+                        .isUserFav(getView().getCurArtistId())
+                        .flatMap(this::getFavObs)
+                        .flatMap(temp ->
+                                getDataManager().isUserFav(
+                                        getView().getCurArtistId()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                isFav -> {
+
+                                    if (isFav) {
+
+                                        getView().setFavActive();
+                                    } else {
+
+                                        getView().setFavInactive();
+                                    }
+                                }
+                        );
+    }
+
+    private Observable<Boolean> getFavObs(Boolean isFav) {
+
+        if (isFav) {
+
+            return getDataManager()
+                    .getFavUserById(getView().getCurArtistId())
+                    .flatMap(getDataManager()::removeFav)
+                    .filter(success -> success);
+        } else {
+
+            return getDataManager()
+                    .addFav(new FavUser(getView().getCurUser(), NumberUtils.getCurrentDate()))
+                    .filter(success -> success);
+        }
     }
 
     @Override
@@ -125,46 +161,12 @@ public class UserDescriptionPresenter
 
         userDescriptionDisp.dispose();
 
-        if (downloadPhotoDisp != null) {
-            if (!downloadPhotoDisp.isDisposed()) {
-                downloadPhotoDisp.dispose();
+        if(favUserDisp != null) {
+            if (!favUserDisp.isDisposed()) {
+                favUserDisp.dispose();
             }
         }
-    }
 
-    private void handleException(Throwable e) {
-        if (e instanceof IOException) {
-
-            getView().showIoException(
-                    R.string.io_exception_title,
-                    R.string.io_exception_message
-            );
-        } else if (e instanceof UnsplashApiException) {
-
-            if (((UnsplashApiException) e)
-                    .getCode() == UnsplashApiException.CODE_API_LIMIT_EXCEEDED) {
-
-                getView().showUnsplashApiException(
-                        R.string.unsplash_api_rate_limit_exceed_title,
-                        R.string.unsplash_api_rate_limit_exceed_message);
-            } else {
-
-                getView().showUnsplashApiException(
-                        R.string.unsplash_api_unknown_exception_title,
-                        R.string.unsplash_api_unknown_exception_message);
-            }
-        } else {
-            getView().showUnknownException(e.getMessage());
-        }
-    }
-
-    @Override
-    public void onDownloadBtnClick(Photo photo) {
-        downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
-    }
-
-    @Override
-    public void onPhotoClick(Photo photo) {
-        getView().startPhotoDescriptionActivity(photo);
+        bookmarkDisp.dispose();
     }
 }

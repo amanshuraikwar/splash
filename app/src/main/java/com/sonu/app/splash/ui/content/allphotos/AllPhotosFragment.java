@@ -27,7 +27,7 @@ public class AllPhotosFragment
         extends ContentFragment<AllPhotosContract.Presenter, Photo>
         implements AllPhotosContract.View {
 
-    private static final String TAG = LogUtils.getLogTag(CuratedPhotosFragment.class);
+    private static final String TAG = LogUtils.getLogTag(AllPhotosContract.class);
 
     private PhotoOnClickListener photoOnClickListener =
             new PhotoOnClickListener() {
@@ -69,4 +69,6 @@ public class AllPhotosFragment
         listItem.setOnClickListener(photoOnClickListener);
         return listItem;
     }
+
+
 }

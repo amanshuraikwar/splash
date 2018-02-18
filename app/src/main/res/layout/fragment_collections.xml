@@ -17,7 +17,6 @@
             android:layout_height="?android:attr/actionBarSize"
             android:layout_marginStart="12dp"
             android:clipToPadding="false"
-            app:layout_scrollFlags="scroll|enterAlways"
             style="@style/Widget.Splash.TabLayout" />
     </android.support.design.widget.AppBarLayout>
 

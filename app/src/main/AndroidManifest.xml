@@ -18,11 +18,22 @@
         android:supportsPictureInPicture="false"
         tools:replace="android:label, android:supportsRtl">
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
         <activity
             android:name="com.sonu.app.splash.ui.home.HomeActivity"
             android:label="${applicationLabel_1}"
             android:theme="@style/Splash.Home"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
 
             <intent-filter>
 
@@ -51,16 +62,16 @@
             android:theme="@style/Splash.Translucent.PhotoFullscreen" />
 
         <activity
-            android:name=".ui.search.activity.SearchActivity"
-            android:theme="@style/Splash.Translucent.Search" />
-
-        <activity
             android:name=".ui.collectiondecription.CollectionDescriptionActivity"
             android:theme="@style/Splash.Translucent.CollectionDescription" />
 
         <activity
             android:name=".ui.search.allsearch.AllSearchActivity"
             android:theme="@style/Splash.Translucent.AllSearch" />
+
+        <activity
+            android:name=".ui.photostats.PhotoStatsActivity"
+            android:theme="@style/Splash.Translucent.PhotoStats" />
 
         <!-- exported=false for restricting the usage of service by this app only-->
         <service

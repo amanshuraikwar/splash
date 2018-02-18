@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.cache.ContentCache;
@@ -24,6 +25,7 @@ import com.sonu.app.splash.ui.architecture.BaseFragment;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.ui.list.ContentListAdapter;
+import com.sonu.app.splash.ui.loading.LoadingListItem;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
 import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
 import com.sonu.app.splash.util.LogUtils;
@@ -50,17 +52,8 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
     @BindView(R.id.progressBar)
     MaterialProgressBar progressBar;
 
-    @BindView(R.id.errorIconIv)
-    ImageView errorIconIv;
-
     @BindView(R.id.errorWrapperLl)
     View errorWrapperLl;
-
-    @BindView(R.id.errorTitleTv)
-    TextView errorTitleTv;
-
-    @BindView(R.id.errorMessageTv)
-    TextView errorMessageTv;
 
     @BindView(R.id.retryBtn)
     Button retryBtn;
@@ -81,21 +74,8 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
                 }
 
                 @Override
-                public void showIoException(int titleStringRes, int messageStringRes) {
-                    ContentFragment
-                            .this.showIoException(titleStringRes, messageStringRes);
-                }
-
-                @Override
-                public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-                    ContentFragment
-                            .this.showUnsplashApiException(titleStringRes, messageStringRes);
-                }
-
-                @Override
-                public void showUnknownException(String message) {
-                    ContentFragment
-                            .this.showUnknownException(message);
+                public void showError(int errorIconDrawableId, String errorTitle, String errorMessage) {
+                    ContentFragment.this.showError();
                 }
 
                 @Override
@@ -145,12 +125,7 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
 
         Log.d(TAG, "onViewCreated:called");
 
-        retryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adapter.getAllContent();
-            }
-        });
+        retryBtn.setOnClickListener(view1 -> adapter.getAllContent());
     }
 
     @Override
@@ -180,6 +155,8 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
 
         itemsRv.setAdapter(adapter);
 
+        itemsRv.clearOnScrollListeners();
+
         itemsRv.addOnScrollListener(
                 new RecyclerView.OnScrollListener() {
                     @Override
@@ -189,11 +166,22 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
 
                         layoutManager.findLastVisibleItemPositions(lastVisibleItems);
 
+                        Log.i(TAG, "onScrollStateChanged:lastVisibleItems");
+
                         if (lastVisibleItems[0] == adapter.getItemCount()-1
                                 || lastVisibleItems[1] == adapter.getItemCount()-1) {
 
+                            Log.i(TAG, "onScrollStateChanged:ready to load more");
+
                             if (!isListEmpty()) {
-                                adapter.getMoreContent();
+                                Log.d(TAG, "onScrollStateChanged:list not empty");
+                                LoadingListItem loadingListItem =
+                                        (LoadingListItem)
+                                                adapter.getListItem(adapter.getItemCount() - 1);
+                                Log.d(TAG, "onScrollStateChanged:state="+loadingListItem.getState());
+                                if (loadingListItem.getState() == LoadingListItem.STATE.NORMAL) {
+                                    adapter.getMoreContent();
+                                }
                             }
                         }
                     }
@@ -213,9 +201,16 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
 
     @Override
     public void showLoading() {
+
         if (isListEmpty()) {
+
             progressBar.setVisibility(View.VISIBLE);
             errorWrapperLl.setVisibility(View.GONE);
+        } else {
+
+            ((LoadingListItem)adapter.getListItems().get(adapter.getItemCount() - 1))
+                    .setState(LoadingListItem.STATE.LOADING);
+            adapter.notifyItemChanged(adapter.getItemCount() - 1, LoadingListItem.STATE.LOADING);
         }
     }
 
@@ -224,86 +219,18 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
         progressBar.setVisibility(View.GONE);
     }
 
-    @Override
-    public void showIoException(int titleStringRes, int messageStringRes) {
+    private void showError() {
+
+        Toast.makeText(host, R.string.content_error_text, Toast.LENGTH_SHORT).show();
 
         if (isListEmpty()) {
             progressBar.setVisibility(View.GONE);
             errorWrapperLl.setVisibility(View.VISIBLE);
-            errorTitleTv.setVisibility(View.GONE);
-            errorMessageTv.setVisibility(View.GONE);
-
-            final AnimatedVectorDrawable avd =
-                    (AnimatedVectorDrawable)
-                            ContextCompat.getDrawable(getContext(), R.drawable.avd_no_connection);
-            if (avd != null) {
-                errorIconIv.setImageDrawable(avd);
-                avd.start();
-            }
-        }
-    }
-
-    @Override
-    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-
-        if (isListEmpty()) {
-            progressBar.setVisibility(View.GONE);
-            errorWrapperLl.setVisibility(View.VISIBLE);
-            errorTitleTv.setVisibility(View.VISIBLE);
-            errorMessageTv.setVisibility(View.VISIBLE);
-
-            errorIconIv.setImageDrawable(
-                    ContextCompat.getDrawable(getContext(), R.drawable.ic_cloud_off_grey_56dp));
-
-            errorTitleTv.setText(getString(titleStringRes));
-            errorMessageTv.setText(getString(messageStringRes));
         } else {
-            MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
-            messageDialogConfig.color(getContext().getColor(R.color.darkRed));
-            messageDialogConfig.actionText("OK");
-            messageDialogConfig.iconDrawable(R.drawable.ic_cloud_off_grey_56dp);
-            messageDialogConfig.title(getString(titleStringRes));
-            messageDialogConfig.message(getString(messageStringRes));
-            messageDialog.setConfig(messageDialogConfig);
-            messageDialog.show();
-        }
-    }
 
-    @Override
-    public void showUnknownException(String message) {
-
-        if (isListEmpty()) {
-            progressBar.setVisibility(View.GONE);
-            errorWrapperLl.setVisibility(View.VISIBLE);
-            errorTitleTv.setVisibility(View.VISIBLE);
-            errorMessageTv.setVisibility(View.VISIBLE);
-
-            errorIconIv.setImageDrawable(
-                    ContextCompat.getDrawable(getContext(), R.drawable.ic_error_grey_56dp));
-
-            errorTitleTv.setText(getString(R.string.unknown_exception_title));
-            if (message != null) {
-                if (!message.equals("")) {
-                    errorMessageTv.setText(message);
-                } else {
-                    errorMessageTv.setText(getString(R.string.unknown_exception_message));
-                }
-            }
-        } else {
-            MessageDialogConfig messageDialogConfig = new MessageDialogConfig();
-            messageDialogConfig.color(getContext().getColor(R.color.darkRed));
-            messageDialogConfig.actionText("OK");
-            messageDialogConfig.iconDrawable(R.drawable.ic_error_grey_56dp);
-            messageDialogConfig.title(getString(R.string.unknown_exception_title));
-            if (message != null) {
-                if (!message.equals("")) {
-                    messageDialogConfig.message(message);
-                } else {
-                    messageDialogConfig.message(getString(R.string.unknown_exception_message));
-                }
-            }
-            messageDialog.setConfig(messageDialogConfig);
-            messageDialog.show();
+            ((LoadingListItem)adapter.getListItems().get(adapter.getItemCount() - 1))
+                    .setState(LoadingListItem.STATE.ERROR);
+            adapter.notifyItemChanged(adapter.getItemCount() - 1, LoadingListItem.STATE.ERROR);
         }
     }
 

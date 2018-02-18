@@ -1,15 +1,15 @@
 package com.sonu.app.splash.data.download;
 
 import android.app.DownloadManager;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.sonu.app.splash.di.ApplicationContext;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.PhotoUtils;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -44,6 +44,7 @@ public class DownloaderImpl implements Downloader {
 
     @Override
     public PhotoDownload.Status checkDownloadStatus(long downloadReference) {
+
         DownloadManager.Query query = new DownloadManager.Query();
 
         //set the query filter to our previously Enqueued download
@@ -57,6 +58,26 @@ public class DownloaderImpl implements Downloader {
         }
 
         return PhotoDownload.Status.FAILED;
+    }
+
+    @Override
+    public Uri getDownloadedFilePath(long downloadReference) {
+
+        DownloadManager.Query query = new DownloadManager.Query();
+
+        //set the query filter to our previously Enqueued download
+        query.setFilterById(downloadReference);
+
+        //Query the download manager about downloads that have been requested.
+        Cursor cursor = downloadManager.query(query);
+
+        if(cursor.moveToFirst()){
+
+            int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+            return Uri.fromFile(new File(cursor.getString(columnIndex)));
+        }
+
+        return null;
     }
 
     private PhotoDownload.Status getDownloadStatus(Cursor cursor) {

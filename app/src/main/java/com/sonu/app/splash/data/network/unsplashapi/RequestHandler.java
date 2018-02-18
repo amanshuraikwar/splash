@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import io.reactivex.exceptions.UndeliverableException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,7 +25,7 @@ public class RequestHandler {
         this.okHttpClient = okHttpClient;
     }
 
-    public ResponseBody request(Request request) throws IOException, UnsplashApiException {
+    public ResponseBody request(Request request) throws IOException, UnsplashApiException, UndeliverableException {
 
         Response response = okHttpClient.newCall(request).execute();
         ResponseBody body = response.body();

@@ -8,10 +8,10 @@ import com.sonu.app.splash.data.cache.FeaturedCollectionsCache;
 import com.sonu.app.splash.data.cache.SearchCollectionsCache;
 import com.sonu.app.splash.data.cache.SearchPhotosCache;
 import com.sonu.app.splash.data.cache.SearchUsersCache;
+import com.sonu.app.splash.data.cache.UserCollectionsCache;
 import com.sonu.app.splash.data.cache.UserPhotosCache;
 import com.sonu.app.splash.data.download.DownloadSession;
 import com.sonu.app.splash.data.download.Downloader;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
 import com.sonu.app.splash.data.local.LocalDataManager;
 import com.sonu.app.splash.data.network.NetworkDataManager;
 
@@ -36,6 +36,8 @@ public interface DataManager extends LocalDataManager, NetworkDataManager, Downl
     SearchUsersCache getSearchUsersCache();
 
     UserPhotosCache getUserPhotosCache(String username);
+
+    UserCollectionsCache getUserCollectionsCache(String username);
 
     CollectionPhotosCache getCollectionPhotosCache(String id);
 

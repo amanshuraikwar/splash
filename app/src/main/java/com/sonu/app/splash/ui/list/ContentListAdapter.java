@@ -2,9 +2,13 @@ package com.sonu.app.splash.ui.list;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 
 import com.sonu.app.splash.data.cache.ContentCache;
+import com.sonu.app.splash.ui.loading.LoadingListItem;
+import com.sonu.app.splash.ui.loading.LoadingOnClickListener;
+import com.sonu.app.splash.ui.loading.LoadingViewHolder;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UiExceptionUtils;
 
@@ -24,6 +28,7 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
 
     private ContentCache contentCache;
     private AdapterListener adapterListener;
+    private boolean fetching = false;
 
     public ContentListAdapter(@NonNull FragmentActivity parentActivity,
                               @NonNull ListItemTypeFactory typeFactory,
@@ -34,10 +39,47 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
         this.adapterListener = adapterListener;
     }
 
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+
+        // making loadingViewHolder cover full span
+        if (holder instanceof LoadingViewHolder) {
+
+            StaggeredGridLayoutManager.LayoutParams layoutParams =
+                    (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+                    layoutParams.setFullSpan(true);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
+
+        if (payloads.isEmpty()) {
+            // Perform a full update
+            onBindViewHolder(holder, position);
+        } else {
+            // Perform a partial update
+            for (Object payload : payloads) {
+                if (payload instanceof LoadingListItem.STATE) {
+                    ((LoadingViewHolder) holder).bindState((LoadingListItem.STATE) payload);
+                }
+            }
+        }
+    }
+
+    private synchronized boolean isFetching() {
+        return fetching;
+    }
+
+    private synchronized void setFetching(boolean fetching) {
+        this.fetching = fetching;
+    }
+
     /**
-     * to get all photos according to cache state
-     * -> if : cache empty then fetch more photos
-     * -> else if : cache is not empty fetch cached photos
+     * to get all content according to cache state
+     * -> if : cache empty then fetch more content
+     * -> else if : cache is not empty fetch cached content
      */
     public void getAllContent() {
 
@@ -50,82 +92,155 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
     }
 
     /**
-     * to fetch cached photos from photos cache
+     * to fetch cached content from content cache
      */
+    @SuppressWarnings({"WeakerAccess", "unchecked"})
     public void getCachedContent() {
+
+        if (isFetching()) {
+            return;
+        }
 
         contentCache
                 .getCachedContent()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<DataModel>>() {
+
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        setFetching(true);
                     }
 
                     @Override
                     public void onNext(List<DataModel> content) {
-                        Log.d(TAG, "getMoreContent:onNext:called");
-                        setListItems(adapterListener.createListItems(content));
-                        notifyDataSetChanged();
-                    }
 
+                        Log.d(TAG, "getMoreContent:onNext:called");
+
+                        if (content.size() != 0) {
+                            setListItems(adapterListener.createListItems(content));
+                            addListItem(getLoadingListItem());
+                            notifyDataSetChanged();
+                        } else {
+
+                            if (!isEmpty()) {
+
+                                ((LoadingListItem)getListItems().get(getItemCount() - 1))
+                                        .setState(LoadingListItem.STATE.NORMAL);
+                                notifyItemChanged(getItemCount() - 1, LoadingListItem.STATE.NORMAL);
+                            }
+                        }
+                    }
 
                     @Override
                     public void onError(Throwable e) {
+
                         Log.d(TAG, "getMoreContent:onError:called");
                         Log.e(TAG, "getMoreContent:onError:error="+e);
                         e.printStackTrace();
-                        UiExceptionUtils.handleUiException(e, adapterListener);
+                        UiExceptionUtils.handleUiException(e, adapterListener, getActivity());
+
+                        setFetching(false);
                     }
 
                     @Override
                     public void onComplete() {
                         Log.d(TAG, "getMoreContent:onCompleted:called");
+                        setFetching(false);
                     }
                 });
     }
 
     /**
-     * to fetch more photos in the photos cache
+     * to fetch more content in the content cache
      */
+    @SuppressWarnings("unchecked")
     public void getMoreContent() {
+
+        if (isFetching()) {
+            return;
+        }
 
         contentCache
                 .getMoreContent()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<DataModel>>() {
+
                     @Override
                     public void onSubscribe(Disposable d) {
+
+                        setFetching(true);
                         adapterListener.showLoading();
                     }
 
                     @Override
                     public void onNext(List<DataModel> content) {
+
                         Log.d(TAG, "getMoreContent:onNext:called");
-                        int lastIndex = getItemCount() - 1;
-                        addListItems(adapterListener.createListItems(content));
-                        notifyItemRangeInserted(lastIndex+1, content.size());
+
+                        if (content.size() != 0) {
+
+                            int lastIndex = getItemCount() - 1;
+                            if (getItemCount() != 0) {
+                                removeListItem(getItemCount() - 1);
+                            }
+                            addListItems(adapterListener.createListItems(content));
+                            addListItem(getLoadingListItem());
+                            notifyItemRangeInserted(lastIndex+1, content.size());
+                        } else {
+
+                            if (!isEmpty()) {
+
+                                ((LoadingListItem)getListItems().get(getItemCount() - 1))
+                                        .setState(LoadingListItem.STATE.NORMAL);
+                                notifyItemChanged(getItemCount() - 1, LoadingListItem.STATE.NORMAL);
+                            }
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
+
                         Log.d(TAG, "getMoreContent:onError:called");
                         Log.e(TAG, "getMoreContent:onError:error="+e);
                         e.printStackTrace();
-                        UiExceptionUtils.handleUiException(e, adapterListener);
+
+                        UiExceptionUtils.handleUiException(e, adapterListener, getActivity());
+                        setFetching(false);
                     }
 
                     @Override
                     public void onComplete() {
+
                         Log.d(TAG, "getMoreContent:onCompleted:called");
+
                         adapterListener.hideLoading();
+                        setFetching(false);
                     }
                 });
     }
 
+    /**
+     * loading list item - onRetry click
+     */
+    private LoadingOnClickListener loadingOnClickListener = this::getMoreContent;
+
+    /**
+     * loading list item - get list item
+     * @return loadingListItem
+     */
+    private LoadingListItem getLoadingListItem() {
+
+        LoadingListItem loadingListItem = new LoadingListItem();
+        loadingListItem.setOnClickListener(loadingOnClickListener);
+        return loadingListItem;
+    }
+
+    /**
+     * receiving/sending "things" to/from the view
+     * @param <DataModel> data model supported by the content cache
+     */
     public static abstract class AdapterListener<DataModel> {
 
         public abstract ListItem createListItem(DataModel dataModel);
@@ -141,10 +256,10 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
             return listItems;
         }
 
-        public abstract void showIoException(int titleStringRes, int messageStringRes);
-        public abstract void showUnsplashApiException(int titleStringRes, int messageStringRes);
-        public abstract void showUnknownException(String message);
         public abstract void showLoading();
         public abstract void hideLoading();
+        public abstract void showError(int errorIconDrawableId,
+                                           String errorTitle,
+                                           String errorMessage);
     }
 }

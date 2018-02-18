@@ -2,9 +2,14 @@ package com.sonu.app.splash.ui.collectiondecription;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -21,14 +26,16 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.cache.ContentCache;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
 import com.sonu.app.splash.model.unsplash.Collection;
+import com.sonu.app.splash.ui.content.collectionphotos.CollectionPhotosFragment;
+import com.sonu.app.splash.ui.content.usercollections.UserCollectionsFragment;
+import com.sonu.app.splash.ui.content.userphotos.UserPhotosFragment;
+import com.sonu.app.splash.ui.home.ViewPagerAdapter;
 import com.sonu.app.splash.ui.list.ContentListAdapter;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.model.unsplash.Photo;
-import com.sonu.app.splash.ui.photo.PhotoLight;
 import com.sonu.app.splash.ui.photo.PhotoListItem;
 import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
@@ -38,6 +45,8 @@ import com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout;
 import com.sonu.app.splash.ui.widget.SwipeBackCoordinatorLayout;
 import com.sonu.app.splash.util.ColorHelper;
 import com.sonu.app.splash.util.LogUtils;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,70 +88,19 @@ public class CollectionDescriptionActivity
     @BindView(R.id.artistNameTv)
     TextView artistNameTv;
 
-    @BindView(R.id.itemsRv)
-    RecyclerView itemsRv;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
 
-    @BindView(R.id.errorWrapperLl)
-    View errorWrapperLl;
+    @BindView(R.id.tabLayout)
+    TabLayout tabLayout;
 
-    @BindView(R.id.retryBtn)
-    Button retryBtn;
+    @BindView(R.id.addToFavFab)
+    FloatingActionButton addToFavFab;
 
-    @BindView(R.id.errorProgressBar)
-    MaterialProgressBar errorProgressBar;
+    private ViewPagerAdapter adapter;
 
-    private ContentListAdapter adapter;
-    private StaggeredGridLayoutManager layoutManager;
-
-    private PhotoOnClickListener photoOnClickListener =
-            new PhotoOnClickListener() {
-                @Override
-                public void onDownloadBtnClick(Photo photo) {
-                    Log.d(TAG, "onDownloadBtnClick:called");
-                    getPresenter().downloadImage(photo);
-                }
-
-                @Override
-                public void onClick(Photo photo, View transitionView) {
-                    Log.d(TAG, "onPhotoClick:called");
-                    startPhotoDescriptionActivity(photo, transitionView);
-                }
-            };
-
-    private ContentListAdapter.AdapterListener<Photo> adapterListener =
-            new ContentListAdapter.AdapterListener<Photo>() {
-                @Override
-                public ListItem createListItem(Photo photo) {
-                    PhotoListItem listItem = new PhotoListItem(photo);
-                    listItem.setOnClickListener(photoOnClickListener);
-                    return listItem;
-                }
-
-                @Override
-                public void showIoException(int titleStringRes, int messageStringRes) {
-                    showError();
-                }
-
-                @Override
-                public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-                    showError();
-                }
-
-                @Override
-                public void showUnknownException(String message) {
-                    showError();
-                }
-
-                @Override
-                public void showLoading() {
-                    CollectionDescriptionActivity.this.showLoading();
-                }
-
-                @Override
-                public void hideLoading() {
-                    CollectionDescriptionActivity.this.hideLoading();
-                }
-            };
+    @Inject
+    CollectionPhotosFragment collectionPhotosFragment;
 
     private SwipeBackCoordinatorLayout.OnSwipeListener onSwipeListener =
             new SwipeBackCoordinatorLayout.OnSwipeListener() {
@@ -163,17 +121,9 @@ public class CollectionDescriptionActivity
             };
 
     private View.OnClickListener tagOnClickListener =
-            new View.OnClickListener() {
-
-                @Override
-                public void onClick(View view) {
-
+            view ->
                     startAllSearchActivity(
-                            ((TextView)
-                                    ((CardView) view).getChildAt(0)
-                            ).getText().toString());
-                }
-            };
+                            ((TextView) ((CardView) view).getChildAt(0)).getText().toString());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,37 +133,46 @@ public class CollectionDescriptionActivity
 
         ButterKnife.bind(this);
 
-        updateUi((Collection) getIntent().getParcelableExtra(KEY_COLLECTION));
+        updateUi(getIntent().getParcelableExtra(KEY_COLLECTION));
 
         parent.setOnSwipeListener(onSwipeListener);
 
-        retryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getAllPhotos();
-            }
-        });
+        artistPicCv.setOnClickListener(
+                view ->
+                        startUserDescriptionActivity(
+                                getIntent().getParcelableExtra(KEY_COLLECTION), userPicIv));
 
-        artistPicCv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                startUserDescriptionActivity(
-                        (Collection) getIntent().getParcelableExtra(KEY_COLLECTION),
-                        userPicIv);
-            }
-        });
+        addToFavFab.setOnClickListener(view -> getPresenter().onAddToFavClick());
     }
 
     private void updateUi(Collection collection) {
 
         collectionTitleTv.setText(collection.getTitle());
 
-        Glide.with(this)
-                .load(collection.getCoverPhoto().getPhotoUrls().getRegular())
-                .apply(new RequestOptions().centerCrop())
-                .transition(new DrawableTransitionOptions().crossFade())
-                .into(coverPhotoIv);
+        if (collection.getCoverPhoto() !=  null) {
+
+            Glide.with(this)
+                    .load(collection.getCoverPhoto().getPhotoUrls().getRegular())
+                    .apply(new RequestOptions().centerCrop())
+                    .transition(new DrawableTransitionOptions().crossFade())
+                    .into(coverPhotoIv);
+
+            int color = Color.parseColor(collection.getCoverPhoto().getColor());
+
+            getWindow().setStatusBarColor(color);
+
+            addToFavFab.setBackgroundTintList(ColorStateList.valueOf(color));
+
+            if (!ColorHelper.isDark(color)) {
+
+                getWindow()
+                        .getDecorView()
+                        .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+                addToFavFab.setImageTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(this, R.color.activeIcon)));
+            }
+        }
 
         artistNameTv.setText(collection.getUser().getName().toLowerCase());
 
@@ -229,17 +188,19 @@ public class CollectionDescriptionActivity
             }
         }
 
-        int color = Color.parseColor(collection.getCoverPhoto().getColor());
+        if (adapter == null) {
 
-        getWindow().setStatusBarColor(color);
+            Bundle bundle = new Bundle();
+            bundle.putString(CollectionPhotosFragment.KEY_COLLECTION_ID, getCollectionId());
+            collectionPhotosFragment.setArguments(bundle);
 
-        if (!ColorHelper.isDark(color)) {
-
-            getWindow()
-                    .getDecorView()
-                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            adapter = new ViewPagerAdapter(getSupportFragmentManager());
+            adapter.addFragment(collectionPhotosFragment, collection.getTotalPhotos()+" photos");
         }
 
+        viewPager.setAdapter(adapter);
+
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     private CardView getTagView(String tag) {
@@ -253,106 +214,31 @@ public class CollectionDescriptionActivity
     }
 
     @Override
-    public void showIoException(int titleStringRes, int messageStringRes) {
-
-    }
-
-    @Override
-    public void showUnsplashApiException(int titleStringRes, int messageStringRes) {
-
-    }
-
-    @Override
-    public void showUnknownException(String message) {
-
-    }
-
-    @Override
     public String getCollectionId() {
         return String.valueOf(((Collection)getIntent().getParcelableExtra(KEY_COLLECTION)).getId());
     }
 
     @Override
-    public void setupList(ContentCache contentCache) {
-
-        // changing grid size for orientation changes
-        if (getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE) {
-
-            layoutManager =
-                    new StaggeredGridLayoutManager(3,
-                            StaggeredGridLayoutManager.VERTICAL);
-        } else {
-
-            layoutManager =
-                    new StaggeredGridLayoutManager(2,
-                            StaggeredGridLayoutManager.VERTICAL);
-        }
-
-        itemsRv.setLayoutManager(layoutManager);
-
-        adapter = new ContentListAdapter(
-                this,
-                new ListItemTypeFactory(),
-                contentCache,
-                adapterListener);
-
-        itemsRv.setAdapter(adapter);
-
-        itemsRv.addOnScrollListener(
-                new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                    }
-
-                    @Override
-                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
-                        Log.d(TAG, "onScrollStateChanged:called");
-
-                        int lastVisibleItems[] = new int[3];
-
-                        layoutManager.findLastVisibleItemPositions(lastVisibleItems);
-
-                        if (lastVisibleItems[0] == adapter.getItemCount()-1
-                                || lastVisibleItems[1] == adapter.getItemCount()-1) {
-
-                            Log.i(TAG, "onScrollStateChanged:loading-more");
-
-                            adapter.getMoreContent();
-                        }
-                    }
-                });
+    public Collection getCollection() {
+        return getIntent().getParcelableExtra(KEY_COLLECTION);
     }
 
     @Override
-    public void getAllPhotos() {
-        adapter.getAllContent();
+    public void setFavActive() {
+
+        addToFavFab
+                .setImageDrawable(
+                        ContextCompat.getDrawable(
+                                this, R.drawable.bookmark_check_black_24dp));
     }
 
     @Override
-    public boolean isListEmpty() {
-        return adapter.getItemCount() == 0;
-    }
+    public void setFavInactive() {
 
-    private void showError() {
-        if (isListEmpty()) {
-            errorWrapperLl.setVisibility(View.VISIBLE);
-            errorProgressBar.setVisibility(View.GONE);
-        }
-    }
-
-    private void showLoading() {
-        if (isListEmpty()) {
-            errorWrapperLl.setVisibility(View.GONE);
-            errorProgressBar.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void hideLoading() {
-        errorWrapperLl.setVisibility(View.GONE);
-        errorProgressBar.setVisibility(View.GONE);
+        addToFavFab
+                .setImageDrawable(
+                        ContextCompat.getDrawable(
+                                this, R.drawable.bookmark_plus_outline_black_24dp));
     }
 
     private void startUserDescriptionActivity(Collection collection, View transitionView) {
@@ -364,27 +250,6 @@ public class CollectionDescriptionActivity
                 ActivityOptions.makeSceneTransitionAnimation(this,
                         transitionView,
                         getString(R.string.transition_artist_pic));
-
-        startActivity(i, options.toBundle());
-    }
-
-    private void startPhotoDescriptionActivity(Photo photo, View transitionView) {
-
-        Intent i =
-                new Intent(
-                        CollectionDescriptionActivity.this,
-                        PhotoDescriptionActivity.class);
-        i.putExtra(PhotoDescriptionActivity.KEY_PHOTO, photo);
-
-        ActivityOptions options =
-                ActivityOptions.makeSceneTransitionAnimation(
-                        CollectionDescriptionActivity.this,
-                        Pair.create(transitionView,
-                                CollectionDescriptionActivity.this.getString(
-                                        R.string.transition_photo)),
-                        Pair.create(transitionView,
-                                CollectionDescriptionActivity.this.getString(
-                                        R.string.transition_photo_description_background)));
 
         startActivity(i, options.toBundle());
     }

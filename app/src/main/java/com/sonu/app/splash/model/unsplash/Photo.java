@@ -1,5 +1,6 @@
 package com.sonu.app.splash.model.unsplash;
 
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,8 +10,10 @@ import android.os.Parcelable;
 
 public class Photo implements Parcelable {
 
-    private String id,
-            createdAt,
+    @PrimaryKey
+    private String id;
+
+    private String createdAt,
             updatedAt;
 
     private int width, height;

@@ -10,6 +10,8 @@ import com.sonu.app.splash.ui.download.DownloadListItem;
 import com.sonu.app.splash.ui.download.DownloadViewHolder;
 import com.sonu.app.splash.ui.header.HeaderHorizontalListItem;
 import com.sonu.app.splash.ui.header.HeaderHorizontalViewHolder;
+import com.sonu.app.splash.ui.header.HeaderListItem;
+import com.sonu.app.splash.ui.header.HeaderViewHolder;
 import com.sonu.app.splash.ui.loading.LoadingListItem;
 import com.sonu.app.splash.ui.loading.LoadingViewHolder;
 import com.sonu.app.splash.ui.photo.PhotoHorizontalViewHolder;
@@ -63,6 +65,10 @@ public class ListItemTypeFactory {
         return 9;
     }
 
+    public int type(HeaderListItem item) {
+        return 10;
+    }
+
     public int getLayout(int viewType) {
         switch (viewType) {
             case 0:
@@ -83,6 +89,8 @@ public class ListItemTypeFactory {
                 return UserViewHolder.LAYOUT;
             case 9:
                 return DownloadViewHolder.LAYOUT;
+            case 10:
+                return HeaderViewHolder.LAYOUT;
             default:
                 return 0;
         }
@@ -119,6 +127,9 @@ public class ListItemTypeFactory {
                 break;
             case 9:
                 viewHolder = new DownloadViewHolder(parent);
+                break;
+            case 10:
+                viewHolder = new HeaderViewHolder(parent);
                 break;
         }
 

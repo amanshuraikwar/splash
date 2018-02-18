@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -60,31 +61,33 @@ public class CollectionViewHolder extends ViewHolder<CollectionListItem> {
     public void bind(final CollectionListItem listItem,
                      final FragmentActivity parentActivity) {
 
-        photoIv.setAspectRatio(((float)listItem.getCollection().getCoverPhoto().getHeight())
-                / ((float)listItem.getCollection().getCoverPhoto().getWidth()));
+        Log.i(TAG, "bind:collection="+listItem.getCollection());
 
-        Glide.with(parentActivity)
-                .load(listItem.getCollection().getCoverPhoto().getPhotoUrls().getRegular())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(photoIv);
+        if (listItem.getCollection().getCoverPhoto() != null) {
 
+            photoIv.setAspectRatio(((float)listItem.getCollection().getCoverPhoto().getHeight())
+                    / ((float)listItem.getCollection().getCoverPhoto().getWidth()));
 
-        int color = Color.parseColor(listItem.getCollection().getCoverPhoto().getColor());
+            Glide.with(parentActivity)
+                    .load(listItem.getCollection().getCoverPhoto().getPhotoUrls().getRegular())
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(photoIv);
 
-        // setting foreground ripple dynamically
-        parent.setForeground(DrawableUtils.createRippleDrawable(color));
+            int color = Color.parseColor(listItem.getCollection().getCoverPhoto().getColor());
 
-        parent.setBackgroundColor(color);
+            // setting foreground ripple dynamically
+            parent.setForeground(DrawableUtils.createRippleDrawable(color));
+
+            parent.setBackgroundColor(color);
+        }
 
         // unique transition name
         artistProfileImageIv.setTransitionName(listItem.getCollection().getId()+"");
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getCollection(), artistProfileImageIv);
-            }
-        });
+        parent.setOnClickListener(
+                view ->
+                        listItem.getOnClickListener().onClick(
+                                listItem.getCollection(), artistProfileImageIv));
 
         collectionTitleTv.setText(listItem.getCollection().getTitle());
 
@@ -101,12 +104,9 @@ public class CollectionViewHolder extends ViewHolder<CollectionListItem> {
                 .apply(new RequestOptions().circleCrop())
                 .into(artistProfileImageIv);
 
-        artistPicCv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onArtistClick(listItem.getCollection(),
-                        artistProfileImageIv);
-            }
-        });
+        artistPicCv.setOnClickListener(
+                view ->
+                        listItem.getOnClickListener().onArtistClick(
+                                listItem.getCollection(), artistProfileImageIv));
     }
 }

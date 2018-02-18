@@ -1,4 +1,4 @@
-package com.sonu.app.splash.data.local.room;
+package com.sonu.app.splash.data.local.room.photodownload;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
@@ -20,7 +20,7 @@ public interface PhotoDownloadDao {
     List<PhotoDownload> getAll();
 
     @Query("SELECT * FROM PhotoDownload WHERE downloadReference = :downloadReference LIMIT 1")
-    PhotoDownload findByDownloadReference(int downloadReference);
+    PhotoDownload findByDownloadReference(long downloadReference);
 
     @Query("SELECT * FROM PhotoDownload WHERE status = 1 or status = 2 or status = 3")
     List<PhotoDownload> getRunningPausedPending();

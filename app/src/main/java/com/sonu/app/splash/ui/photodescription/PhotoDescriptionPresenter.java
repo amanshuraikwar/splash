@@ -6,17 +6,20 @@ import android.util.Log;
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
-import com.sonu.app.splash.data.local.room.PhotoDownload;
+import com.sonu.app.splash.data.local.room.favourites.FavPhoto;
 import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.ui.architecture.PresenterPlugin;
 import com.sonu.app.splash.util.LogUtils;
+import com.sonu.app.splash.util.NumberUtils;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -32,7 +35,7 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
     private static final String TAG = LogUtils.getLogTag(PhotoDescriptionPresenter.class);
 
-    private Disposable photoDescriptionDesc, downloadPhotoDisp;
+    private Disposable photoDescriptionDesc, downloadPhotoDisp, favPhotoDisp, bookmarkDisp;
     private boolean fetchingData;
 
     @Inject
@@ -47,7 +50,24 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
         if (wasViewRecreated) {
 
             getData();
+
+            checkForBookmark();
         }
+    }
+
+    private void checkForBookmark() {
+
+        bookmarkDisp = getDataManager()
+                .isPhotoFav(getView().getCurPhotoId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(value -> {
+                    if (value) {
+                        getView().setFavActive();
+                    } else {
+                        getView().setFavInactive();
+                    }
+                });
     }
 
     @Override
@@ -57,44 +77,33 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
         Log.i(TAG, "getData:locked="+fetchingData);
 
         if (!fetchingData) {
+
             fetchingData = true;
+
             photoDescriptionDesc = getDataManager()
                     .getPhotoDescription(getView().getCurPhotoId())
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            new Consumer<Photo>() {
-                                @Override
-                                public void accept(Photo photo) throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onNext:called");
-                                    getView().displayPhotoDescription(photo);
-                                }
+                            photo -> {
+                                Log.d(TAG, "getPhotoDescription:onNext:called");
+                                getView().displayPhotoDescription(photo);
                             },
-                            new Consumer<Throwable>() {
-                                @Override
-                                public void accept(Throwable throwable) throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onError:called");
-                                    Log.e(TAG, "getPhotoDescription:onError:error=" + throwable);
-                                    throwable.printStackTrace();
-                                    handleException(throwable);
-                                    fetchingData = false;
-                                }
+                            throwable -> {
+                                Log.d(TAG, "getPhotoDescription:onError:called");
+                                Log.e(TAG, "getPhotoDescription:onError:error=" + throwable);
+                                throwable.printStackTrace();
+                                getView().showError();
+                                fetchingData = false;
                             },
-                            new Action() {
-                                @Override
-                                public void run() throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onCompleted:called");
-                                    getView().hideLoading();
-                                    fetchingData = false;
-                                }
-                            }
-                            ,
-                            new Consumer<Disposable>() {
-                                @Override
-                                public void accept(Disposable disposable) throws Exception {
-                                    Log.d(TAG, "getPhotoDescription:onSubscribe:called");
-                                    getView().showLoading();
-                                }
+                            () -> {
+                                Log.d(TAG, "getPhotoDescription:onCompleted:called");
+                                getView().hideLoading();
+                                fetchingData = false;
+                            },
+                            disposable -> {
+                                Log.d(TAG, "getPhotoDescription:onSubscribe:called");
+                                getView().showLoading();
                             });
         }
     }
@@ -102,6 +111,46 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
     @Override
     public void downloadPhoto(Photo photo) {
         downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
+    }
+
+    @Override
+    public void onAddToFavClick() {
+
+        favPhotoDisp =
+                getDataManager()
+                        .isPhotoFav(getView().getCurPhotoId())
+                        .flatMap(this::getFavObs)
+                        .flatMap(temp -> getDataManager().isPhotoFav(getView().getCurPhotoId()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                isFav -> {
+
+                                    if (isFav) {
+
+                                        getView().setFavActive();
+                                    } else {
+
+                                        getView().setFavInactive();
+                                    }
+                                }
+                        );
+    }
+
+    private Observable<Boolean> getFavObs(Boolean isFav) {
+
+        if (isFav) {
+
+            return getDataManager()
+                    .getFavPhotoById(getView().getCurPhotoId())
+                    .flatMap(getDataManager()::removeFav)
+                    .filter(success -> success);
+        } else {
+
+            return getDataManager()
+                    .addFav(new FavPhoto(getView().getCurPhoto(), NumberUtils.getCurrentDate()))
+                    .filter(success -> success);
+        }
     }
 
     @Override
@@ -115,31 +164,13 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
                 downloadPhotoDisp.dispose();
             }
         }
-    }
 
-    private void handleException(Throwable e) {
-        if (e instanceof IOException) {
-
-            getView().showIoException(
-                    R.string.io_exception_title,
-                    R.string.io_exception_message
-            );
-        } else if (e instanceof UnsplashApiException) {
-
-            if (((UnsplashApiException) e)
-                    .getCode() == UnsplashApiException.CODE_API_LIMIT_EXCEEDED) {
-
-                getView().showUnsplashApiException(
-                        R.string.unsplash_api_rate_limit_exceed_title,
-                        R.string.unsplash_api_rate_limit_exceed_message);
-            } else {
-
-                getView().showUnsplashApiException(
-                        R.string.unsplash_api_unknown_exception_title,
-                        R.string.unsplash_api_unknown_exception_message);
+        if (favPhotoDisp != null) {
+            if (!favPhotoDisp.isDisposed()) {
+                favPhotoDisp.dispose();
             }
-        } else {
-            getView().showUnknownException(e.getMessage());
         }
+
+        bookmarkDisp.dispose();
     }
 }

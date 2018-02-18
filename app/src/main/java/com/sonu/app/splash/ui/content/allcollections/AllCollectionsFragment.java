@@ -36,15 +36,7 @@ public class AllCollectionsFragment
 
                     Log.d(TAG, "onClick:called");
 
-                    Intent i = new Intent(getActivity(), CollectionDescriptionActivity.class);
-                    i.putExtra(CollectionDescriptionActivity.KEY_COLLECTION, collection);
-
-                    ActivityOptions options =
-                            ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                                    transitionView,
-                                    getString(R.string.transition_artist_pic));
-
-                    startActivity(i, options.toBundle());
+                    startCollectionDescriptionActivity(collection, transitionView);
                 }
 
                 @Override
@@ -68,6 +60,19 @@ public class AllCollectionsFragment
     @Override
     protected int getSpanCount() {
         return 1;
+    }
+
+    private void startCollectionDescriptionActivity(Collection collection, View transitionView) {
+
+        Intent i = new Intent(getActivity(), CollectionDescriptionActivity.class);
+        i.putExtra(CollectionDescriptionActivity.KEY_COLLECTION, collection);
+
+        ActivityOptions options =
+                ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                        transitionView,
+                        getString(R.string.transition_artist_pic));
+
+        startActivity(i, options.toBundle());
     }
 
     private void startUserDescriptionActivity(Collection collection, View transitionView) {

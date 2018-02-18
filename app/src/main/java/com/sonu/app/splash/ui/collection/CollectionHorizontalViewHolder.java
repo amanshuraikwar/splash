@@ -78,12 +78,10 @@ public class CollectionHorizontalViewHolder extends ViewHolder<CollectionHorizon
         // unique transition name
         artistProfileImageIv.setTransitionName(listItem.getCollection().getId()+"");
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onClick(listItem.getCollection(), artistProfileImageIv);
-            }
-        });
+        parent.setOnClickListener(
+                view ->
+                        listItem.getOnClickListener().onClick(
+                                listItem.getCollection(), artistProfileImageIv));
 
         collectionTitleTv.setText(listItem.getCollection().getTitle());
 
@@ -97,11 +95,9 @@ public class CollectionHorizontalViewHolder extends ViewHolder<CollectionHorizon
                 .apply(new RequestOptions().circleCrop())
                 .into(artistProfileImageIv);
 
-        artistPicCv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listItem.getOnClickListener().onArtistClick(listItem.getCollection(), artistProfileImageIv);
-            }
-        });
+        artistPicCv.setOnClickListener(
+                view ->
+                        listItem.getOnClickListener().onArtistClick(
+                                listItem.getCollection(), artistProfileImageIv));
     }
 }
