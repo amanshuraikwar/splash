@@ -57,4 +57,4 @@ possible.
 [<img height="100" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=com.sonu.app.splash&hl=en)
 
 ## Please
-> ### Please don't over use the app as the Api has a limit. (I am trying to increase this limiy)
+> ### Please don't over use the app as the Api has a limit. (I am trying to increase this limit)
