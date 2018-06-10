@@ -28,10 +28,12 @@
         </targets>
     </changeBounds>
 
-    <changeBounds
+    <transitionSet
         android:interpolator="@android:interpolator/fast_out_slow_in">
+        <changeImageTransform />
+        <changeBounds />
         <targets>
             <target android:targetId="@id/photoIv" />
         </targets>
-    </changeBounds>
+    </transitionSet>
 </transitionSet>

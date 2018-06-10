@@ -22,6 +22,6 @@ public class HeaderListItem extends ListItem<SimpleListItemOnClickListener> {
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return HeaderListItem.class.hashCode();
     }
 }

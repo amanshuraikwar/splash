@@ -22,6 +22,6 @@ public class DownloadListItem extends ListItem<DownloadOnClickListener> {
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return DownloadListItem.class.hashCode();
     }
 }

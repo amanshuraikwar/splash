@@ -22,6 +22,6 @@ public class UserHorizontalListItem extends ListItem<UserOnClickListener> {
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return UserHorizontalListItem.class.hashCode();
     }
 }

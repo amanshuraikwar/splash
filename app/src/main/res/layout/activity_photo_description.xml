@@ -18,389 +18,112 @@
         android:background="@color/grey1"
         android:transitionName="@string/transition_photo_description_background" />
 
-    <android.support.v4.widget.NestedScrollView
+    <com.sonu.app.splash.ui.widget.ParallaxScrimageView
+        android:id="@+id/photoIv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:minHeight="168dp"
+        android:foreground="@drawable/mid_grey_ripple"
+        android:stateListAnimator="@animator/app_bar_pin"
+        android:transitionName="@string/transition_photo"
+        android:background="@color/grey1"
+        app:scrimColor="@color/scrim"
+        app:scrimAlpha="0"
+        app:maxScrimAlpha="0.4"
+        app:parallaxFactor="-0.5" />
 
-        <LinearLayout
+    <FrameLayout
+        android:id="@+id/toolbarWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="9dp">
+
+        <ImageButton
+            android:id="@+id/backIb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:src="@drawable/ic_arrow_back_black_24dp"
+            style="@style/Widget.Splash.BorderlessImageButton.Light"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:importantForAccessibility="no" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/itemsRv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="insideOverlay"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+
+    <LinearLayout
+        android:id="@+id/photoInfoLoadingWrapperLl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:orientation="vertical">
+
+        <com.sonu.app.splash.ui.widget.FourThreeView
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:id="@+id/view"
+            android:background="@drawable/mid_grey_ripple" />
 
-            <FrameLayout
-                android:id="@+id/picParentFl"
-                android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:id="@+id/photoInfoPb"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="32dp"
+                android:indeterminateTint="@color/inactiveIcon" />
+
+            <Button
+                android:id="@+id/photoInfoRetryBtn"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clipChildren="false">
+                android:layout_margin="32dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_replay_black_24dp"
+                style="@style/Widget.Splash.Button"
+                android:text="@string/retry_btn_text"
+                tools:ignore="ContentDescription"
+                android:visibility="invisible"/>
+        </FrameLayout>
+    </LinearLayout>
 
-                <com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView
-                    android:id="@+id/photoIv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:transitionName="@string/transition_photo"
-                    android:clickable="true"
-                    android:focusable="true"
-                    tools:ignore="ContentDescription" />
-
-                <FrameLayout
-                    android:id="@+id/toolbarWrapper"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <View
-                        android:id="@+id/topGradientView"
-                        android:layout_width="match_parent"
-                        android:layout_height="72dp"
-                        android:background="@drawable/gradient_background_dark_top_down_dark" />
-
-                    <ImageButton
-                        android:id="@+id/backIb"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:src="@drawable/ic_arrow_back_black_24dp"
-                        style="@style/Widget.Splash.BorderlessImageButton.Light"
-                        tools:ignore="ContentDescription" />
-                </FrameLayout>
-
-                <ImageButton
-                    android:id="@+id/addToFavIb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:layout_gravity="bottom|end"
-                    android:src="@drawable/bookmark_plus_outline_black_24dp"
-                    style="@style/Widget.Splash.BorderlessImageButton.Light"
-                    tools:ignore="ContentDescription"
-                    android:visibility="visible"/>
-            </FrameLayout>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:focusableInTouchMode="true"
-                android:importantForAccessibility="no" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <FrameLayout
-                        android:id="@+id/photoLocationFl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom">
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginBottom="12dp"
-                            android:src="@drawable/ic_place_black_24dp"
-                            style="@style/Widget.Splash.ImageView"
-                            android:tint="@color/green"
-                            tools:ignore="ContentDescription"/>
-
-                        <TextView
-                            android:id="@+id/photoLocationTv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="40dp"
-                            android:textAppearance="@style/TextAppearance.LocationTitle"
-                            android:text="Unknown location"/>
-                    </FrameLayout>
-
-                    <TextView
-                        android:id="@+id/photoDescriptionTv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:background="@color/grey2"
-                        android:textAppearance="@style/TextAppearance.PhotoDescription"
-                        android:text="Description" />
-
-                    <LinearLayout
-                        android:id="@+id/photoActionsLl"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        android:paddingStart="16dp"
-                        android:paddingTop="24dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="16dp"
-                        android:clipToPadding="false"
-                        android:visibility="gone">
-
-                        <Button
-                            android:id="@+id/photoLikesCountBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:drawableTop="@drawable/ic_heart_solid_black_24dp"
-                            android:drawableTint="@color/pink"
-                            style="@style/Widget.Splash.InlineActionButton"
-                            android:background="@null"
-                            android:text="--"/>
-
-                        <Button
-                            android:id="@+id/photoViewsCountBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:drawableTop="@drawable/ic_remove_red_eye_black_24dp"
-                            android:drawableTint="@color/blue"
-                            style="@style/Widget.Splash.InlineActionButton"
-                            android:background="@null"
-                            android:text="--" />
-
-                        <Button
-                            android:id="@+id/photoDownloadsCountBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:drawableTop="@drawable/ic_file_download_black_24dp"
-                            android:drawableTint="@color/teal"
-                            style="@style/Widget.Splash.InlineActionButton"
-                            android:background="@null"
-                            android:text="--" />
-                    </LinearLayout>
-
-                    <View
-                        android:id="@+id/divider"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/divider" />
-
-                    <LinearLayout
-                        android:id="@+id/artistDataLl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:orientation="vertical">
-
-                        <android.support.v7.widget.CardView
-                            android:id="@+id/artistPicCv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:layout_gravity="center_horizontal"
-                            android:stateListAnimator="@animator/raise"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="36dp"
-                            app:cardElevation="0dp">
-
-                            <ImageView
-                                android:id="@+id/artistPicIv"
-                                android:layout_width="@dimen/user_pic_small"
-                                android:layout_height="@dimen/user_pic_small"
-                                tools:ignore="ContentDescription"
-                                android:src="@drawable/me" />
-                        </android.support.v7.widget.CardView>
-
-                        <TextView
-                            android:id="@+id/artistNameTv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:layout_gravity="center_horizontal"
-                            android:textAppearance="@style/TextAppearance.ArtistName"
-                            android:text="Amanshu Raikwar" />
-
-                        <TextView
-                            android:id="@+id/artistUsernameTv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp"
-                            android:layout_gravity="center_horizontal"
-                            android:textAppearance="@style/TextAppearance.ArtistUsername"
-                            android:text="\@amanshuraikwar" />
-                    </LinearLayout>
-
-                    <View
-                        android:id="@+id/divider1"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/divider"
-                        android:layout_marginBottom="16dp"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/exifMakeBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="8dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_camera_alt_black_24dp"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:text="--"/>
-
-                        <Button
-                            android:id="@+id/exifModelBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="16dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_camera_roll_black_24dp"
-                            android:lines="1"
-                            android:ellipsize="end"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:text="--"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/exifExposureTimeBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="8dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_av_timer_black_24dp"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:text="--" />
-
-                        <Button
-                            android:id="@+id/exifApertureBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="16dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_camera_black_24dp"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:text="--" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/exifFocalLengthBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="8dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_center_focus_strong_black_24dp"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:text="--" />
-
-                        <Button
-                            android:id="@+id/exifIsoBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="16dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_iso_black_24dp"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:text="--" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/photoResolutionBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="8dp"
-                            android:layout_marginBottom="16dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_image_aspect_ratio_black_24dp"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:text="--" />
-
-                        <Button
-                            android:id="@+id/photoStatsBtn"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="8dp"
-                            android:layout_marginBottom="16dp"
-                            android:layout_weight="1"
-                            android:drawableStart="@drawable/ic_timeline_black_24dp"
-                            style="@style/Widget.Splash.PhotoInfoButton"
-                            android:transitionName="@string/transition_stats_button"
-                            android:background="@color/grey1"
-                            android:foreground="?android:attr/selectableItemBackground"
-                            android:stateListAnimator="@animator/raise_small"
-                            android:text="stats" />
-                    </LinearLayout>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="made with LOVE."
-                        android:textAppearance="@style/TextAppearance.AppInfoHeading"
-                        android:textColor="@color/pink"
-                        android:background="@color/grey2"/>
-                </LinearLayout>
-
-                <FrameLayout
-                    android:id="@+id/photoInfoLoadingWrapperFl"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/grey1"
-                    android:visibility="gone">
-
-                    <ProgressBar
-                        android:id="@+id/photoInfoPb"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="32dp"
-                        android:indeterminateTint="@color/inactiveIcon" />
-
-                    <Button
-                        android:id="@+id/photoInfoRetryBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="32dp"
-                        android:layout_gravity="center_horizontal"
-                        android:src="@drawable/ic_replay_black_24dp"
-                        style="@style/Widget.Splash.Button"
-                        android:text="@string/retry_btn_text"
-                        tools:ignore="ContentDescription"
-                        android:visibility="invisible"/>
-                </FrameLayout>
-            </FrameLayout>
-        </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-
-    <android.support.design.widget.FloatingActionButton
+    <com.sonu.app.splash.ui.widget.FABToggle
         android:id="@+id/downloadFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
         android:clickable="false"
         android:focusable="true"
         android:tint="@color/activeIconLight"
-        android:src="@drawable/ic_file_download_black_24dp" />
+        android:src="@drawable/ic_file_download_black_24dp"
+        app:fabSize="mini" />
 
+    <com.sonu.app.splash.ui.widget.FABToggle
+        android:id="@+id/addToFavFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="72dp"
+        android:stateListAnimator="@animator/raise"
+        android:tint="@color/activeIconLight"
+        android:src="@drawable/bookmark_plus_outline_black_24dp"
+        app:fabSize="mini" />
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

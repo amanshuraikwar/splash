@@ -1,20 +1,22 @@
 package com.sonu.app.splash.ui.photodescription;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.util.Log;
 
-import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.data.DataManager;
 import com.sonu.app.splash.data.local.room.favourites.FavPhoto;
-import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.ui.architecture.PresenterPlugin;
+import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.NumberUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -82,12 +84,13 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
             photoDescriptionDesc = getDataManager()
                     .getPhotoDescription(getView().getCurPhotoId())
+                    .map(this::getListItems)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            photo -> {
+                            listItems -> {
                                 Log.d(TAG, "getPhotoDescription:onNext:called");
-                                getView().displayPhotoDescription(photo);
+                                getView().displayItems(listItems);
                             },
                             throwable -> {
                                 Log.d(TAG, "getPhotoDescription:onError:called");
@@ -106,6 +109,19 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
                                 getView().showLoading();
                             });
         }
+    }
+
+    private List<ListItem> getListItems(Photo photo) {
+
+        List<ListItem> listItems = new ArrayList<>();
+        listItems.add(
+                new PhotoDescriptionUiElements.FourThreeEmptyListItem(
+                        Color.parseColor(getView().getCurPhoto().getColor())));
+        listItems.add(getView().getLocationListItem(photo.getLocation()));
+        listItems.add(getView().getDescriptionTextListItem(photo.getDescription()));
+        listItems.add(getView().getPhotoUserListItem(photo.getUser()));
+        listItems.add(getView().getPhotoInfoListItem(photo.getId(), photo.getExif()));
+        return listItems;
     }
 
     @Override

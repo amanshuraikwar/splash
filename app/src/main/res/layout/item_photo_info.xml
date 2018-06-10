@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/exifMakeBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_camera_alt_black_24dp"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:text="--"/>
+
+        <Button
+            android:id="@+id/exifModelBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_camera_roll_black_24dp"
+            android:lines="1"
+            android:ellipsize="end"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:text="--"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/exifExposureTimeBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_av_timer_black_24dp"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:text="--" />
+
+        <Button
+            android:id="@+id/exifApertureBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_camera_black_24dp"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:text="--" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/exifFocalLengthBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_center_focus_strong_black_24dp"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:text="--" />
+
+        <Button
+            android:id="@+id/exifIsoBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_iso_black_24dp"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:text="--" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/photoResolutionBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_image_aspect_ratio_black_24dp"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:text="--" />
+
+        <Button
+            android:id="@+id/photoStatsBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_timeline_black_24dp"
+            style="@style/Widget.Splash.PhotoInfoButton"
+            android:transitionName="@string/transition_stats_button"
+            android:background="@color/grey1"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:stateListAnimator="@animator/raise_small"
+            android:text="stats" />
+    </LinearLayout>
+</LinearLayout>

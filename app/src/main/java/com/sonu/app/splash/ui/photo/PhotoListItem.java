@@ -22,6 +22,6 @@ public class PhotoListItem extends ListItem<PhotoOnClickListener> {
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return PhotoListItem.class.hashCode();
     }
 }

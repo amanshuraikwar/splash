@@ -5,6 +5,7 @@ package com.sonu.app.splash.ui.architecture;
  */
 
 public interface BasePresenter<View extends BaseView> {
+
     /**
      * Binds presenter with the view when resumed
      * Presenter should perform initializations here

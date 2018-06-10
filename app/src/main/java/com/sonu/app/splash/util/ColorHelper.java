@@ -2,8 +2,11 @@ package com.sonu.app.splash.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.annotation.CheckResult;
 import android.support.annotation.ColorInt;
+import android.support.annotation.FloatRange;
 import android.support.annotation.IntDef;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
@@ -68,5 +71,22 @@ public class ColorHelper {
             // if palette failed, then check the color of the specified pixel
             return isDark(bitmap.getPixel(backupPixelX, backupPixelY));
         }
+    }
+
+    /**
+     * Set the alpha component of {@code color} to be {@code alpha}.
+     */
+    public static @CheckResult @ColorInt int modifyAlpha(@ColorInt int color,
+                                                         @IntRange(from = 0, to = 255) int alpha) {
+        return (color & 0x00ffffff) | (alpha << 24);
+    }
+
+    /**
+     * Set the alpha component of {@code color} to be {@code alpha}.
+     */
+    public static @CheckResult
+    @ColorInt int modifyAlpha(@ColorInt int color,
+                              @FloatRange(from = 0f, to = 1f) float alpha) {
+        return modifyAlpha(color, (int) (255f * alpha));
     }
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -23,7 +22,6 @@ import com.sonu.app.splash.ui.architecture.BaseFragment;
 import com.sonu.app.splash.ui.collection.CollectionListItem;
 import com.sonu.app.splash.ui.collection.CollectionOnClickListener;
 import com.sonu.app.splash.ui.collectiondecription.CollectionDescriptionActivity;
-import com.sonu.app.splash.ui.header.HeaderHorizontalListItem;
 import com.sonu.app.splash.ui.header.HeaderListItem;
 import com.sonu.app.splash.ui.list.ListItem;
 import com.sonu.app.splash.ui.list.ListItemTypeFactory;
@@ -36,7 +34,6 @@ import com.sonu.app.splash.ui.user.UserOnClickListener;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
 import com.sonu.app.splash.util.LogUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;

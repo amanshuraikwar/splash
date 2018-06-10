@@ -32,6 +32,8 @@
     <string name="transition_stats_button">stats_button</string>
     <string name="transition_stats_background">stats_background</string>
     <string name="content_error_text">Unable to load content!</string>
+    <string name="unknown_location">Unknown location</string>
+    <string name="empty_stat">--</string>
 
     <array name="tab_name">
         <item>photos</item>

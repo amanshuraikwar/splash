@@ -31,6 +31,6 @@ public class LoadingListItem extends ListItem<LoadingOnClickListener> {
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return LoadingListItem.class.hashCode();
     }
 }

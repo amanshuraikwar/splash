@@ -22,6 +22,6 @@ public class UserListItem extends ListItem<UserOnClickListener> {
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return UserListItem.class.hashCode();
     }
 }

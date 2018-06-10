@@ -1,24 +1,13 @@
 package com.sonu.app.splash.ui.userdescription;
 
-import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -29,33 +18,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.data.DataManager;
-import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
 import com.sonu.app.splash.ui.content.usercollections.UserCollectionsFragment;
 import com.sonu.app.splash.ui.content.userphotos.UserPhotosFragment;
 import com.sonu.app.splash.ui.home.ViewPagerAdapter;
-import com.sonu.app.splash.ui.list.ListItem;
-import com.sonu.app.splash.ui.list.ListItemTypeFactory;
-import com.sonu.app.splash.ui.list.ContentListAdapter;
-import com.sonu.app.splash.ui.messagedialog.MessageDialog;
-import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
-import com.sonu.app.splash.model.unsplash.Photo;
-import com.sonu.app.splash.ui.photo.PhotoListItem;
-import com.sonu.app.splash.ui.photo.PhotoOnClickListener;
-import com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity;
 import com.sonu.app.splash.ui.search.allsearch.AllSearchActivity;
 import com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout;
 import com.sonu.app.splash.ui.widget.SwipeBackCoordinatorLayout;
-import com.sonu.app.splash.util.ConnectionUtil;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.NumberUtils;
 
@@ -63,7 +36,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
  * Created by amanshuraikwar on 16/01/18.

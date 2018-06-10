@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:paddingStart="16dp"
+    android:paddingTop="24dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="16dp">
+
+    <Button
+        android:id="@+id/photoLikesCountBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_heart_solid_black_24dp"
+        android:drawableTint="@color/pink"
+        style="@style/Widget.Splash.InlineActionButton"
+        android:background="@null"
+        android:text="@string/empty_stat"/>
+
+    <Button
+        android:id="@+id/photoViewsCountBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_remove_red_eye_black_24dp"
+        android:drawableTint="@color/blue"
+        style="@style/Widget.Splash.InlineActionButton"
+        android:background="@null"
+        android:text="@string/empty_stat" />
+
+    <Button
+        android:id="@+id/photoDownloadsCountBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_file_download_black_24dp"
+        android:drawableTint="@color/teal"
+        style="@style/Widget.Splash.InlineActionButton"
+        android:background="@null"
+        android:text="@string/empty_stat" />
+</LinearLayout>

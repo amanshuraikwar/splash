@@ -22,6 +22,6 @@ public class CollectionListItem extends ListItem<CollectionOnClickListener> {
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return CollectionListItem.class.hashCode();
     }
 }

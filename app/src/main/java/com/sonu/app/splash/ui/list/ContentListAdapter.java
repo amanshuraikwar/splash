@@ -15,7 +15,7 @@ import com.sonu.app.splash.util.UiExceptionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -33,7 +33,7 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
     public ContentListAdapter(@NonNull FragmentActivity parentActivity,
                               @NonNull ListItemTypeFactory typeFactory,
                               @NonNull ContentCache contentCache,
-                              @Nonnull AdapterListener adapterListener) {
+                              @NonNull AdapterListener adapterListener) {
         super(parentActivity, typeFactory);
         this.contentCache = contentCache;
         this.adapterListener = adapterListener;

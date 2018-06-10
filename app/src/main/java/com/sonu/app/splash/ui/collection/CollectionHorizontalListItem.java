@@ -22,6 +22,6 @@ public class CollectionHorizontalListItem extends ListItem<CollectionOnClickList
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return CollectionHorizontalListItem.class.hashCode();
     }
 }

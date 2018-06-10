@@ -2,12 +2,10 @@ package com.sonu.app.splash.ui.content;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -15,19 +13,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.ui.architecture.BaseFragment;
 import com.sonu.app.splash.ui.list.ListItem;
-import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.ui.list.ContentListAdapter;
+import com.sonu.app.splash.ui.list.ListItemTypeFactory;
 import com.sonu.app.splash.ui.loading.LoadingListItem;
 import com.sonu.app.splash.ui.messagedialog.MessageDialog;
-import com.sonu.app.splash.ui.messagedialog.MessageDialogConfig;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;

@@ -22,6 +22,6 @@ public class HeaderHorizontalListItem extends ListItem<SimpleListItemOnClickList
 
     @Override
     public int type(ListItemTypeFactory typeFactory) {
-        return typeFactory.type(this);
+        return HeaderHorizontalListItem.class.hashCode();
     }
 }

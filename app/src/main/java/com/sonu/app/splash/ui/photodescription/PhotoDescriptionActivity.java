@@ -12,37 +12,43 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout;
 import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 import com.sonu.app.splash.R;
-import com.sonu.app.splash.model.unsplash.PhotoStats;
+import com.sonu.app.splash.model.unsplash.Exif;
+import com.sonu.app.splash.model.unsplash.Location;
+import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BaseActivity;
 import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.ui.list.ListItem;
+import com.sonu.app.splash.ui.list.ListItemTypeFactory;
+import com.sonu.app.splash.ui.list.RecyclerViewAdapter;
 import com.sonu.app.splash.ui.photofullscreen.PhotoFullscreenActivity;
 import com.sonu.app.splash.ui.photostats.PhotoStatsActivity;
 import com.sonu.app.splash.ui.userdescription.UserDescriptionActivity;
-import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
+import com.sonu.app.splash.ui.widget.FABToggle;
+import com.sonu.app.splash.ui.widget.ParallaxScrimageView;
 import com.sonu.app.splash.util.ColorHelper;
 import com.sonu.app.splash.util.LogUtils;
-import com.sonu.app.splash.util.NumberUtils;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,89 +68,56 @@ public class PhotoDescriptionActivity
     @BindView(R.id.eddfl)
     ElasticDragDismissFrameLayout eddfl;
 
-    @BindView(R.id.picParentFl)
-    View picParentFl;
-
     @BindView(R.id.photoIv)
-    WidthRelativeAspectRatioImageView photoIv;
-
-    @BindView(R.id.photoDescriptionTv)
-    TextView photoDescriptionTv;
-
-    @BindView(R.id.photoLikesCountBtn)
-    Button photoLikesCountBtn;
-
-    @BindView(R.id.photoViewsCountBtn)
-    Button photoViewsCountBtn;
-
-    @BindView(R.id.photoDownloadsCountBtn)
-    Button photoDownloadsCountBtn;
-
-    @BindView(R.id.photoStatsBtn)
-    Button photoStatsBtn;
-
-    @BindView(R.id.artistPicIv)
-    ImageView artistPicIv;
-
-    @BindView(R.id.artistNameTv)
-    TextView artistNameTv;
-
-    @BindView(R.id.photoLocationFl)
-    View photoLocationFl;
-
-    @BindView(R.id.photoLocationTv)
-    TextView photoLocationTv;
-
-    @BindView(R.id.topGradientView)
-    View topGradientView;
+    ParallaxScrimageView photoIv;
 
     @BindView(R.id.backIb)
     ImageButton backIb;
 
-    @BindView(R.id.artistUsernameTv)
-    TextView artistUsernameTv;
-
-    @BindView(R.id.artistPicCv)
-    CardView artistPicCv;
-
-    // exif info
-    @BindView(R.id.exifExposureTimeBtn)
-    Button exifExposureTimeBtn;
-
-    @BindView(R.id.exifFocalLengthBtn)
-    Button exifFocalLengthBtn;
-
-    @BindView(R.id.exifIsoBtn)
-    Button exifIsoBtn;
-
-    @BindView(R.id.exifMakeBtn)
-    Button exifMakeBtn;
-
-    @BindView(R.id.exifModelBtn)
-    Button exifModelBtn;
-
-    @BindView(R.id.exifApertureBtn)
-    Button exifApertureBtn;
-
-    @BindView(R.id.photoResolutionBtn)
-    Button photoResolutionBtn;
-
-    @BindView(R.id.addToFavIb)
-    ImageButton addToFavIb;
-
     @BindView(R.id.downloadFab)
-    FloatingActionButton downloadFab;
+    FABToggle downloadFab;
 
     @BindView(R.id.photoInfoPb)
     ProgressBar photoInfoPb;
 
-    @BindView(R.id.photoInfoLoadingWrapperFl)
+    @BindView(R.id.photoInfoLoadingWrapperLl)
     View photoInfoLoadingWrapperFl;
 
     @BindView(R.id.photoInfoRetryBtn)
     Button photoInfoRetryBtn;
 
+    @BindView(R.id.itemsRv)
+    RecyclerView itemsRv;
+
+    @BindView(R.id.addToFavFab)
+    FABToggle addToFavFab;
+
     private boolean contentLoaded;
+    private int fabOffset;
+
+    private PhotoDescriptionUiElements
+            .PhotoUserListItemOnClickListener photoUserListItemOnClickListener =
+            (user, animatingView) -> startUserDescriptionActivity(getCurPhoto(), animatingView);
+
+    private PhotoDescriptionUiElements
+            .PhotoInfoListItemOnClickListener photoInfoListItemOnClickListener =
+            photoId -> startPhotoStatsActivity(getCurPhoto());
+
+    private PhotoDescriptionUiElements
+            .LocationListItemOnClickListener locationListItemOnClickListener =
+            location -> {
+                Uri locationUri =
+                        Uri.parse(
+                                "geo:"
+                                        + location.getLat()
+                                        + ","
+                                        + location.getLon()
+                                        + "?z=14");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, locationUri);
+                startActivity(mapIntent);
+            };
+
+    private View firstView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,8 +132,6 @@ public class PhotoDescriptionActivity
 
         downloadFab.setOnClickListener(
                 view -> getPresenter().downloadPhoto(getCurPhoto()));
-
-        artistPicCv.setOnClickListener(view -> startUserDescriptionActivity(getCurPhoto()));
 
         backIb.setOnClickListener(view -> finishAfterTransition());
 
@@ -179,14 +150,62 @@ public class PhotoDescriptionActivity
             }
         });
 
-        addToFavIb.setOnClickListener(view -> getPresenter().onAddToFavClick());
+
+        addToFavFab.setOnClickListener(view -> getPresenter().onAddToFavClick());
 
         photoIv.setOnClickListener(view -> startPhotoFullscreenActivity(getCurPhoto()));
 
         photoInfoRetryBtn.setOnClickListener(view -> getPresenter().getData());
 
-        photoStatsBtn.setOnClickListener(view -> startPhotoStatsActivity(getCurPhoto()));
+        itemsRv.setLayoutManager(new LinearLayoutManager(this));
+
+        itemsRv.addOnScrollListener(scrollListener);
+        itemsRv.setOnFlingListener(flingListener);
+
+        photoIv.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        photoIv.getViewTreeObserver().removeOnPreDrawListener(this);
+                        calculateFabPosition();
+                        return true;
+                    }
+                });
     }
+
+    private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+            if (firstView!= null) {
+                final int scrollY = firstView.getTop();
+                photoIv.setOffset(scrollY);
+                addToFavFab.setOffset(fabOffset + scrollY);
+                downloadFab.setOffset(fabOffset + scrollY);
+                Log.d(TAG, ""+scrollY);
+            } else {
+                firstView = itemsRv.getChildAt(0);
+            }
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            // as we animate the main image's elevation change when it 'pins' at it's min height
+            // a fling can cause the title to go over the image before the animation has a chance to
+            // run. In this case we short circuit the animation and just jump to state.
+            photoIv.setImmediatePin(newState == RecyclerView.SCROLL_STATE_SETTLING);
+        }
+    };
+
+    private RecyclerView.OnFlingListener flingListener =
+            new RecyclerView.OnFlingListener() {
+                @Override
+                public boolean onFling(int velocityX, int velocityY) {
+                    photoIv.setImmediatePin(true);
+                    return false;
+                }
+            };
 
     @Override
     protected void onStart() {
@@ -203,34 +222,6 @@ public class PhotoDescriptionActivity
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        Log.d(TAG, "onResume:called");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        Log.d(TAG, "onPause:called");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        Log.d(TAG, "onStop:called");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Log.d(TAG, "onDestroy:called");
-    }
-
-    @Override
     public Photo getCurPhoto() {
         return getIntent().getParcelableExtra(KEY_PHOTO);
     }
@@ -243,6 +234,8 @@ public class PhotoDescriptionActivity
 
         downloadFab.setBackgroundTintList(ColorStateList.valueOf(color));
 
+        addToFavFab.setBackgroundTintList(ColorStateList.valueOf(color));
+
         if (!ColorHelper.isDark(color)) {
 
             getWindow()
@@ -251,34 +244,12 @@ public class PhotoDescriptionActivity
 
             downloadFab.setImageTintList(
                     ColorStateList.valueOf(ContextCompat.getColor(this, R.color.activeIcon)));
+
+            addToFavFab.setImageTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.activeIcon)));
         }
 
-        picParentFl.setBackgroundColor(color);
-
-        if (photo.getDescription() == null) {
-            photoDescriptionTv.setVisibility(View.GONE);
-        } else {
-            photoDescriptionTv.setText(photo.getDescription().trim());
-        }
-
-        photoLikesCountBtn.setText(
-                String.format(
-                        "%s likes",
-                        String.valueOf(NumberUtils.format(photo.getLikes()))));
-
-        artistNameTv.setText(photo.getUser().getName().toLowerCase());
-
-        artistUsernameTv.setText(
-                String.format("@%s", photo.getUser().getUsername()));
-
-        Glide.with(this)
-                .load(photo.getUser().getProfileImage().getLarge())
-                .apply(new RequestOptions().centerCrop().circleCrop())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(artistPicIv);
-
-        photoIv.setAspectRatio(((float) photo.getHeight())
-                / ((float) photo.getWidth()));
+        photoIv.setBackgroundColor(color);
 
         Glide.with(this)
                 .asBitmap()
@@ -299,7 +270,6 @@ public class PhotoDescriptionActivity
                                                    Object model,
                                                    Target<Bitmap> target,
                                                    DataSource dataSource, boolean isFirstResource) {
-                        topGradientView.setVisibility(View.GONE);
                         updateIconColors(resource);
                         return false;
                     }
@@ -341,9 +311,9 @@ public class PhotoDescriptionActivity
                 .maximumColorCount(3)
                 .clearFilters()
                 .setRegion(
-                        picParentFl.getWidth() - 1 - sixteenDip - twentyFourDip,
+                        photoIv.getWidth() - 1 - sixteenDip - twentyFourDip,
                         sixteenDip,
-                        picParentFl.getWidth() - 1 - sixteenDip,
+                        photoIv.getWidth() - 1 - sixteenDip,
                         sixteenDip + twentyFourDip)
                 .generate(palette -> {
 
@@ -354,6 +324,8 @@ public class PhotoDescriptionActivity
                     // for icon in top right corner
                 });
 
+        // todo
+        /*
         Palette.from(resource)
                 .maximumColorCount(3)
                 .clearFilters()
@@ -371,6 +343,7 @@ public class PhotoDescriptionActivity
                     addToFavIb.setImageTintList(
                             drawableColorStateList);
                 });
+                */
     }
 
     private @ColorInt int getDrawableColor(Palette palette, Bitmap resource) {
@@ -380,7 +353,7 @@ public class PhotoDescriptionActivity
         if (lightness == ColorHelper.LIGHTNESS_UNKNOWN) {
             isDark = ColorHelper.isDark(
                     resource,
-                    picParentFl.getWidth() / 2,
+                    photoIv.getWidth() / 2,
                     0);
         } else {
             isDark = lightness == ColorHelper.IS_DARK;
@@ -399,16 +372,27 @@ public class PhotoDescriptionActivity
         }
     }
 
-    public void startUserDescriptionActivity(Photo photo) {
+    void calculateFabPosition() {
+        // calculate 'natural' position i.e. with full height image. Store it for use when scrolling
+        fabOffset = photoIv.getHeight() - (addToFavFab.getHeight() / 2);
+        downloadFab.setOffset(fabOffset);
+        addToFavFab.setOffset(fabOffset);
+
+        // calculate min position i.e. pinned to the collapsed image when scrolled
+        downloadFab.setMinOffset(photoIv.getMinimumHeight() - (addToFavFab.getHeight() / 2));
+        addToFavFab.setMinOffset(photoIv.getMinimumHeight() - (addToFavFab.getHeight() / 2));
+    }
+
+    public void startUserDescriptionActivity(Photo photo, View animatingView) {
 
         Intent i = new Intent(this, UserDescriptionActivity.class);
         i.putExtra(UserDescriptionActivity.KEY_USER, photo.getUser());
 
-        artistPicIv.setTransitionName(getCurPhotoId());
+        animatingView.setTransitionName(getCurPhotoId());
 
         ActivityOptions options =
                 ActivityOptions.makeSceneTransitionAnimation(this,
-                        artistPicIv,
+                        animatingView,
                         getString(R.string.transition_artist_pic));
 
         startActivity(i, options.toBundle());
@@ -456,7 +440,7 @@ public class PhotoDescriptionActivity
     @Override
     public void setFavActive() {
 
-        addToFavIb
+        addToFavFab
                 .setImageDrawable(
                         ContextCompat.getDrawable(
                                 this, R.drawable.bookmark_check_black_24dp));
@@ -465,10 +449,39 @@ public class PhotoDescriptionActivity
     @Override
     public void setFavInactive() {
 
-        addToFavIb
+        addToFavFab
                 .setImageDrawable(
                         ContextCompat.getDrawable(
                                 this, R.drawable.bookmark_plus_outline_black_24dp));
+    }
+
+    @Override
+    public ListItem getLocationListItem(Location location) {
+        PhotoDescriptionUiElements.LocationListItem listItem
+                = new PhotoDescriptionUiElements.LocationListItem(location);
+        listItem.setOnClickListener(locationListItemOnClickListener);
+        return listItem;
+    }
+
+    @Override
+    public ListItem getDescriptionTextListItem(String description) {
+        return new PhotoDescriptionUiElements.PhotoDescriptionTextListItem(description);
+    }
+
+    @Override
+    public ListItem getPhotoUserListItem(User user) {
+        PhotoDescriptionUiElements.PhotoUserListItem listItem
+                = new PhotoDescriptionUiElements.PhotoUserListItem(user);
+        listItem.setOnClickListener(photoUserListItemOnClickListener);
+        return listItem;
+    }
+
+    @Override
+    public ListItem getPhotoInfoListItem(String photoId, Exif photoExif) {
+        PhotoDescriptionUiElements.PhotoInfoListItem listItem
+                = new PhotoDescriptionUiElements.PhotoInfoListItem(photoId, photoExif);
+        listItem.setOnClickListener(photoInfoListItemOnClickListener);
+        return listItem;
     }
 
     @Override
@@ -482,65 +495,13 @@ public class PhotoDescriptionActivity
     }
 
     @Override
-    public void displayPhotoDescription(final Photo photo) {
+    public void displayItems(List<ListItem> listItems) {
 
-        photoViewsCountBtn
-                .setText(
-                        String.format("%s views",
-                                String.valueOf(
-                                        NumberUtils.format(photo.getViews()))));
-
-        photoDownloadsCountBtn
-                .setText(
-                        String.format("%s downloads",
-                                String.valueOf(
-                                        NumberUtils.format(photo.getDownloads()))));
-
-        if (photo.getLocation() != null) {
-
-            photoLocationTv.setText(photo.getLocation().getTitle());
-
-            photoLocationFl.setOnClickListener(view -> {
-                Uri location =
-                        Uri.parse(
-                                "geo:"
-                                        + photo.getLocation().getLat()
-                                        + ","
-                                        + photo.getLocation().getLon()
-                                        + "?z=14");
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
-                startActivity(mapIntent);
-            });
-        }
-
-
-        if (photo.getExif().getMake()!=null) {
-            exifMakeBtn.setText(
-                    photo.getExif().getMake() != null ? photo.getExif().getMake() : "--");
-        }
-
-        if (photo.getExif().getModel()!=null) {
-            exifModelBtn.setText(
-                    photo.getExif().getModel() != null ? photo.getExif().getModel() : "--");
-        }
-
-        if (photo.getExif().getExposureTime() != null) {
-            exifExposureTimeBtn.setText(String.format("%ss", photo.getExif().getExposureTime()));
-        }
-
-        if (photo.getExif().getAperture() != null) {
-            exifApertureBtn.setText(String.format("f/%s", photo.getExif().getAperture()));
-        }
-
-        if (photo.getExif().getIso() != 0) {
-            exifIsoBtn.setText(String.format("%d", photo.getExif().getIso()));
-        }
-
-        if (photo.getExif().getFocalLength() != null) {
-            exifFocalLengthBtn.setText(String.format("%smm", photo.getExif().getFocalLength()));
-        }
-
-        photoResolutionBtn.setText(String.format("%d x %d", photo.getWidth(), photo.getHeight()));
+        itemsRv.setAdapter(
+                new RecyclerViewAdapter(
+                        this,
+                        new ListItemTypeFactory(),
+                        listItems));
 
         contentLoaded = true;
     }
