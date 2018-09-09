@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.sonu.app.splash.ui.widget.FourThreeView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:id="@+id/view"
-    android:layout_columnSpan="3"
-    android:background="@drawable/mid_grey_ripple"  />

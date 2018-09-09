@@ -1,86 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.sonu.app.splash">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+    package="io.github.amanshuraikwar.splash">
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
-        android:label="${applicationLabel_1}"
         android:icon="@mipmap/ic_launcher"
-        android:supportsRtl="false"
-        android:theme="@style/Splash"
-        android:name="com.sonu.app.splash.MyApp"
-        android:resizeableActivity="false"
-        android:supportsPictureInPicture="false"
-        tools:replace="android:label, android:supportsRtl">
-
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
-        </provider>
-
-        <activity
-            android:name="com.sonu.app.splash.ui.home.HomeActivity"
-            android:label="${applicationLabel_1}"
-            android:theme="@style/Splash.Home"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
-
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".ui.home.HomeActivity">
             <intent-filter>
-
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".test.TestActivity">
-        </activity>
-
-        <activity
-            android:name="com.sonu.app.splash.ui.about.AboutActivity"
-            android:theme="@style/Splash.Translucent.About" />
-
-        <activity
-            android:name="com.sonu.app.splash.ui.photodescription.PhotoDescriptionActivity"
-            android:theme="@style/Splash.Translucent.PhotoDescription" />
-
-        <activity
-            android:name="com.sonu.app.splash.ui.userdescription.UserDescriptionActivity"
-            android:theme="@style/Splash.Translucent.UserDescription" />
-
-        <activity
-            android:name="com.sonu.app.splash.ui.photofullscreen.PhotoFullscreenActivity"
-            android:theme="@style/Splash.Translucent.PhotoFullscreen" />
-
-        <activity
-            android:name=".ui.collectiondecription.CollectionDescriptionActivity"
-            android:theme="@style/Splash.Translucent.CollectionDescription" />
-
-        <activity
-            android:name=".ui.search.allsearch.AllSearchActivity"
-            android:theme="@style/Splash.Translucent.AllSearch" />
-
-        <activity
-            android:name=".ui.photostats.PhotoStatsActivity"
-            android:theme="@style/Splash.Translucent.PhotoStats" />
-
-        <!-- exported=false for restricting the usage of service by this app only-->
-        <service
-            android:name="com.sonu.app.splash.data.download.PhotoDownloadService"
-            android:exported="false"/>
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
