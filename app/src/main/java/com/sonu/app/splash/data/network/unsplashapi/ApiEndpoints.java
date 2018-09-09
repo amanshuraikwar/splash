@@ -9,7 +9,6 @@ public interface ApiEndpoints {
     int PER_PAGE = 30, STATS_QUANTITY = 30;
     String STATS_RESOLUTION = "days";
 
-
     String BASE_ENDPOINT = "https://api.unsplash.com/";
 
     String GET_ALL_PHOTOS = BASE_ENDPOINT + "photos?page=%s&order_by=%s&per_page="+PER_PAGE;
