@@ -1,10 +1,9 @@
 package io.github.amanshuraikwar.splash.ui.list.networkstate
 
+import io.github.amanshuraikwar.multiitemlistadapter.ListItem
+import io.github.amanshuraikwar.multiitemlistadapter.SimpleListItemOnClickListener
 import io.github.amanshuraikwar.splash.data.jetpack.NetworkState
-import io.github.amanshuraikwar.splash.model.Photo
-import io.github.amanshuraikwar.splash.ui.list.ListItem
 import io.github.amanshuraikwar.splash.ui.list.ListItemTypeFactory
-import io.github.amanshuraikwar.splash.ui.list.SimpleListItemOnClickListener
 
 /**
  * ListItem representing a CryptoCurrency in the RecyclerView.
@@ -14,7 +13,7 @@ import io.github.amanshuraikwar.splash.ui.list.SimpleListItemOnClickListener
  */
 class NetworkStateListItem(var networkState: NetworkState?,
                            var retryCallback: () -> Unit)
-    : ListItem<SimpleListItemOnClickListener>() {
+    : ListItem<SimpleListItemOnClickListener, ListItemTypeFactory>() {
 
     override fun id() = ""
 

@@ -4,8 +4,8 @@ import android.support.annotation.LayoutRes
 import android.support.v4.app.FragmentActivity
 import android.view.View
 import com.bumptech.glide.Glide
+import io.github.amanshuraikwar.multiitemlistadapter.ViewHolder
 import io.github.amanshuraikwar.splash.R
-import io.github.amanshuraikwar.splash.ui.list.ViewHolder
 import io.github.amanshuraikwar.splash.util.Util
 import kotlinx.android.synthetic.main.item_photo.view.*
 

@@ -4,11 +4,12 @@ import android.arch.lifecycle.Observer
 import android.arch.paging.PagedList
 import android.os.Bundle
 import android.util.Log
+import io.github.amanshuraikwar.multiitemlistadapter.ListItem
+import io.github.amanshuraikwar.multiitemlistadapter.SimpleListItemOnClickListener
 import io.github.amanshuraikwar.splash.R
 import io.github.amanshuraikwar.splash.data.jetpack.NetworkState
 import io.github.amanshuraikwar.splash.ui.base.BaseActivity
 import io.github.amanshuraikwar.splash.ui.list.InfiniteListAdapter
-import io.github.amanshuraikwar.splash.ui.list.ListItem
 import io.github.amanshuraikwar.splash.ui.list.ListItemTypeFactory
 import io.github.amanshuraikwar.splash.util.Util
 import kotlinx.android.synthetic.main.activity_home.*
@@ -31,7 +32,7 @@ class HomeActivity : BaseActivity<HomeContract.View, HomeContract.Presenter>(), 
         adapter = InfiniteListAdapter(this, ListItemTypeFactory()) { presenter.retry() }
         itemsRv.adapter = adapter
 
-        presenter.posts().observe(this, Observer<PagedList<ListItem<*>>> {
+        presenter.posts().observe(this, Observer<PagedList<ListItem<SimpleListItemOnClickListener, ListItemTypeFactory>>> {
             Log.d(TAG, "getting new posts: $it")
             adapter.submitList(it)
         })
@@ -50,7 +51,7 @@ class HomeActivity : BaseActivity<HomeContract.View, HomeContract.Presenter>(), 
 //        }
     }
 
-    override fun submitList(pagerList: PagedList<ListItem<*>>?) {
+    override fun submitList(pagerList: PagedList<ListItem<*, *>>?) {
         adapter.submitList(pagerList)
     }
 

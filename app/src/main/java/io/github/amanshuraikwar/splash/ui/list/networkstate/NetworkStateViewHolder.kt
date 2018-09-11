@@ -3,9 +3,9 @@ package io.github.amanshuraikwar.splash.ui.list.networkstate
 import android.support.annotation.LayoutRes
 import android.support.v4.app.FragmentActivity
 import android.view.View
+import io.github.amanshuraikwar.multiitemlistadapter.ViewHolder
 import io.github.amanshuraikwar.splash.R
 import io.github.amanshuraikwar.splash.data.jetpack.Status
-import io.github.amanshuraikwar.splash.ui.list.ViewHolder
 import io.github.amanshuraikwar.splash.util.Util
 import kotlinx.android.synthetic.main.item_network_state.view.*
 

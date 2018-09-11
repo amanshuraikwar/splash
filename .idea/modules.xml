@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/UmmSplash.iml" filepath="$PROJECT_DIR$/UmmSplash.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/multiitemlistadapter/multiitemlistadapter.iml" filepath="$PROJECT_DIR$/multiitemlistadapter/multiitemlistadapter.iml" />
     </modules>
   </component>
 </project>

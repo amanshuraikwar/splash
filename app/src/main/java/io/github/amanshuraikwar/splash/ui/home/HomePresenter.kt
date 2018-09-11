@@ -2,12 +2,14 @@ package io.github.amanshuraikwar.splash.ui.home
 
 import android.arch.lifecycle.LiveData
 import android.arch.paging.PagedList
+import io.github.amanshuraikwar.multiitemlistadapter.ListItem
+import io.github.amanshuraikwar.multiitemlistadapter.SimpleListItemOnClickListener
 import io.github.amanshuraikwar.splash.bus.AppBus
 import io.github.amanshuraikwar.splash.data.DataManager
 import io.github.amanshuraikwar.splash.data.jetpack.NetworkState
 import io.github.amanshuraikwar.splash.model.Photo
 import io.github.amanshuraikwar.splash.ui.base.BasePresenterImpl
-import io.github.amanshuraikwar.splash.ui.list.ListItem
+import io.github.amanshuraikwar.splash.ui.list.ListItemTypeFactory
 import io.github.amanshuraikwar.splash.ui.list.photo.PhotoListItem
 import io.github.amanshuraikwar.splash.util.Util
 import javax.inject.Inject
@@ -41,7 +43,7 @@ class HomePresenter @Inject constructor(appBus: AppBus, dataManager: DataManager
         listing.retry.invoke()
     }
 
-    override fun posts(): LiveData<PagedList<ListItem<*>>> {
+    override fun posts(): LiveData<PagedList<ListItem<SimpleListItemOnClickListener, ListItemTypeFactory>>> {
         return posts
     }
 

@@ -1,12 +1,11 @@
 package io.github.amanshuraikwar.splash.data
 
 import android.content.Context
+import io.github.amanshuraikwar.multiitemlistadapter.ListItem
 import io.github.amanshuraikwar.splash.data.jetpack.JetpackDataManager
-import io.github.amanshuraikwar.splash.data.jetpack.Listing
 import io.github.amanshuraikwar.splash.data.network.NetworkDataManager
 import io.github.amanshuraikwar.splash.di.ApplicationContext
 import io.github.amanshuraikwar.splash.model.Photo
-import io.github.amanshuraikwar.splash.ui.list.ListItem
 import javax.inject.Inject
 
 /**
@@ -28,6 +27,6 @@ class DataManagerImpl @Inject constructor(
             = networkDataManager.getCurartedPhotos(page, orderBy, perPage)
 
 
-    override fun getCuratedPhotosListing(mapper: (Photo) -> ListItem<*>)
+    override fun getCuratedPhotosListing(mapper: (Photo) -> ListItem<*, *>)
             = jetpackDataManager.getCuratedPhotosListing(mapper)
 }

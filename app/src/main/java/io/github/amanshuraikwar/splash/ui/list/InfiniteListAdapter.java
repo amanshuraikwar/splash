@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import javax.security.auth.callback.Callback;
 
+import io.github.amanshuraikwar.multiitemlistadapter.MultiItemListAdapter;
+import io.github.amanshuraikwar.multiitemlistadapter.ViewHolder;
 import io.github.amanshuraikwar.splash.data.jetpack.NetworkState;
 import io.github.amanshuraikwar.splash.ui.list.networkstate.NetworkStateListItem;
 import io.github.amanshuraikwar.splash.util.Util;

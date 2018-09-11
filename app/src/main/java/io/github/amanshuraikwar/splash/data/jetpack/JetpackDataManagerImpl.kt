@@ -3,11 +3,10 @@ package io.github.amanshuraikwar.splash.data.jetpack
 import android.arch.lifecycle.Transformations
 import android.arch.paging.LivePagedListBuilder
 import android.arch.paging.PagedList
-import io.github.amanshuraikwar.splash.data.jetpack.datasource.ContentDataSource
+import io.github.amanshuraikwar.multiitemlistadapter.ListItem
 import io.github.amanshuraikwar.splash.data.jetpack.datasource.CuratedPhotosDataSource
 import io.github.amanshuraikwar.splash.di.Qualifiers
 import io.github.amanshuraikwar.splash.model.Photo
-import io.github.amanshuraikwar.splash.ui.list.ListItem
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
@@ -15,9 +14,10 @@ import javax.inject.Inject
 class JetpackDataManagerImpl @Inject constructor(
         private val curatedPhotosDataSource: CuratedPhotosDataSource,
         private val pagedListConfig: PagedList.Config,
-        @Qualifiers.NetworkExecutor private val networkExecutor: Executor) : JetpackDataManager {
+        @Qualifiers.NetworkExecutor private val networkExecutor: Executor)
+    : JetpackDataManager {
 
-    override fun getCuratedPhotosListing(mapper: (Photo) -> ListItem<*>): Listing<ListItem<*>> {
+    override fun <T1, T2> getCuratedPhotosListing(mapper: (Photo) -> ListItem<T1, T2>): Listing<ListItem<T1, T2>> {
 
         val sourceFactory = ContentDataSourceFactory(curatedPhotosDataSource.map(mapper))
 
