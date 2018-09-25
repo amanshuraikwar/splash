@@ -1,4 +1,4 @@
-# Splash
+# Splash [DISCONTINUED]
 <b>Splash</b> is an app to browse photos from various sources like <b>Unsplash</b>. Due to it's initial stage of development it 
 fetches photos from <b>Unsplash</b> only. In future <b>Splash</b> will fetch photos from various sources. Through <b>Splash</b> 
 you can download photos and bookmark photos, collections and photographers in an offline list. <b>Splash</b> in no way tries to 
