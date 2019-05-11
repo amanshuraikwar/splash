@@ -10,51 +10,51 @@ possible.
 ## Design
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-home-1.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-home-1.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-home-2.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-home-2.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-photo-desc-1.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-photo-desc-1.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-collections-1.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-collections-1.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-collection-desc-1.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-collection-desc-1.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-collection-desc-2.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-collection-desc-2.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-user-desc-1.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-user-desc-1.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-user-desc-2.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-user-desc-2.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-search-1.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-search-1.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-search-2.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-search-2.jpg">
 </div>
 
 <div align="center">
-<img width="240" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/ss-downloads.jpg">
+<img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-downloads.jpg">
 </div>
 
 ## Get it
-[<img height="100" src="https://github.com/amanshuraikwar/splash/blob/master/screenshots/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=com.sonu.app.splash&hl=en)
+[<img height="100" src="https://amanshuraikwar.github.io/assets/splash/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=com.sonu.app.splash&hl=en)
 
 ## Please
 > ### Please don't over use the app as the Api has a limit. (I am trying to increase this limit)
