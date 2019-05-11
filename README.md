@@ -54,7 +54,7 @@ possible.
 </div>
 
 ## Get it
-[<img height="100" src="https://amanshuraikwar.github.io/assets/splash/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=com.sonu.app.splash&hl=en)
+[<img height="100" src="https://amanshuraikwar.github.io/assets/splash/en_badge_web_generic.png">](https://amanshuraikwar.github.io/assets/splash/splash-0.0.5.apk)
 
 ## Please
 > ### Please don't over use the app as the Api has a limit. (I am trying to increase this limit)
