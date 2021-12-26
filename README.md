@@ -1,4 +1,4 @@
-# Splash
+# Splash (No Longer Maintained)
 <b>Splash</b> is an app to browse photos from various sources like <b>Unsplash</b>. Due to it's initial stage of development it 
 fetches photos from <b>Unsplash</b> only. In future <b>Splash</b> will fetch photos from various sources. Through <b>Splash</b> 
 you can download photos and bookmark photos, collections and photographers in an offline list. <b>Splash</b> in no way tries to 
@@ -54,7 +54,7 @@ possible.
 </div>
 
 ## Get it
-[<img height="100" src="https://amanshuraikwar.github.io/assets/splash/en_badge_web_generic.png">](https://amanshuraikwar.github.io/assets/splash/splash-0.0.5.apk)
+[Download APK](https://amanshuraikwar.github.io/assets/splash/splash-0.0.5.apk)
 
 ## Please
-> ### Please don't over use the app as the Api has a limit. (I am trying to increase this limit)
+> ### Please don't over use the app as the Api has a limit.
