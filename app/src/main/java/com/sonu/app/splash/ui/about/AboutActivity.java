@@ -11,8 +11,6 @@ import com.commit451.elasticdragdismisslayout.ElasticDragDismissListener;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import dagger.android.support.DaggerAppCompatActivity;
 
 /**
@@ -20,8 +18,6 @@ import dagger.android.support.DaggerAppCompatActivity;
  */
 
 public class AboutActivity extends DaggerAppCompatActivity {
-
-    @BindView(R.id.eddfl)
     ElasticDragDismissFrameLayout eddfl;
 
     @Inject
@@ -32,8 +28,7 @@ public class AboutActivity extends DaggerAppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_about);
-        ButterKnife.bind(this);
-
+        eddfl = findViewById(R.id.eddfl);
         ActivityUtils.addFragmentToActivity(
                 getSupportFragmentManager(), aboutFragment, R.id.contentFl);
 

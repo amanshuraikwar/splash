@@ -3,11 +3,11 @@ package com.sonu.app.splash.ui.userdescription;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.cardview.widget.CardView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -34,9 +34,6 @@ import com.sonu.app.splash.util.NumberUtils;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by amanshuraikwar on 16/01/18.
  */
@@ -48,65 +45,25 @@ public class UserDescriptionActivity
     public static final String KEY_USER = "User";
 
     private static final String TAG = LogUtils.getLogTag(UserDescriptionActivity.class);
-
-    @BindView(R.id.eddfl)
     SwipeBackCoordinatorLayout eddfl;
-
-    @BindView(R.id.userPicIv)
     ImageView userPicIv;
-
-    @BindView(R.id.artistNameTv)
     TextView artistNameTv;
-
-    @BindView(R.id.artistUsernameTv)
     TextView artistUsernameTv;
-
-    @BindView(R.id.artistBioTv)
     TextView artistBioTv;
-
-    @BindView(R.id.artistLocationFl)
     View artistLocationFl;
-
-    @BindView(R.id.artistLocationTv)
     TextView artistLocationTv;
-
-    @BindView(R.id.artistPhotosCountBtn)
     Button artistPhotosCountBtn;
-
-    @BindView(R.id.artistFollowersCountBtn)
     Button artistFollowersCountBtn;
-
-    @BindView(R.id.artistLikesCountBtn)
     Button artistLikesCountBtn;
-
-    @BindView(R.id.tagsParentLl)
     LinearLayout tagsParentLl;
-
-    @BindView(R.id.artistPortfolioLinkIb)
     ImageButton artistPortfolioLinkIb;
-
-    @BindView(R.id.userDataLl)
     LinearLayout userDataLl;
-
-    @BindView(R.id.tabLayout)
     TabLayout tabLayout;
-
-    @BindView(R.id.viewPager)
     ViewPager viewPager;
-
-    @BindView(R.id.appBar)
     NestedScrollAppBarLayout appBar;
-
-    @BindView(R.id.userInfoLoadingWrapperFl)
     View userInfoLoadingWrapperFl;
-
-    @BindView(R.id.userInfoPb)
     ProgressBar userInfoPb;
-
-    @BindView(R.id.userInfoRetryBtn)
     Button userInfoRetryBtn;
-
-    @BindView(R.id.addToFavFab)
     FloatingActionButton addToFavFab;
 
     @Inject
@@ -122,8 +79,26 @@ public class UserDescriptionActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_user_description);
-        ButterKnife.bind(this);
-
+        eddfl = findViewById(R.id.eddfl);
+        userPicIv = findViewById(R.id.userPicIv);
+        artistNameTv = findViewById(R.id.artistNameTv);
+        artistUsernameTv = findViewById(R.id.artistUsernameTv);
+        artistBioTv = findViewById(R.id.artistBioTv);
+        artistLocationFl = findViewById(R.id.artistLocationFl);
+        artistLocationTv = findViewById(R.id.artistLocationTv);
+        artistPhotosCountBtn = findViewById(R.id.artistPhotosCountBtn);
+        artistFollowersCountBtn = findViewById(R.id.artistFollowersCountBtn);
+        artistLikesCountBtn = findViewById(R.id.artistLikesCountBtn);
+        tagsParentLl = findViewById(R.id.tagsParentLl);
+        artistPortfolioLinkIb = findViewById(R.id.artistPortfolioLinkIb);
+        userDataLl = findViewById(R.id.userDataLl);
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
+        appBar = findViewById(R.id.appBar);
+        userInfoLoadingWrapperFl = findViewById(R.id.userInfoLoadingWrapperFl);
+        userInfoPb = findViewById(R.id.userInfoPb);
+        userInfoRetryBtn = findViewById(R.id.userInfoRetryBtn);
+        addToFavFab = findViewById(R.id.addToFavFab);
         User user = getIntent().getParcelableExtra(KEY_USER);
 
         updateUi(user);

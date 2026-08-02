@@ -19,9 +19,6 @@ import com.sonu.app.splash.util.NumberUtils;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by amanshuraikwar on 13/02/18.
  */
@@ -32,92 +29,34 @@ public class PhotoStatsActivity
 
     private static final String TAG = LogUtils.getLogTag(PhotoStatsActivity.class);
     public static final String KEY_PHOTO_ID = "photo_id";
-
-    @BindView(R.id.photoLikesCountBtn)
     Button photoLikesCountBtn;
-
-    @BindView(R.id.photoViewsCountBtn)
     Button photoViewsCountBtn;
-
-    @BindView(R.id.photoDownloadsCountBtn)
     Button photoDownloadsCountBtn;
-
-    @BindView(R.id.likesChangeTv)
     TextView likesChangeTv;
-
-    @BindView(R.id.likesChangeQuantityTv)
     TextView likesChangeQuantityTv;
-
-    @BindView(R.id.likesChangeResolutionTv)
     TextView likesChangeResolutionTv;
-
-    @BindView(R.id.likesSparkView)
     SparkView likesSparkView;
-
-    @BindView(R.id.likesScrubFl)
     View likesScrubFl;
-
-    @BindView(R.id.likesScrubTv)
     TextView likesScrubTv;
-
-    @BindView(R.id.viewsChangeTv)
     TextView viewsChangeTv;
-
-    @BindView(R.id.viewsChangeQuantityTv)
     TextView viewsChangeQuantityTv;
-
-    @BindView(R.id.viewsChangeResolutionTv)
     TextView viewsChangeResolutionTv;
-
-    @BindView(R.id.viewsSparkView)
     SparkView viewsSparkView;
-
-    @BindView(R.id.viewsScrubFl)
     View viewsScrubFl;
-
-    @BindView(R.id.viewsScrubTv)
     TextView viewsScrubTv;
-
-    @BindView(R.id.downloadsChangeTv)
     TextView downloadsChangeTv;
-
-    @BindView(R.id.downloadsChangeQuantityTv)
     TextView downloadsChangeQuantityTv;
-
-    @BindView(R.id.downloadsChangeResolutionTv)
     TextView downloadsChangeResolutionTv;
-
-    @BindView(R.id.downloadsSparkView)
     SparkView downloadsSparkView;
-
-    @BindView(R.id.downloadsScrubFl)
     View downloadsScrubFl;
-
-    @BindView(R.id.downloadsScrubTv)
     TextView downloadsScrubTv;
-
-    @BindView(R.id.eddfl)
     ElasticDragDismissFrameLayout eddfl;
-
-    @BindView(R.id.footerTv)
     TextView footerTv;
-
-    @BindView(R.id.loadingWrapperFl)
     View loadingWrapperFl;
-
-    @BindView(R.id.loadingPb)
     ProgressBar loadingPb;
-
-    @BindView(R.id.loadingRetryBtn)
     Button loadingRetryBtn;
-
-    @BindView(R.id.likesWrapperLl)
     View likesWrapperLl;
-
-    @BindView(R.id.downloadsWrapperLl)
     View downloadsWrapperLl;
-
-    @BindView(R.id.viewsWrapperLl)
     View viewsWrapperLl;
 
 
@@ -126,8 +65,35 @@ public class PhotoStatsActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_photostats);
-        ButterKnife.bind(this);
-
+        photoLikesCountBtn = findViewById(R.id.photoLikesCountBtn);
+        photoViewsCountBtn = findViewById(R.id.photoViewsCountBtn);
+        photoDownloadsCountBtn = findViewById(R.id.photoDownloadsCountBtn);
+        likesChangeTv = findViewById(R.id.likesChangeTv);
+        likesChangeQuantityTv = findViewById(R.id.likesChangeQuantityTv);
+        likesChangeResolutionTv = findViewById(R.id.likesChangeResolutionTv);
+        likesSparkView = findViewById(R.id.likesSparkView);
+        likesScrubFl = findViewById(R.id.likesScrubFl);
+        likesScrubTv = findViewById(R.id.likesScrubTv);
+        viewsChangeTv = findViewById(R.id.viewsChangeTv);
+        viewsChangeQuantityTv = findViewById(R.id.viewsChangeQuantityTv);
+        viewsChangeResolutionTv = findViewById(R.id.viewsChangeResolutionTv);
+        viewsSparkView = findViewById(R.id.viewsSparkView);
+        viewsScrubFl = findViewById(R.id.viewsScrubFl);
+        viewsScrubTv = findViewById(R.id.viewsScrubTv);
+        downloadsChangeTv = findViewById(R.id.downloadsChangeTv);
+        downloadsChangeQuantityTv = findViewById(R.id.downloadsChangeQuantityTv);
+        downloadsChangeResolutionTv = findViewById(R.id.downloadsChangeResolutionTv);
+        downloadsSparkView = findViewById(R.id.downloadsSparkView);
+        downloadsScrubFl = findViewById(R.id.downloadsScrubFl);
+        downloadsScrubTv = findViewById(R.id.downloadsScrubTv);
+        eddfl = findViewById(R.id.eddfl);
+        footerTv = findViewById(R.id.footerTv);
+        loadingWrapperFl = findViewById(R.id.loadingWrapperFl);
+        loadingPb = findViewById(R.id.loadingPb);
+        loadingRetryBtn = findViewById(R.id.loadingRetryBtn);
+        likesWrapperLl = findViewById(R.id.likesWrapperLl);
+        downloadsWrapperLl = findViewById(R.id.downloadsWrapperLl);
+        viewsWrapperLl = findViewById(R.id.viewsWrapperLl);
         initSparkViews();
 
         eddfl.addListener(new ElasticDragDismissListener() {

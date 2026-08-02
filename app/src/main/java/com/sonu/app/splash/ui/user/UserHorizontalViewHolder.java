@@ -1,8 +1,8 @@
 package com.sonu.app.splash.ui.user;
 
-import android.support.annotation.LayoutRes;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.CardView;
+import androidx.annotation.LayoutRes;
+import androidx.fragment.app.FragmentActivity;
+import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,8 +15,6 @@ import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.list.ViewHolder;
 import com.sonu.app.splash.util.LogUtils;
 
-import butterknife.BindView;
-
 /**
  * Created by amanshuraikwar on 20/12/17.
  */
@@ -27,24 +25,19 @@ public class UserHorizontalViewHolder extends ViewHolder<UserHorizontalListItem>
 
     @LayoutRes
     public static final int LAYOUT = R.layout.item_user_horizontal;
-
-    @BindView(R.id.artistPicCv)
     CardView artistPicCv;
-
-    @BindView(R.id.artistPicIv)
     ImageView artistPicIv;
-
-    @BindView(R.id.parent)
     View parent;
-
-    @BindView(R.id.artistNameTv)
     TextView artistNameTv;
-
-    @BindView(R.id.artistUsernameTv)
     TextView artistUsernameTv;
 
     public UserHorizontalViewHolder(View itemView) {
         super(itemView);
+        artistPicCv = itemView.findViewById(R.id.artistPicCv);
+        artistPicIv = itemView.findViewById(R.id.artistPicIv);
+        parent = itemView.findViewById(R.id.parent);
+        artistNameTv = itemView.findViewById(R.id.artistNameTv);
+        artistUsernameTv = itemView.findViewById(R.id.artistUsernameTv);
     }
 
     @Override

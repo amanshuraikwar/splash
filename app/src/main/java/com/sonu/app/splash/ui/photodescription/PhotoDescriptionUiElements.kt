@@ -1,14 +1,13 @@
 package com.sonu.app.splash.ui.photodescription
 
-import android.support.annotation.ColorInt
-import android.support.annotation.LayoutRes
-import android.support.v4.app.FragmentActivity
-import android.support.v7.widget.CardView
+import androidx.annotation.ColorInt
+import androidx.annotation.LayoutRes
+import androidx.fragment.app.FragmentActivity
+import androidx.cardview.widget.CardView
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import butterknife.BindView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
@@ -45,8 +44,7 @@ class PhotoDescriptionUiElements {
             val LAYOUT = R.layout.item_location
         }
 
-        @BindView(R.id.titleTv)
-        lateinit var titleTv: TextView
+        private val titleTv: TextView = itemView.findViewById(R.id.titleTv)
 
         override fun bind(listItem: LocationListItem?, parentActivity: FragmentActivity?) {
 
@@ -72,8 +70,7 @@ class PhotoDescriptionUiElements {
             val LAYOUT = R.layout.item_photo_description_text
         }
 
-        @BindView(R.id.descriptionTv)
-        lateinit var descriptionTv: TextView
+        private val descriptionTv: TextView = itemView.findViewById(R.id.descriptionTv)
 
         override fun bind(listItem: PhotoDescriptionTextListItem?,
                           parentActivity: FragmentActivity?) {
@@ -101,27 +98,23 @@ class PhotoDescriptionUiElements {
             val LAYOUT = R.layout.item_photo_user
         }
 
-        @BindView(R.id.userPhotoIv)
-        lateinit var userPhotoIv: ImageView
+        private val userPhotoIv: ImageView = itemView.findViewById(R.id.userPhotoIv)
 
-        @BindView(R.id.userNameTv)
-        lateinit var userNameTv: TextView
+        private val userNameTv: TextView = itemView.findViewById(R.id.userNameTv)
 
-        @BindView(R.id.userUsernameTv)
-        lateinit var userUsernameTv: TextView
+        private val userUsernameTv: TextView = itemView.findViewById(R.id.userUsernameTv)
 
-        @BindView(R.id.userPhotoCv)
-        lateinit var userPhotoCv: CardView
+        private val userPhotoCv: CardView = itemView.findViewById(R.id.userPhotoCv)
 
         override fun bind(listItem: PhotoUserListItem?, parentActivity: FragmentActivity?) {
 
             listItem?.let{
 
-                userNameTv.text = it.user.name.toLowerCase()
+                userNameTv.text = it.user.name.lowercase()
 
                 userUsernameTv.text = String.format("@%s", it.user.username)
 
-                Glide.with(parentActivity)
+                Glide.with(parentActivity ?: return)
                         .load(it.user.profileImage.large)
                         .apply(RequestOptions().centerCrop().circleCrop())
                         .transition(DrawableTransitionOptions.withCrossFade())
@@ -153,29 +146,21 @@ class PhotoDescriptionUiElements {
             val LAYOUT = R.layout.item_photo_info
         }
 
-        @BindView(R.id.exifExposureTimeBtn)
-        lateinit var exifExposureTimeBtn: Button
+        private val exifExposureTimeBtn: Button = itemView.findViewById(R.id.exifExposureTimeBtn)
 
-        @BindView(R.id.exifFocalLengthBtn)
-        lateinit var exifFocalLengthBtn: Button
+        private val exifFocalLengthBtn: Button = itemView.findViewById(R.id.exifFocalLengthBtn)
 
-        @BindView(R.id.exifIsoBtn)
-        lateinit var exifIsoBtn: Button
+        private val exifIsoBtn: Button = itemView.findViewById(R.id.exifIsoBtn)
 
-        @BindView(R.id.exifMakeBtn)
-        lateinit var exifMakeBtn: Button
+        private val exifMakeBtn: Button = itemView.findViewById(R.id.exifMakeBtn)
 
-        @BindView(R.id.exifModelBtn)
-        lateinit var exifModelBtn: Button
+        private val exifModelBtn: Button = itemView.findViewById(R.id.exifModelBtn)
 
-        @BindView(R.id.exifApertureBtn)
-        lateinit var exifApertureBtn: Button
+        private val exifApertureBtn: Button = itemView.findViewById(R.id.exifApertureBtn)
 
-        @BindView(R.id.photoResolutionBtn)
-        lateinit var photoResolutionBtn: Button
+        private val photoResolutionBtn: Button = itemView.findViewById(R.id.photoResolutionBtn)
 
-        @BindView(R.id.photoStatsBtn)
-        lateinit var photoStatsBtn: Button
+        private val photoStatsBtn: Button = itemView.findViewById(R.id.photoStatsBtn)
 
         override fun bind(listItem: PhotoInfoListItem?, parentActivity: FragmentActivity?) {
 
@@ -231,8 +216,7 @@ class PhotoDescriptionUiElements {
             val LAYOUT = R.layout.item_four_three_empty
         }
 
-        @BindView(R.id.view)
-        lateinit var view: View
+        private val view: View = itemView.findViewById(R.id.view)
 
         override fun bind(listItem: FourThreeEmptyListItem?, parentActivity: FragmentActivity?) {
 

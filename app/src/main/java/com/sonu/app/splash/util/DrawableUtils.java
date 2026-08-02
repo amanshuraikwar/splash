@@ -10,8 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.VectorDrawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 
 /**
  * Created by amanshuraikwar on 10/01/18.

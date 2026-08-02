@@ -54,7 +54,7 @@
         android:focusableInTouchMode="true"
         android:importantForAccessibility="no" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/itemsRv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -63,7 +63,7 @@
         android:orientation="vertical"
         android:scrollbars="vertical"
         android:scrollbarStyle="insideOverlay"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <LinearLayout
         android:id="@+id/photoInfoLoadingWrapperLl"

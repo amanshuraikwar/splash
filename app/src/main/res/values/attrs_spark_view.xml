@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SparkView">
+        <attr name="spark_lineColor" format="color" />
+        <attr name="spark_lineWidth" format="dimension" />
+        <attr name="spark_cornerRadius" format="dimension" />
+        <attr name="spark_scrubEnabled" format="boolean" />
+        <attr name="spark_scrubLineColor" format="color" />
+    </declare-styleable>
+</resources>

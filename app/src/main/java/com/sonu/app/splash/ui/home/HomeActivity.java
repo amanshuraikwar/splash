@@ -8,8 +8,6 @@ import com.sonu.app.splash.util.ActivityUtils;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import dagger.android.support.DaggerAppCompatActivity;
 
 /**
@@ -17,8 +15,6 @@ import dagger.android.support.DaggerAppCompatActivity;
  */
 
 public class HomeActivity extends DaggerAppCompatActivity {
-
-    @BindView(com.sonu.app.splash.R.id.contentFl)
     FrameLayout contentFl;
 
     @Inject
@@ -29,8 +25,7 @@ public class HomeActivity extends DaggerAppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(com.sonu.app.splash.R.layout.activity_home);
-        ButterKnife.bind(this);
-
+        contentFl = findViewById(com.sonu.app.splash.R.id.contentFl);
         ActivityUtils.addFragmentToActivity(
                 getSupportFragmentManager(), homeFragment, R.id.contentFl);
     }

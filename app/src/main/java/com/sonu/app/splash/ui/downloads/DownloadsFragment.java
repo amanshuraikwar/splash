@@ -8,11 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.FileProvider;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +34,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
@@ -45,17 +43,9 @@ import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 public class DownloadsFragment
         extends BaseFragment<DownloadsContract.Presenter>
         implements DownloadsContract.View {
-
-    @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
-
-    @BindView(R.id.errorWrapperLl)
     View errorWrapperLl;
-
-    @BindView(R.id.retryBtn)
     Button retryBtn;
-
-    @BindView(R.id.errorProgressBar)
     MaterialProgressBar errorProgressBar;
 
     private RecyclerViewAdapter adapter;
@@ -102,7 +92,10 @@ public class DownloadsFragment
                              @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_downloads, container, false);
-        ButterKnife.bind(this, root);
+        itemsRv = root.findViewById(R.id.itemsRv);
+        errorWrapperLl = root.findViewById(R.id.errorWrapperLl);
+        retryBtn = root.findViewById(R.id.retryBtn);
+        errorProgressBar = root.findViewById(R.id.errorProgressBar);
         return root;
     }
 

@@ -3,10 +3,10 @@ package com.sonu.app.splash.ui.favs;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -38,8 +38,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
@@ -51,17 +49,9 @@ public class FavsFragment
         implements FavsContract.View {
 
     private static final String TAG = LogUtils.getLogTag(FavsFragment.class);
-
-    @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
-
-    @BindView(R.id.errorWrapperLl)
     View errorWrapperLl;
-
-    @BindView(R.id.retryBtn)
     Button retryBtn;
-
-    @BindView(R.id.errorProgressBar)
     MaterialProgressBar errorProgressBar;
 
     private RecyclerViewAdapter adapter;
@@ -123,7 +113,10 @@ public class FavsFragment
                              @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_favs, container, false);
-        ButterKnife.bind(this, root);
+        itemsRv = root.findViewById(R.id.itemsRv);
+        errorWrapperLl = root.findViewById(R.id.errorWrapperLl);
+        retryBtn = root.findViewById(R.id.retryBtn);
+        errorProgressBar = root.findViewById(R.id.errorProgressBar);
         return root;
     }
 

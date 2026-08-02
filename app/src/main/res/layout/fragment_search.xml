@@ -28,7 +28,7 @@
                 style="@style/Widget.Splash.BorderlessImageButton"
                 tools:ignore="ContentDescription" />
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/searchIb"
@@ -52,7 +52,7 @@
                     android:imeOptions="actionSearch"
                     android:textAppearance="@style/TextAppearance.SearchQuery"
                     android:hint="photos, collection and users" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <ImageButton
                 android:id="@+id/clearIb"
@@ -69,7 +69,7 @@
                 android:visibility="gone" />
         </RelativeLayout>
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
             style="@style/Widget.Splash.TabLayout" />
     </LinearLayout>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

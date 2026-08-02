@@ -2,11 +2,11 @@ package com.sonu.app.splash.ui.search;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,9 +28,6 @@ import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by amanshuraikwar on 01/02/18.
  */
@@ -40,20 +37,10 @@ public class SearchFragment
         implements SearchContract.View {
 
     private static final String TAG = LogUtils.getLogTag(SearchFragment.class);
-
-    @BindView(R.id.searchIb)
     ImageButton searchIb;
-
-    @BindView(R.id.searchEt)
     EditText searchEt;
-
-    @BindView(R.id.clearIb)
     ImageButton clearIb;
-
-    @BindView(R.id.tabLayout)
     TabLayout tabLayout;
-
-    @BindView(R.id.viewPager)
     ViewPager viewPager;
 
     @Inject
@@ -92,7 +79,11 @@ public class SearchFragment
                              @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_search, container, false);
-        ButterKnife.bind(this, root);
+        searchIb = root.findViewById(R.id.searchIb);
+        searchEt = root.findViewById(R.id.searchEt);
+        clearIb = root.findViewById(R.id.clearIb);
+        tabLayout = root.findViewById(R.id.tabLayout);
+        viewPager = root.findViewById(R.id.viewPager);
         return root;
     }
 

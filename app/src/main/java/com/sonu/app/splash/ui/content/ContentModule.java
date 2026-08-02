@@ -23,7 +23,6 @@ import com.sonu.app.splash.ui.content.usercollections.UserCollectionsFragment;
 import com.sonu.app.splash.ui.content.userphotos.UserPhotosContract;
 import com.sonu.app.splash.ui.content.userphotos.UserPhotosFragment;
 
-import butterknife.BindView;
 import dagger.Binds;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

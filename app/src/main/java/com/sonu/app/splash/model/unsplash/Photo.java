@@ -1,6 +1,6 @@
 package com.sonu.app.splash.model.unsplash;
 
-import android.arch.persistence.room.PrimaryKey;
+import androidx.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
