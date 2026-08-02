@@ -373,21 +373,32 @@ public class UnsplashJsonUtils {
 
         UserLinks.Builder builder = new UserLinks.Builder();
 
-        builder.self(jsonObject.get("self").getAsString());
+        builder.self(getStringOrNull(jsonObject, "self"));
 
-        builder.html(jsonObject.get("html").getAsString());
+        builder.html(getStringOrNull(jsonObject, "html"));
 
-        builder.photos(jsonObject.get("photos").getAsString());
+        builder.photos(getStringOrNull(jsonObject, "photos"));
 
-        builder.likes(jsonObject.get("likes").getAsString());
+        builder.likes(getStringOrNull(jsonObject, "likes"));
 
-        builder.portfolio(jsonObject.get("portfolio").getAsString());
+        builder.portfolio(getStringOrNull(jsonObject, "portfolio"));
 
-        builder.following(jsonObject.get("following").getAsString());
+        builder.following(getStringOrNull(jsonObject, "following"));
 
-        builder.followers(jsonObject.get("followers").getAsString());
+        builder.followers(getStringOrNull(jsonObject, "followers"));
 
         return builder.build();
+    }
+
+    private static String getStringOrNull(JsonObject jsonObject, String memberName) {
+
+        JsonElement element = jsonObject.get(memberName);
+
+        if (element == null || element.isJsonNull()) {
+            return null;
+        }
+
+        return element.getAsString();
     }
 
     public static Collection buildCollectionObj(JsonObject jsonObject) {

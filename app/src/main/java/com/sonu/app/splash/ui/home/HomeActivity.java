@@ -1,10 +1,8 @@
 package com.sonu.app.splash.ui.home;
 
 import android.os.Bundle;
-import android.widget.FrameLayout;
 
-import com.sonu.app.splash.R;
-import com.sonu.app.splash.util.ActivityUtils;
+import com.sonu.app.splash.data.DataManager;
 
 import javax.inject.Inject;
 
@@ -15,25 +13,14 @@ import dagger.android.support.DaggerAppCompatActivity;
  */
 
 public class HomeActivity extends DaggerAppCompatActivity {
-    FrameLayout contentFl;
 
     @Inject
-    HomeFragment homeFragment;
+    DataManager dataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(com.sonu.app.splash.R.layout.activity_home);
-        contentFl = findViewById(com.sonu.app.splash.R.id.contentFl);
-        ActivityUtils.addFragmentToActivity(
-                getSupportFragmentManager(), homeFragment, R.id.contentFl);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!homeFragment.onBackPressed()) {
-            super.onBackPressed();
-        }
+        HomeCompose.setContent(this, dataManager);
     }
 }
