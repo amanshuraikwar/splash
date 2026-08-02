@@ -1,14 +1,15 @@
 package com.sonu.app.splash.ui.theme
 
-import android.app.Activity
+import android.graphics.Color.TRANSPARENT as TransparentColor
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 
 @Composable
 fun PolygonTheme(
@@ -24,7 +25,7 @@ fun PolygonTheme(
     content: @Composable () -> Unit,
 ) {
     if (applySystemBars) {
-        PolygonSystemBars(colors = colors, darkTheme = darkTheme)
+        PolygonSystemBars(darkTheme = darkTheme)
     }
 
     CompositionLocalProvider(
@@ -77,17 +78,20 @@ object Polygon {
 }
 
 @Composable
-private fun PolygonSystemBars(colors: PolygonColors, darkTheme: Boolean) {
+private fun PolygonSystemBars(darkTheme: Boolean) {
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as? Activity)?.window ?: return@SideEffect
-            window.statusBarColor = colors.statusBar.toArgb()
-            window.navigationBarColor = colors.navigationBar.toArgb()
-
-            val controller = WindowCompat.getInsetsController(window, view)
-            controller.isAppearanceLightStatusBars = !darkTheme
-            controller.isAppearanceLightNavigationBars = false
+            val activity = view.context as? ComponentActivity ?: return@SideEffect
+            val systemBarStyle = if (darkTheme) {
+                SystemBarStyle.dark(TransparentColor)
+            } else {
+                SystemBarStyle.light(TransparentColor, TransparentColor)
+            }
+            activity.enableEdgeToEdge(
+                statusBarStyle = systemBarStyle,
+                navigationBarStyle = systemBarStyle,
+            )
         }
     }
 }

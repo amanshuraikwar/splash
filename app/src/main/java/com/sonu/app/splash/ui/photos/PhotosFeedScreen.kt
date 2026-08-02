@@ -1,19 +1,20 @@
 package com.sonu.app.splash.ui.photos
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
@@ -25,10 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,7 +36,6 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.sonu.app.splash.R
 import com.sonu.app.splash.data.DataManager
 import com.sonu.app.splash.model.unsplash.Photo
 import com.sonu.app.splash.ui.navigation.LocalSplashAnimatedVisibilityScope
@@ -66,7 +65,6 @@ fun PhotosFeedRoute(
         onRetryClick = viewModel::refresh,
         onLoadMore = viewModel::loadMore,
         onPhotoClick = onPhotoClick,
-        onDownloadClick = viewModel::downloadPhoto,
     )
 }
 
@@ -77,13 +75,20 @@ fun PhotosFeedScreen(
     onRetryClick: () -> Unit,
     onLoadMore: () -> Unit,
     onPhotoClick: ((Photo) -> Unit)?,
-    onDownloadClick: (Photo) -> Unit,
     modifier: Modifier = Modifier,
     onImageSuccess: (Photo) -> Unit = {},
     imageLoader: ImageLoader? = null,
     imageCrossfade: Boolean = true,
 ) {
     val gridState = rememberLazyStaggeredGridState()
+    val density = LocalDensity.current
+    val gridEdgePadding = 8.dp
+    val statusBarPadding = with(density) {
+        WindowInsets.statusBars.getTop(this).toDp()
+    }
+    val navigationBarPadding = with(density) {
+        WindowInsets.navigationBars.getBottom(this).toDp()
+    }
 
     Box(
         modifier = modifier
@@ -96,7 +101,12 @@ fun PhotosFeedScreen(
                     columns = StaggeredGridCells.Fixed(2),
                     state = gridState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(8.dp),
+                    contentPadding = PaddingValues(
+                        start = gridEdgePadding,
+                        top = statusBarPadding + gridEdgePadding,
+                        end = gridEdgePadding,
+                        bottom = navigationBarPadding + gridEdgePadding,
+                    ),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalItemSpacing = 8.dp,
                 ) {
@@ -107,7 +117,6 @@ fun PhotosFeedScreen(
                         PhotoFeedCard(
                             photo = photo,
                             onPhotoClick = onPhotoClick,
-                            onDownloadClick = onDownloadClick,
                             onImageSuccess = onImageSuccess,
                             imageLoader = imageLoader,
                             imageCrossfade = imageCrossfade,
@@ -148,7 +157,6 @@ fun PhotosFeedScreen(
 private fun PhotoFeedCard(
     photo: Photo,
     onPhotoClick: ((Photo) -> Unit)?,
-    onDownloadClick: (Photo) -> Unit,
     modifier: Modifier = Modifier,
     onImageSuccess: (Photo) -> Unit,
     imageLoader: ImageLoader?,
@@ -199,31 +207,6 @@ private fun PhotoFeedCard(
                 crossfade = imageCrossfade,
             )
         }
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(Polygon.dimensions.iconButtonTouchTarget)
-                .clickable { onDownloadClick(photo) },
-            contentAlignment = Alignment.Center,
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_file_download_black_24dp),
-                contentDescription = "Download",
-                colorFilter = ColorFilter.tint(PolygonPalette.White),
-                modifier = Modifier.size(24.dp),
-            )
-        }
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_landscape_black_24dp),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(PolygonPalette.White),
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp)
-                .size(12.dp),
-        )
     }
 }
 

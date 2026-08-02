@@ -44,7 +44,6 @@ class PhotosFeedScreenScreenshotTest {
                     onRetryClick = {},
                     onLoadMore = {},
                     onPhotoClick = {},
-                    onDownloadClick = {},
                     modifier = Modifier.testTag(MAIN_FEED_TAG),
                     onImageSuccess = { photo ->
                         loadedPhotoIds.add(photo.id)

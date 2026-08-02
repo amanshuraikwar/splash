@@ -1,6 +1,10 @@
 package com.sonu.app.splash.ui.home;
 
+import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.activity.SystemBarStyle;
 
 import com.sonu.app.splash.data.DataManager;
 
@@ -19,6 +23,10 @@ public class HomeActivity extends DaggerAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(
+                this,
+                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT));
         super.onCreate(savedInstanceState);
 
         HomeCompose.setContent(this, dataManager);
