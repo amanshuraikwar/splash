@@ -1,9 +1,26 @@
 *.iml
 .gradle
 /local.properties
+/.idea/
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store
 /build
 /captures
 .externalNativeBuild
+
+# Local secrets and generated app packages
+.env
+.env.*
+google-services.json
+*.apk
+*.aab
+*.ap_
+*.idsig
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+app/release/

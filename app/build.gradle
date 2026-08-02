@@ -9,6 +9,35 @@ def versionMinor = 0
 def versionPatch = 0
 def versionBuild = 1 // bump for dogfood builds, public betas, etc.
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
+def readPrivateValue = { String name ->
+    def gradleValue = providers.gradleProperty(name).orNull
+    if (gradleValue != null && !gradleValue.trim().isEmpty()) {
+        return gradleValue
+    }
+
+    def envValue = providers.environmentVariable(name).orNull
+    if (envValue != null && !envValue.trim().isEmpty()) {
+        return envValue
+    }
+
+    def localValue = localProperties.getProperty(name)
+    if (localValue != null && !localValue.trim().isEmpty()) {
+        return localValue
+    }
+
+    return ""
+}
+
+def buildConfigString = { String value ->
+    "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
+}
+
 android {
     namespace "com.sonu.app.splash"
     compileSdk 37
@@ -20,6 +49,8 @@ android {
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "UNSPLASH_ACCESS_KEY",
+                buildConfigString(readPrivateValue("UNSPLASH_ACCESS_KEY"))
     }
 
     ext {
@@ -28,6 +59,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig true
         compose true
     }
 

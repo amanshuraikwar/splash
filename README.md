@@ -53,8 +53,15 @@ possible.
 <img width="240" src="https://amanshuraikwar.github.io/assets/splash/ss-downloads.jpg">
 </div>
 
-## Get it
-[Download APK](https://amanshuraikwar.github.io/assets/splash/splash-0.0.5.apk)
+## Build it
+This public repository does not include APK binaries or API credentials.
+To run the app against Unsplash, provide an access key outside Git:
+
+```sh
+UNSPLASH_ACCESS_KEY=your_access_key ./gradlew :app:assembleDebug
+```
+
+You can also put `UNSPLASH_ACCESS_KEY=your_access_key` in untracked `local.properties`.
 
 ## Please
 > ### Please don't over use the app as the Api has a limit.

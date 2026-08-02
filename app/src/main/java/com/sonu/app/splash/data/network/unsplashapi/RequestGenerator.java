@@ -2,6 +2,8 @@ package com.sonu.app.splash.data.network.unsplashapi;
 
 import androidx.annotation.NonNull;
 
+import com.sonu.app.splash.BuildConfig;
+
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -11,7 +13,11 @@ public class RequestGenerator {
     private static void addDefaultHeaders(@NonNull Request.Builder builder) {
         builder.header("Accept", "application/json");
         builder.header("Accept-Version", "v1");
-        builder.header("Authorization", "Client-ID d0e90a33fc21f29f62b102fd9a330de94dcc490aa45de1dc8d8daa34306b41b6");
+
+        String accessKey = BuildConfig.UNSPLASH_ACCESS_KEY.trim();
+        if (!accessKey.isEmpty()) {
+            builder.header("Authorization", "Client-ID " + accessKey);
+        }
     }
 
     public static Request get(@NonNull String url) {
