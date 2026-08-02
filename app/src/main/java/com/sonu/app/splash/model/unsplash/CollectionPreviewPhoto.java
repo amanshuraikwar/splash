@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class CollectionPreviewPhoto implements Parcelable {
 
-    private int id;
+    private String id;
 
     private PhotoUrls photoUrls;
 
@@ -18,7 +18,7 @@ public class CollectionPreviewPhoto implements Parcelable {
         photoUrls = builder.photoUrls;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -35,10 +35,10 @@ public class CollectionPreviewPhoto implements Parcelable {
     }
 
     public static final class Builder {
-        private int id;
+        private String id;
         private PhotoUrls photoUrls;
 
-        public Builder(int id) {
+        public Builder(String id) {
             this.id = id;
         }
 
@@ -59,12 +59,12 @@ public class CollectionPreviewPhoto implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeString(this.id);
         dest.writeParcelable(this.photoUrls, flags);
     }
 
     protected CollectionPreviewPhoto(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readString();
         this.photoUrls = in.readParcelable(PhotoUrls.class.getClassLoader());
     }
 

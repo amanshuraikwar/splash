@@ -1,5 +1,6 @@
 package com.sonu.app.splash.ui.photos
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -10,11 +11,14 @@ import coil3.ImageLoader
 import coil3.asImage
 import coil3.test.FakeImageLoaderEngine
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.sonu.app.splash.model.unsplash.Collection as UnsplashCollection
 import com.sonu.app.splash.model.unsplash.Photo
 import com.sonu.app.splash.model.unsplash.PhotoUrls
+import com.sonu.app.splash.model.unsplash.ProfileImage
 import com.sonu.app.splash.model.unsplash.User
 import com.sonu.app.splash.ui.theme.PolygonTheme
 import java.io.File
+import java.net.URI
 import java.util.Collections
 import org.junit.Rule
 import org.junit.Test
@@ -39,18 +43,32 @@ class PhotosFeedScreenScreenshotTest {
 
         composeRule.setContent {
             PolygonTheme {
-                PhotosFeedScreen(
-                    state = PhotosFeedUiState(photos = photos),
-                    onRetryClick = {},
-                    onLoadMore = {},
-                    onPhotoClick = {},
+                PhotosFeedPagerScaffold(
                     modifier = Modifier.testTag(MAIN_FEED_TAG),
-                    onImageSuccess = { photo ->
-                        loadedPhotoIds.add(photo.id)
-                    },
-                    imageLoader = imageLoader,
-                    imageCrossfade = false,
-                )
+                    pages = listOf(PhotosFeedPage.AllPhotos, PhotosFeedPage.Collections),
+                ) { page ->
+                    when (page) {
+                        PhotosFeedPage.AllPhotos -> PhotosFeedScreen(
+                            state = PhotosFeedUiState(photos = photos),
+                            onRetryClick = {},
+                            onLoadMore = {},
+                            onPhotoClick = {},
+                            onImageSuccess = { photo ->
+                                loadedPhotoIds.add(photo.id)
+                            },
+                            imageLoader = imageLoader,
+                            imageCrossfade = false,
+                            includeStatusBarPadding = false,
+                        )
+
+                        PhotosFeedPage.Collections -> CollectionsFeedScreen(
+                            state = CollectionsFeedUiState(),
+                            onRetryClick = {},
+                            onLoadMore = {},
+                            includeStatusBarPadding = false,
+                        )
+                    }
+                }
             }
         }
 
@@ -61,6 +79,38 @@ class PhotosFeedScreenScreenshotTest {
         composeRule
             .onNodeWithTag(MAIN_FEED_TAG)
             .captureRoboImage("src/test/snapshots/photos_feed_main.png")
+    }
+
+    @Test
+    fun recordsCollectionsScreen() {
+        val collections = fixtureCollections()
+        val loadedCollectionIds = Collections.synchronizedSet(mutableSetOf<Int>())
+        val imageLoader = fixtureCollectionImageLoader(collections)
+
+        composeRule.setContent {
+            PolygonTheme {
+                CollectionsFeedScreen(
+                    state = CollectionsFeedUiState(collections = collections),
+                    onRetryClick = {},
+                    onLoadMore = {},
+                    modifier = Modifier.testTag(COLLECTIONS_FEED_TAG),
+                    onImageSuccess = { collection ->
+                        loadedCollectionIds.add(collection.id)
+                    },
+                    imageLoader = imageLoader,
+                    imageCrossfade = false,
+                    includeStatusBarPadding = false,
+                )
+            }
+        }
+
+        composeRule.waitUntil(timeoutMillis = 10_000) {
+            loadedCollectionIds.isNotEmpty()
+        }
+
+        composeRule
+            .onNodeWithTag(COLLECTIONS_FEED_TAG)
+            .captureRoboImage("src/test/snapshots/photos_feed_collections.png")
     }
 
     private fun fixturePhotos(): List<Photo> {
@@ -110,6 +160,63 @@ class PhotosFeedScreenScreenshotTest {
         )
     }
 
+    private fun fixtureCollections(): List<UnsplashCollection> {
+        val titles = listOf(
+            "Soft Interiors",
+            "Shadow Studies",
+            "City Neon",
+            "Forest Light",
+            "Quiet Streets",
+            "Warm Horizons",
+        )
+        val artists = listOf(
+            "Nora Fields",
+            "Mika Chen",
+            "Eli Reyes",
+            "June Park",
+            "Ada Stone",
+            "Kai Morgan",
+        )
+        val colors = listOf(
+            "#90A4AE",
+            "#6D4C41",
+            "#455A64",
+            "#78909C",
+            "#5C6BC0",
+            "#8D6E63",
+        )
+        val coverSizes = listOf(
+            1400 to 860,
+            1200 to 760,
+            1300 to 900,
+            1600 to 980,
+            1500 to 930,
+            1280 to 820,
+        )
+
+        return titles.mapIndexed { index, title ->
+            UnsplashCollection.Builder(10_000 + index)
+                .title(title)
+                .totalPhotos((index + 2) * 18)
+                .coverPhoto(
+                    collectionCoverPhoto(
+                        id = "collection-cover-$index",
+                        color = colors[index],
+                        width = coverSizes[index].first,
+                        height = coverSizes[index].second,
+                    ),
+                )
+                .user(
+                    User.Builder("collection-user-$index")
+                        .username(artists[index].lowercase().replace(" ", "_"))
+                        .name(artists[index])
+                        .profileImage(profileImage("fixture://collection-profile-$index"))
+                        .build(),
+                )
+                .build()
+        }
+    }
+
     private fun photo(
         id: String,
         color: String,
@@ -141,6 +248,39 @@ class PhotosFeedScreenScreenshotTest {
             .build()
     }
 
+    private fun collectionCoverPhoto(
+        id: String,
+        color: String,
+        width: Int,
+        height: Int,
+    ): Photo {
+        val imageUri = "fixture://$id"
+        return Photo.Builder(id)
+            .width(width)
+            .height(height)
+            .color(color)
+            .description("Collection cover")
+            .urls(
+                PhotoUrls.Builder()
+                    .raw(imageUri)
+                    .full(imageUri)
+                    .regular(imageUri)
+                    .small(imageUri)
+                    .thumb(imageUri)
+                    .build(),
+            )
+            .user(User.Builder("user-$id").name("Collection artist").build())
+            .build()
+    }
+
+    private fun profileImage(imageUri: String): ProfileImage {
+        return ProfileImage.Builder()
+            .small(imageUri)
+            .meduim(imageUri)
+            .large(imageUri)
+            .build()
+    }
+
     private fun screenshotFixture(fileName: String): String {
         return File(projectRoot(), "screenshots/$fileName").toURI().toString()
     }
@@ -148,22 +288,58 @@ class PhotosFeedScreenScreenshotTest {
     private fun fixtureImageLoader(photos: List<Photo>): ImageLoader {
         val engineBuilder = FakeImageLoaderEngine.Builder()
         photos.forEach { photo ->
-            val bitmap = checkNotNull(
-                BitmapFactory.decodeFile(
-                    File(projectRoot(), "screenshots/${fixtureImageName(photo.id)}").absolutePath,
-                ),
-            ) {
-                "Unable to decode fixture image for ${photo.id}"
-            }
             engineBuilder.intercept(
                 checkNotNull(photo.photoUrls.small),
-                bitmap.asImage(),
+                fixtureFileBitmap(checkNotNull(photo.photoUrls.small)).asImage(),
             )
         }
 
         return ImageLoader.Builder(RuntimeEnvironment.getApplication())
             .components { add(engineBuilder.build()) }
             .build()
+    }
+
+    private fun fixtureCollectionImageLoader(collections: List<UnsplashCollection>): ImageLoader {
+        val engineBuilder = FakeImageLoaderEngine.Builder()
+        collections.forEachIndexed { index, collection ->
+            val coverPhoto = collection.coverPhoto
+            coverPhoto?.photoUrls?.small?.let { imageUri ->
+                engineBuilder.intercept(
+                    imageUri,
+                    fixtureColorBitmap(
+                        width = coverPhoto.width,
+                        height = coverPhoto.height,
+                        color = COLLECTION_FIXTURE_COLORS[index],
+                    ).asImage(),
+                )
+            }
+            collection.user?.profileImage?.large?.let { imageUri ->
+                engineBuilder.intercept(
+                    imageUri,
+                    fixtureColorBitmap(
+                        width = 128,
+                        height = 128,
+                        color = PROFILE_FIXTURE_COLORS[index],
+                    ).asImage(),
+                )
+            }
+        }
+
+        return ImageLoader.Builder(RuntimeEnvironment.getApplication())
+            .components { add(engineBuilder.build()) }
+            .build()
+    }
+
+    private fun fixtureFileBitmap(imageUri: String) = checkNotNull(
+        BitmapFactory.decodeFile(File(URI.create(imageUri)).absolutePath),
+    ) {
+        "Unable to decode fixture image at $imageUri"
+    }
+
+    private fun fixtureColorBitmap(width: Int, height: Int, color: Int): Bitmap {
+        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+            eraseColor(color)
+        }
     }
 
     private fun fixtureImageName(photoId: String): String {
@@ -185,5 +361,22 @@ class PhotosFeedScreenScreenshotTest {
 
     private companion object {
         const val MAIN_FEED_TAG = "photos-feed-main"
+        const val COLLECTIONS_FEED_TAG = "photos-feed-collections"
+        val COLLECTION_FIXTURE_COLORS = intArrayOf(
+            0xFF90A4AE.toInt(),
+            0xFF6D4C41.toInt(),
+            0xFF455A64.toInt(),
+            0xFF78909C.toInt(),
+            0xFF5C6BC0.toInt(),
+            0xFF8D6E63.toInt(),
+        )
+        val PROFILE_FIXTURE_COLORS = intArrayOf(
+            0xFF263238.toInt(),
+            0xFF3E2723.toInt(),
+            0xFF1A237E.toInt(),
+            0xFF004D40.toInt(),
+            0xFF311B92.toInt(),
+            0xFF4E342E.toInt(),
+        )
     }
 }

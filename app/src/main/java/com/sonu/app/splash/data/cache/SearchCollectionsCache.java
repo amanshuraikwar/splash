@@ -9,6 +9,9 @@ import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UnsplashJsonUtils;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import javax.inject.Inject;
 
 /**
@@ -26,7 +29,10 @@ public class SearchCollectionsCache extends SearchCache<Collection> {
 
     @Override
     String getApiEndpoint() {
-        return String.format(ApiEndpoints.SEARCH_COLLECTIONS, getQuery(), "%s");
+        return String.format(
+                ApiEndpoints.SEARCH_COLLECTIONS,
+                URLEncoder.encode(getQuery(), StandardCharsets.UTF_8),
+                "%s");
     }
 
     @Override

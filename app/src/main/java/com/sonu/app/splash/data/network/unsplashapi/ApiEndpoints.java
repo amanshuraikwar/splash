@@ -14,7 +14,7 @@ public interface ApiEndpoints {
 
     String GET_ALL_PHOTOS = BASE_ENDPOINT + "photos?page=%s&order_by=%s&per_page="+PER_PAGE;
 
-    String GET_CURATED_PHOTOS = BASE_ENDPOINT + "photos/curated?page=%s&order_by=%s&per_page="+PER_PAGE;
+    String GET_CURATED_PHOTOS = BASE_ENDPOINT + "photos?page=%s&order_by=%s&per_page="+PER_PAGE;
 
     String GET_PHOTO = BASE_ENDPOINT + "photos/%s";
 

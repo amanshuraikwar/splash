@@ -31,7 +31,12 @@ public class UnsplashJsonUtils {
                 new Photo.Builder(jsonObject.get("id").getAsString());
 
         builder.createdAt(jsonObject.get("created_at").getAsString());
-        builder.updatedAt(jsonObject.get("updated_at").getAsString());
+
+        try {
+            builder.updatedAt(jsonObject.get("updated_at").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         builder.width(jsonObject.get("width").getAsInt());
         builder.height(jsonObject.get("height").getAsInt());
@@ -46,9 +51,17 @@ public class UnsplashJsonUtils {
 
         builder.urls(buildPhotoUrlsObj(jsonObject.get("urls").getAsJsonObject()));
 
-        builder.links(buildPhotoLinks(jsonObject.get("links").getAsJsonObject()));
+        try {
+            builder.links(buildPhotoLinks(jsonObject.get("links").getAsJsonObject()));
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.likes(jsonObject.get("likes").getAsInt());
+        try {
+            builder.likes(jsonObject.get("likes").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         builder.user(buildUserObj(jsonObject.get("user").getAsJsonObject()));
 
@@ -106,7 +119,7 @@ public class UnsplashJsonUtils {
 
         builder.download(jsonObject.get("download").getAsString());
 
-        builder.downloadLocation(jsonObject.get("download_location").getAsString());
+        builder.downloadLocation(getStringOrNull(jsonObject, "download_location"));
 
         return builder.build();
     }
@@ -202,7 +215,11 @@ public class UnsplashJsonUtils {
         User.Builder builder =
                 new User.Builder(jsonObject.get("id").getAsString());
 
-        builder.updatedAt(jsonObject.get("updated_at").getAsString());
+        try {
+            builder.updatedAt(jsonObject.get("updated_at").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         try {
             builder.numericId(jsonObject.get("numeric_id").getAsInt());
@@ -246,11 +263,23 @@ public class UnsplashJsonUtils {
             // do nothing
         }
 
-        builder.totalLikes(jsonObject.get("total_likes").getAsInt());
+        try {
+            builder.totalLikes(jsonObject.get("total_likes").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.totalPhotos(jsonObject.get("total_photos").getAsInt());
+        try {
+            builder.totalPhotos(jsonObject.get("total_photos").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.totalCollections(jsonObject.get("total_collections").getAsInt());
+        try {
+            builder.totalCollections(jsonObject.get("total_collections").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         try {
             builder.followingCount(jsonObject.get("following_count").getAsInt());
@@ -409,16 +438,43 @@ public class UnsplashJsonUtils {
 
         builder.title(jsonObject.get("title").getAsString());
 
-        builder.publishedAt(jsonObject.get("published_at").getAsString());
-        builder.updatedAt(jsonObject.get("updated_at").getAsString());
+        builder.description(getStringOrNull(jsonObject, "description"));
 
-        builder.curated(jsonObject.get("curated").getAsBoolean());
+        try {
+            builder.publishedAt(jsonObject.get("published_at").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.featured(jsonObject.get("featured").getAsBoolean());
+        try {
+            builder.updatedAt(jsonObject.get("updated_at").getAsString());
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.totalPhotos(jsonObject.get("total_photos").getAsInt());
+        try {
+            builder.curated(jsonObject.get("curated").getAsBoolean());
+        } catch (Exception e) {
+            // do nothing
+        }
 
-        builder.privateC(jsonObject.get("private").getAsBoolean());
+        try {
+            builder.featured(jsonObject.get("featured").getAsBoolean());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.totalPhotos(jsonObject.get("total_photos").getAsInt());
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        try {
+            builder.privateC(jsonObject.get("private").getAsBoolean());
+        } catch (Exception e) {
+            // do nothing
+        }
 
         try {
             builder.shareKey(jsonObject.get("share_key").getAsString());
@@ -480,7 +536,7 @@ public class UnsplashJsonUtils {
     private static CollectionPreviewPhoto buildCollectionPreviewPhotoObj(JsonObject jsonObject) {
 
         CollectionPreviewPhoto.Builder builder =
-                new CollectionPreviewPhoto.Builder(jsonObject.get("id").getAsInt());
+                new CollectionPreviewPhoto.Builder(jsonObject.get("id").getAsString());
 
         builder.photoUrls(buildPhotoUrlsObj(jsonObject.get("urls").getAsJsonObject()));
 
