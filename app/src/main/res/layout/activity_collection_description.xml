@@ -70,7 +70,7 @@
                     </LinearLayout>
                 </HorizontalScrollView>
 
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/artistPicCv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                         android:transitionName="@string/transition_artist_pic"
                         tools:ignore="ContentDescription"
                         android:src="@drawable/me" />
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/artistNameTv"
@@ -104,7 +104,7 @@
             </LinearLayout>
         </FrameLayout>
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="wrap_content"
             android:layout_height="?android:attr/actionBarSize"
@@ -114,13 +114,13 @@
             style="@style/Widget.Splash.TabLayout" />
     </com.sonu.app.splash.ui.widget.NestedScrollAppBarLayout>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addToFavFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

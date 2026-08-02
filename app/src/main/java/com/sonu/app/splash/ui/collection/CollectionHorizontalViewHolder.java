@@ -1,9 +1,9 @@
 package com.sonu.app.splash.ui.collection;
 
 import android.graphics.Color;
-import android.support.annotation.LayoutRes;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.CardView;
+import androidx.annotation.LayoutRes;
+import androidx.fragment.app.FragmentActivity;
+import androidx.cardview.widget.CardView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,8 +18,6 @@ import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.DrawableUtils;
 import com.sonu.app.splash.util.LogUtils;
 
-import butterknife.BindView;
-
 /**
  * Created by amanshuraikwar on 28/01/18.
  */
@@ -30,30 +28,23 @@ public class CollectionHorizontalViewHolder extends ViewHolder<CollectionHorizon
 
     @LayoutRes
     public static final int LAYOUT = R.layout.item_collection_horizontal;
-
-    @BindView(R.id.photoIv)
     public HeightRelativeAspectRatioImageView photoIv;
-
-    @BindView(R.id.photosCountTv)
     TextView photosCountTv;
-
-    @BindView(R.id.collectionTitleTv)
     TextView collectionTitleTv;
-
-    @BindView(R.id.artistProfileImageIv)
     ImageView artistProfileImageIv;
-
-    @BindView(R.id.artistNameTv)
     TextView artistNameTv;
-
-    @BindView(R.id.artistPicCv)
     CardView artistPicCv;
-
-    @BindView(R.id.parent)
     View parent;
 
     public CollectionHorizontalViewHolder(View itemView) {
         super(itemView);
+        photoIv = itemView.findViewById(R.id.photoIv);
+        photosCountTv = itemView.findViewById(R.id.photosCountTv);
+        collectionTitleTv = itemView.findViewById(R.id.collectionTitleTv);
+        artistProfileImageIv = itemView.findViewById(R.id.artistProfileImageIv);
+        artistNameTv = itemView.findViewById(R.id.artistNameTv);
+        artistPicCv = itemView.findViewById(R.id.artistPicCv);
+        parent = itemView.findViewById(R.id.parent);
     }
 
     @Override

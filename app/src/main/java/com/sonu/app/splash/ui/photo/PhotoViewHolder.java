@@ -1,8 +1,8 @@
 package com.sonu.app.splash.ui.photo;
 
 import android.graphics.Color;
-import android.support.annotation.LayoutRes;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.LayoutRes;
+import androidx.fragment.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,8 +19,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
-import butterknife.BindView;
-
 /**
  * Created by amanshuraikwar on 20/12/17.
  */
@@ -31,18 +29,15 @@ public class PhotoViewHolder extends ViewHolder<PhotoListItem> {
 
     @LayoutRes
     public static final int LAYOUT = R.layout.item_photo;
-
-    @BindView(R.id.photoIv)
     public WidthRelativeAspectRatioImageView photoIv;
-
-    @BindView(R.id.parent)
     View parent;
-
-    @BindView(R.id.downloadIb)
     ImageButton downloadIb;
 
     public PhotoViewHolder(View itemView) {
         super(itemView);
+        photoIv = itemView.findViewById(R.id.photoIv);
+        parent = itemView.findViewById(R.id.parent);
+        downloadIb = itemView.findViewById(R.id.downloadIb);
     }
 
     @Override

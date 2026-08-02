@@ -3,11 +3,11 @@ package com.sonu.app.splash.ui.content;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +27,6 @@ import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
@@ -40,20 +38,10 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
         implements ContentContract.View {
 
     private static final String TAG = LogUtils.getLogTag(ContentFragment.class);
-
-    @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
-
-    @BindView(R.id.progressBar)
     MaterialProgressBar progressBar;
-
-    @BindView(R.id.errorWrapperLl)
     View errorWrapperLl;
-
-    @BindView(R.id.retryBtn)
     Button retryBtn;
-
-    @BindView(R.id.parentCl)
     CoordinatorLayout parent;
 
     private ContentListAdapter adapter;
@@ -100,7 +88,11 @@ public abstract class ContentFragment<Presenter extends ContentContract.Presente
         Log.d(TAG, "onCreateView:called");
 
         View root = inflater.inflate(R.layout.fragment_content, container, false);
-        ButterKnife.bind(this, root);
+        itemsRv = root.findViewById(R.id.itemsRv);
+        progressBar = root.findViewById(R.id.progressBar);
+        errorWrapperLl = root.findViewById(R.id.errorWrapperLl);
+        retryBtn = root.findViewById(R.id.retryBtn);
+        parent = root.findViewById(R.id.parentCl);
         return root;
     }
 

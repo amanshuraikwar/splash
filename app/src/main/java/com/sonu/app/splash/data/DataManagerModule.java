@@ -1,7 +1,7 @@
 package com.sonu.app.splash.data;
 
 import android.app.DownloadManager;
-import android.arch.persistence.room.Room;
+import androidx.room.Room;
 import android.content.Context;
 
 import com.sonu.app.splash.data.cache.PhotosCache;

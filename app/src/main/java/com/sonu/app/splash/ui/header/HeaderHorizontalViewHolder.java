@@ -1,15 +1,13 @@
 package com.sonu.app.splash.ui.header;
 
-import android.support.annotation.LayoutRes;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.LayoutRes;
+import androidx.fragment.app.FragmentActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.list.ViewHolder;
 import com.sonu.app.splash.util.LogUtils;
-
-import butterknife.BindView;
 
 /**
  * Created by amanshuraikwar on 27/01/18.
@@ -21,15 +19,13 @@ public class HeaderHorizontalViewHolder extends ViewHolder<HeaderHorizontalListI
 
     @LayoutRes
     public static final int LAYOUT = R.layout.item_header_horizontal;
-
-    @BindView(R.id.textTv)
     TextView textTv;
-
-    @BindView(R.id.parent)
     View parent;
 
     public HeaderHorizontalViewHolder(View itemView) {
         super(itemView);
+        textTv = itemView.findViewById(R.id.textTv);
+        parent = itemView.findViewById(R.id.parent);
     }
 
     @Override

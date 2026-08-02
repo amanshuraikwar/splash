@@ -1,9 +1,9 @@
 package com.sonu.app.splash.util.fragment;
 
-import android.support.annotation.AnimRes;
-import android.support.annotation.StyleRes;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.util.Pair;
+import androidx.annotation.AnimRes;
+import androidx.annotation.StyleRes;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.util.Pair;
 import android.view.View;
 
 import java.util.ArrayList;

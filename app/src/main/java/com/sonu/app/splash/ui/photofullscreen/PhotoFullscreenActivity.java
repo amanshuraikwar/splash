@@ -2,8 +2,8 @@ package com.sonu.app.splash.ui.photofullscreen;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -15,10 +15,6 @@ import com.sonu.app.splash.R;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.LogUtils;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 /**
  * Created by amanshuraikwar on 26/01/18.
  */
@@ -27,14 +23,9 @@ public class PhotoFullscreenActivity extends AppCompatActivity {
 
     public static final String KEY_PHOTO = "photo";
     private static final String TAG = LogUtils.getLogTag(PhotoFullscreenActivity.class);
-
-    @BindView(R.id.photoView)
     PhotoView photoView;
-
-    @BindView(R.id.loadingTv)
     TextView loadingTv;
 
-    @OnClick(R.id.closeBtn)
     void onClick() {
         finishAfterTransition();
     }
@@ -44,8 +35,10 @@ public class PhotoFullscreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_fullscreen);
 
-        ButterKnife.bind(this);
+        photoView = findViewById(R.id.photoView);
 
+        loadingTv = findViewById(R.id.loadingTv);
+        findViewById(R.id.closeBtn).setOnClickListener(v -> onClick());
         final Photo photo = getIntent().getParcelableExtra(KEY_PHOTO);
 
         Glide.with(PhotoFullscreenActivity.this)

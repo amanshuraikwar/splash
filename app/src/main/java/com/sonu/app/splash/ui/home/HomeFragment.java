@@ -7,11 +7,11 @@ import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +33,6 @@ import com.sonu.app.splash.util.fragment.FragmentHistory;
 
 import javax.inject.Inject;
 
-import butterknife.BindArray;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by amanshuraikwar on 18/12/17.
  */
@@ -50,14 +46,8 @@ public class HomeFragment
         FragNavController.RootFragmentListener {
 
     private static final String TAG = LogUtils.getLogTag(HomeFragment.class);
-
-    @BindView(R.id.persistentMessage)
     View persistentMessage;
-
-    @BindArray(R.array.tab_name)
     String[] TABS;
-
-    @BindView(R.id.bottomTl)
     TabLayout bottomTl;
 
     private ConnectivityManager.NetworkCallback networkCallback =
@@ -122,7 +112,9 @@ public class HomeFragment
                              @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(com.sonu.app.splash.R.layout.fragment_home, container, false);
-        ButterKnife.bind(this, root);
+        persistentMessage = root.findViewById(R.id.persistentMessage);
+        bottomTl = root.findViewById(R.id.bottomTl);
+        TABS = getResources().getStringArray(R.array.tab_name);
         return root;
     }
 

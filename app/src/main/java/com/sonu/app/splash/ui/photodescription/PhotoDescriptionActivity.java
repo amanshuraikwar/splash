@@ -7,13 +7,13 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.graphics.Palette;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.content.ContextCompat;
+import androidx.palette.graphics.Palette;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -50,9 +50,6 @@ import com.sonu.app.splash.util.LogUtils;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by amanshuraikwar on 11/01/18.
  */
@@ -64,32 +61,14 @@ public class PhotoDescriptionActivity
     private static final String TAG = LogUtils.getLogTag(PhotoDescriptionActivity.class);
 
     public static final String KEY_PHOTO = "curPhoto";
-
-    @BindView(R.id.eddfl)
     ElasticDragDismissFrameLayout eddfl;
-
-    @BindView(R.id.photoIv)
     ParallaxScrimageView photoIv;
-
-    @BindView(R.id.backIb)
     ImageButton backIb;
-
-    @BindView(R.id.downloadFab)
     FABToggle downloadFab;
-
-    @BindView(R.id.photoInfoPb)
     ProgressBar photoInfoPb;
-
-    @BindView(R.id.photoInfoLoadingWrapperLl)
     View photoInfoLoadingWrapperFl;
-
-    @BindView(R.id.photoInfoRetryBtn)
     Button photoInfoRetryBtn;
-
-    @BindView(R.id.itemsRv)
     RecyclerView itemsRv;
-
-    @BindView(R.id.addToFavFab)
     FABToggle addToFavFab;
 
     private boolean contentLoaded;
@@ -126,8 +105,15 @@ public class PhotoDescriptionActivity
         Log.d(TAG, "onCreate:called");
 
         setContentView(R.layout.activity_photo_description);
-        ButterKnife.bind(this);
-
+        eddfl = findViewById(R.id.eddfl);
+        photoIv = findViewById(R.id.photoIv);
+        backIb = findViewById(R.id.backIb);
+        downloadFab = findViewById(R.id.downloadFab);
+        photoInfoPb = findViewById(R.id.photoInfoPb);
+        photoInfoLoadingWrapperFl = findViewById(R.id.photoInfoLoadingWrapperLl);
+        photoInfoRetryBtn = findViewById(R.id.photoInfoRetryBtn);
+        itemsRv = findViewById(R.id.itemsRv);
+        addToFavFab = findViewById(R.id.addToFavFab);
         updateUi(getCurPhoto());
 
         downloadFab.setOnClickListener(

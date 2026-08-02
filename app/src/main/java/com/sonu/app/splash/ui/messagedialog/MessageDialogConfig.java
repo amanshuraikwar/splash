@@ -2,8 +2,8 @@ package com.sonu.app.splash.ui.messagedialog;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 
 import com.sonu.app.splash.R;

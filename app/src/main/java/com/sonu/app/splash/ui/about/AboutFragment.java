@@ -3,8 +3,8 @@ package com.sonu.app.splash.ui.about;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +16,6 @@ import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 /**
  * Created by amanshuraikwar on 19/12/17.
  */
@@ -28,40 +24,27 @@ public class AboutFragment extends BaseFragment<AboutContract.Presenter>
         implements AboutContract.View {
 
     private static final String TAG = LogUtils.getLogTag(AboutFragment.class);
-
-    @BindView(R.id.projectGithubIv)
     ImageView projectGithubIv;
-
-    @BindView(R.id.arLinkedinIv)
     ImageView arLinkedinIv;
-
-    @BindView(R.id.arGithubIv)
     ImageView arGithubIv;
-
-    @BindView(R.id.arInstagramIv)
     ImageView arInstagramIv;
 
-    @OnClick(R.id.slLinkIv)
     void onSlIvClick() {
         startBrowserActivity("https://developer.android.com/topic/libraries/support-library");
     }
 
-    @OnClick(R.id.bnLinkIv)
     void onBnIvClick() {
         startBrowserActivity("http://jakewharton.github.io/butterknife/");
     }
 
-    @OnClick(R.id.glideLinkIv)
     void onGlideIvClick() {
         startBrowserActivity("https://github.com/bumptech/glide");
     }
 
-    @OnClick(R.id.okhttpLinkIv)
     void onOkhttpIvClick() {
         startBrowserActivity("http://square.github.io/okhttp/");
     }
 
-    @OnClick(R.id.rfLinkIv)
     void onRfIvClick() {
         startBrowserActivity("http://square.github.io/retrofit/");
     }
@@ -75,7 +58,10 @@ public class AboutFragment extends BaseFragment<AboutContract.Presenter>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_about, container, false);
-        ButterKnife.bind(this, root);
+        projectGithubIv = root.findViewById(R.id.projectGithubIv);
+        arLinkedinIv = root.findViewById(R.id.arLinkedinIv);
+        arGithubIv = root.findViewById(R.id.arGithubIv);
+        arInstagramIv = root.findViewById(R.id.arInstagramIv);
         return  root;
     }
 
@@ -94,6 +80,12 @@ public class AboutFragment extends BaseFragment<AboutContract.Presenter>
 
         arInstagramIv.setOnClickListener(
                 v -> startBrowserActivity(getString(R.string.developer_instagram)));
+
+        view.findViewById(R.id.slLinkIv).setOnClickListener(v -> onSlIvClick());
+        view.findViewById(R.id.bnLinkIv).setOnClickListener(v -> onBnIvClick());
+        view.findViewById(R.id.glideLinkIv).setOnClickListener(v -> onGlideIvClick());
+        view.findViewById(R.id.okhttpLinkIv).setOnClickListener(v -> onOkhttpIvClick());
+        view.findViewById(R.id.rfLinkIv).setOnClickListener(v -> onRfIvClick());
     }
 
     private void startBrowserActivity(String url) {

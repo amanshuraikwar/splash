@@ -1,9 +1,9 @@
 package com.sonu.app.splash.ui.download;
 
 import android.graphics.Color;
-import android.support.annotation.LayoutRes;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.CardView;
+import androidx.annotation.LayoutRes;
+import androidx.fragment.app.FragmentActivity;
+import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -18,8 +18,6 @@ import com.sonu.app.splash.ui.widget.WidthRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.DrawableUtils;
 import com.sonu.app.splash.util.LogUtils;
 
-import butterknife.BindView;
-
 /**
  * Created by amanshuraikwar on 20/12/17.
  */
@@ -30,33 +28,25 @@ public class DownloadViewHolder extends ViewHolder<DownloadListItem> {
 
     @LayoutRes
     public static final int LAYOUT = R.layout.item_download;
-
-    @BindView(R.id.photoIv)
     public WidthRelativeAspectRatioImageView photoIv;
-
-    @BindView(R.id.fileNameTv)
     TextView fileNameTv;
-
-    @BindView(R.id.parent)
     View parent;
-
-    @BindView(R.id.downloadStatusTv)
     TextView downloadStatusTv;
-
-    @BindView(R.id.downloadTimestampTv)
     TextView downloadTimestampTv;
-
-    @BindView(R.id.downloadStatusCv)
     CardView downloadStatusCv;
-
-    @BindView(R.id.openFileCv)
     CardView openFileCv;
-
-    @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
     public DownloadViewHolder(View itemView) {
         super(itemView);
+        photoIv = itemView.findViewById(R.id.photoIv);
+        fileNameTv = itemView.findViewById(R.id.fileNameTv);
+        parent = itemView.findViewById(R.id.parent);
+        downloadStatusTv = itemView.findViewById(R.id.downloadStatusTv);
+        downloadTimestampTv = itemView.findViewById(R.id.downloadTimestampTv);
+        downloadStatusCv = itemView.findViewById(R.id.downloadStatusCv);
+        openFileCv = itemView.findViewById(R.id.openFileCv);
+        progressBar = itemView.findViewById(R.id.progressBar);
     }
 
     @Override

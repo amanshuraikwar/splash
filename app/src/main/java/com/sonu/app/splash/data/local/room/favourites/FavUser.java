@@ -1,8 +1,8 @@
 package com.sonu.app.splash.data.local.room.favourites;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.annotation.NonNull;
 
 import com.sonu.app.splash.model.unsplash.ProfileImage;
 import com.sonu.app.splash.model.unsplash.User;
@@ -67,6 +67,7 @@ public class FavUser {
         this.userLinks = user.getUserLinks();
     }
 
+    @NonNull
     public String getId() {
         return id;
     }

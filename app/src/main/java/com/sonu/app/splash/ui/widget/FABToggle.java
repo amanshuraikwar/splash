@@ -17,7 +17,7 @@
 package com.sonu.app.splash.ui.widget;
 
 import android.content.Context;
-import android.support.design.widget.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 import android.widget.ImageButton;

@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.cardview.widget.CardView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,9 +32,6 @@ import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by amanshuraikwar on 04/02/18.
  */
@@ -46,38 +43,16 @@ public class CollectionDescriptionActivity
     public static final String KEY_COLLECTION = "collection";
 
     private static final String TAG = LogUtils.getLogTag(CollectionDescriptionActivity.class);
-
-    @BindView(R.id.parent)
     SwipeBackCoordinatorLayout parent;
-
-    @BindView(R.id.appBar)
     NestedScrollAppBarLayout appBar;
-
-    @BindView(R.id.coverPhotoIv)
     ImageView coverPhotoIv;
-
-    @BindView(R.id.collectionTitleTv)
     TextView collectionTitleTv;
-
-    @BindView(R.id.tagsParentLl)
     LinearLayout tagsParentLl;
-
-    @BindView(R.id.userPicIv)
     ImageView userPicIv;
-
-    @BindView(R.id.artistPicCv)
     CardView artistPicCv;
-
-    @BindView(R.id.artistNameTv)
     TextView artistNameTv;
-
-    @BindView(R.id.viewPager)
     ViewPager viewPager;
-
-    @BindView(R.id.tabLayout)
     TabLayout tabLayout;
-
-    @BindView(R.id.addToFavFab)
     FloatingActionButton addToFavFab;
 
     private ViewPagerAdapter adapter;
@@ -114,8 +89,27 @@ public class CollectionDescriptionActivity
 
         setContentView(R.layout.activity_collection_description);
 
-        ButterKnife.bind(this);
+        parent = findViewById(R.id.parent);
 
+        appBar = findViewById(R.id.appBar);
+
+        coverPhotoIv = findViewById(R.id.coverPhotoIv);
+
+        collectionTitleTv = findViewById(R.id.collectionTitleTv);
+
+        tagsParentLl = findViewById(R.id.tagsParentLl);
+
+        userPicIv = findViewById(R.id.userPicIv);
+
+        artistPicCv = findViewById(R.id.artistPicCv);
+
+        artistNameTv = findViewById(R.id.artistNameTv);
+
+        viewPager = findViewById(R.id.viewPager);
+
+        tabLayout = findViewById(R.id.tabLayout);
+
+        addToFavFab = findViewById(R.id.addToFavFab);
         updateUi(getIntent().getParcelableExtra(KEY_COLLECTION));
 
         parent.setOnSwipeListener(onSwipeListener);

@@ -75,7 +75,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/myImageCv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/me"
                     tools:ignore="ContentDescription" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -170,7 +170,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/slIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/android_icon_125"
                     tools:ignore="ContentDescription" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/slDtLl"
@@ -232,7 +232,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/bnIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/butterknife"
                     tools:ignore="ContentDescription" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/bnDtLl"
@@ -294,7 +294,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/glideIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -306,7 +306,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/glide"
                     tools:ignore="ContentDescription" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/glideDtLl"
@@ -356,7 +356,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/okhttpIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -368,7 +368,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/okhttp"
                     tools:ignore="ContentDescription" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/okhttpDtLl"
@@ -418,7 +418,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/rfIv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -430,7 +430,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/okhttp"
                     tools:ignore="ContentDescription" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/rfDtLl"

@@ -1,7 +1,7 @@
 package com.sonu.app.splash.ui.user;
 
-import android.support.annotation.LayoutRes;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.LayoutRes;
+import androidx.fragment.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,8 +14,6 @@ import com.sonu.app.splash.R;
 import com.sonu.app.splash.ui.list.ViewHolder;
 import com.sonu.app.splash.util.LogUtils;
 
-import butterknife.BindView;
-
 /**
  * Created by amanshuraikwar on 20/12/17.
  */
@@ -26,21 +24,17 @@ public class UserViewHolder extends ViewHolder<UserListItem> {
 
     @LayoutRes
     public static final int LAYOUT = R.layout.item_user;
-
-    @BindView(R.id.artistPicIv)
     ImageView artistPicIv;
-
-    @BindView(R.id.parent)
     View parent;
-
-    @BindView(R.id.artistNameTv)
     TextView artistNameTv;
-
-    @BindView(R.id.artistUsernameTv)
     TextView artistUsernameTv;
 
     public UserViewHolder(View itemView) {
         super(itemView);
+        artistPicIv = itemView.findViewById(R.id.artistPicIv);
+        parent = itemView.findViewById(R.id.parent);
+        artistNameTv = itemView.findViewById(R.id.artistNameTv);
+        artistUsernameTv = itemView.findViewById(R.id.artistUsernameTv);
     }
 
     @Override

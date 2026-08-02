@@ -1,8 +1,8 @@
 package com.sonu.app.splash.ui.photo;
 
 import android.graphics.Color;
-import android.support.annotation.LayoutRes;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.LayoutRes;
+import androidx.fragment.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -15,8 +15,6 @@ import com.sonu.app.splash.ui.widget.HeightRelativeAspectRatioImageView;
 import com.sonu.app.splash.util.DrawableUtils;
 import com.sonu.app.splash.util.LogUtils;
 
-import butterknife.BindView;
-
 /**
  * Created by amanshuraikwar on 20/12/17.
  */
@@ -27,18 +25,15 @@ public class PhotoHorizontalViewHolder extends ViewHolder<PhotoHorizontalListIte
 
     @LayoutRes
     public static final int LAYOUT = R.layout.item_photo_horizontal;
-
-    @BindView(R.id.photoIv)
     public HeightRelativeAspectRatioImageView photoIv;
-
-    @BindView(R.id.parent)
     View parent;
-
-    @BindView(R.id.downloadIb)
     ImageButton downloadIb;
 
     public PhotoHorizontalViewHolder(View itemView) {
         super(itemView);
+        photoIv = itemView.findViewById(R.id.photoIv);
+        parent = itemView.findViewById(R.id.parent);
+        downloadIb = itemView.findViewById(R.id.downloadIb);
     }
 
     @Override

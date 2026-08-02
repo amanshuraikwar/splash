@@ -1,6 +1,6 @@
 package com.sonu.app.splash.data.cache;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.gson.JsonElement;
 import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;

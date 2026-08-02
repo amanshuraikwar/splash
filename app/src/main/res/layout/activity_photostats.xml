@@ -16,7 +16,7 @@
         android:transitionName="@string/transition_stats_background"
         android:background="@color/grey1" />
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -353,5 +353,5 @@
                 android:textColor="@color/pink"
                 android:background="@color/grey2" />
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 </com.commit451.elasticdragdismisslayout.ElasticDragDismissFrameLayout>

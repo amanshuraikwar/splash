@@ -1,6 +1,6 @@
 package com.sonu.app.splash.data.network.unsplashapi;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import okhttp3.MediaType;
 import okhttp3.Request;
