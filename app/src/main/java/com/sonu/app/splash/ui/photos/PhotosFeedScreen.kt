@@ -1,6 +1,9 @@
 package com.sonu.app.splash.ui.photos
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
@@ -41,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -57,6 +61,7 @@ import com.sonu.app.splash.model.unsplash.Collection as UnsplashCollection
 import com.sonu.app.splash.ui.navigation.LocalSplashAnimatedVisibilityScope
 import com.sonu.app.splash.ui.navigation.LocalSplashSharedTransitionScope
 import com.sonu.app.splash.ui.navigation.SplashDestinationScope
+import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.navigation.SplashSharedElementKey
 import com.sonu.app.splash.ui.theme.Polygon
 import com.sonu.app.splash.ui.theme.PolygonPalette
@@ -69,17 +74,28 @@ internal enum class PhotosFeedPage(val title: String) {
     Collections("collections"),
 }
 
+internal object PhotosFeedTestTags {
+    fun photoCard(photoId: String) = "photos-feed:photo-card:$photoId"
+}
+
 @Composable
 fun PhotosFeedRoute(
     dataManager: DataManager,
     destinationScope: SplashDestinationScope,
     onPhotoClick: ((Photo) -> Unit)? = null,
 ) {
+    val photoClick = onPhotoClick ?: { photo: Photo ->
+        val photoId = photo.id
+        if (!photoId.isNullOrBlank()) {
+            destinationScope.navigate(SplashRoute.PhotoDescription.fromPhoto(photo))
+        }
+    }
+
     PhotosFeedPagerScaffold { page ->
         when (page) {
             PhotosFeedPage.AllPhotos -> PhotosFeedPageRoute(
                 dataManager = dataManager,
-                onPhotoClick = onPhotoClick,
+                onPhotoClick = photoClick,
             )
 
             PhotosFeedPage.Collections -> CollectionsFeedRoute(dataManager = dataManager)
@@ -173,6 +189,7 @@ internal fun PhotosFeedPagerScaffold(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PhotosFeedHeader(
     pages: List<PhotosFeedPage>,
@@ -180,27 +197,82 @@ private fun PhotosFeedHeader(
     statusBarPadding: Dp,
     onPageClick: (Int) -> Unit,
 ) {
-    Column(
+    val sharedTransitionScope = LocalSplashSharedTransitionScope.current
+    val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
+    val headerContentModifier =
+        if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+            val overlayModifier = with(sharedTransitionScope) {
+                Modifier.renderInSharedTransitionScopeOverlay(zIndexInOverlay = 4f)
+            }
+            with(animatedVisibilityScope) {
+                overlayModifier.animateEnterExit(
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                )
+            }
+        } else if (animatedVisibilityScope != null) {
+            with(animatedVisibilityScope) {
+                Modifier.animateEnterExit(
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                )
+            }
+        } else {
+            Modifier
+        }
+    val sharedTopChromeModifier =
+        if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+            with(sharedTransitionScope) {
+                Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(
+                        key = SplashSharedElementKey.photosTopChrome,
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
+                        contentScale = ContentScale.FillBounds,
+                    ),
+                    zIndexInOverlay = 2f,
+                )
+            }
+        } else {
+            Modifier
+        }
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .zIndex(1f)
-            .shadow(Polygon.elevation.medium)
-            .background(Polygon.colors.surface)
-            .padding(top = statusBarPadding),
+            .shadow(Polygon.elevation.medium),
     ) {
-        Row(
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .then(sharedTopChromeModifier)
+                .background(Polygon.colors.surface),
+        )
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
-                .padding(start = 12.dp, end = 48.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .then(headerContentModifier)
+                .padding(top = statusBarPadding),
         ) {
-            pages.forEachIndexed { index, page ->
-                PhotosFeedHeaderTab(
-                    title = page.title,
-                    selected = index == selectedPage,
-                    onClick = { onPageClick(index) },
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(start = 12.dp, end = 48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                pages.forEachIndexed { index, page ->
+                    PhotosFeedHeaderTab(
+                        title = page.title,
+                        selected = index == selectedPage,
+                        onClick = { onPageClick(index) },
+                    )
+                }
             }
         }
     }
@@ -611,20 +683,42 @@ private fun PhotoFeedCard(
     val imageModifier = Modifier
         .fillMaxWidth()
         .aspectRatio(aspectRatio)
+    val cardModifier = Modifier
+        .fillMaxWidth()
+        .then(
+            if (onPhotoClick != null) {
+                Modifier.clickable { onPhotoClick(photo) }
+            } else {
+                Modifier
+            },
+        )
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
+            .then(cardModifier)
+            .testTag(PhotosFeedTestTags.photoCard(photoId))
             .clip(Polygon.shapes.none)
-            .background(photo.backgroundColor())
-            .then(
-                if (onPhotoClick != null) {
-                    Modifier.clickable { onPhotoClick(photo) }
-                } else {
-                    Modifier
-                },
-            ),
+            .background(photo.backgroundColor()),
     ) {
+        if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+            with(sharedTransitionScope) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = SplashSharedElementKey.photoSurface(photoId),
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            enter = fadeIn(),
+                            exit = fadeOut(),
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                        )
+                        .background(photo.backgroundColor()),
+                )
+            }
+        }
+
         if (sharedTransitionScope != null && animatedVisibilityScope != null) {
             with(sharedTransitionScope) {
                 PhotoImage(
@@ -637,7 +731,8 @@ private fun PhotoFeedCard(
                     ),
                     onSuccess = onImageSuccess,
                     imageLoader = imageLoader,
-                    crossfade = imageCrossfade,
+                    crossfade = false,
+                    memoryCacheKey = SplashSharedElementKey.photoImageMemoryCache(photoId),
                 )
             }
         } else {
@@ -647,6 +742,7 @@ private fun PhotoFeedCard(
                 onSuccess = onImageSuccess,
                 imageLoader = imageLoader,
                 crossfade = imageCrossfade,
+                memoryCacheKey = null,
             )
         }
     }
@@ -659,11 +755,13 @@ private fun PhotoImage(
     onSuccess: (Photo) -> Unit,
     imageLoader: ImageLoader?,
     crossfade: Boolean,
+    memoryCacheKey: String?,
 ) {
     val context = LocalContext.current
     val imageUrl = photo.photoUrls?.small.orEmpty()
     val request = ImageRequest.Builder(context)
             .data(imageUrl)
+            .memoryCacheKey(memoryCacheKey)
             .apply { crossfade(crossfade) }
             .build()
 
