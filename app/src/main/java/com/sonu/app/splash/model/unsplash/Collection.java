@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class Collection implements Parcelable {
 
-    private int id;
+    private String id;
 
     private String title,
             description,
@@ -54,7 +54,7 @@ public class Collection implements Parcelable {
         collectionLinks = builder.collectionLinks;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -136,7 +136,7 @@ public class Collection implements Parcelable {
     }
 
     public static final class Builder {
-        private int id;
+        private String id;
         private String title;
         private String description;
         private String publishedAt;
@@ -152,7 +152,7 @@ public class Collection implements Parcelable {
         private User user;
         private CollectionLinks collectionLinks;
 
-        public Builder(int id) {
+        public Builder(String id) {
             this.id = id;
         }
 
@@ -238,7 +238,7 @@ public class Collection implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeString(this.id);
         dest.writeString(this.title);
         dest.writeString(this.description);
         dest.writeString(this.publishedAt);
@@ -256,7 +256,7 @@ public class Collection implements Parcelable {
     }
 
     protected Collection(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readString();
         this.title = in.readString();
         this.description = in.readString();
         this.publishedAt = in.readString();

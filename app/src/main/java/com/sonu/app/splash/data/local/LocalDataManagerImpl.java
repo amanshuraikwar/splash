@@ -234,7 +234,7 @@ public class LocalDataManagerImpl implements LocalDataManager {
     }
 
     @Override
-    public Observable<Boolean> isCollectionFav(int collectionId) {
+    public Observable<Boolean> isCollectionFav(String collectionId) {
         return Observable.create(e -> {
             try {
                 FavCollection favCollection =
@@ -274,7 +274,7 @@ public class LocalDataManagerImpl implements LocalDataManager {
     }
 
     @Override
-    public Observable<FavCollection> getFavCollectionById(int collectionId) {
+    public Observable<FavCollection> getFavCollectionById(String collectionId) {
         return Observable.create(e -> {
             try {
                 e.onNext(appDatabase.getFavsDao().getFavCollectionsById(collectionId));

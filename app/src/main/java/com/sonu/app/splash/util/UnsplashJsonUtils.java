@@ -434,7 +434,7 @@ public class UnsplashJsonUtils {
 
 
         Collection.Builder builder =
-                new Collection.Builder(jsonObject.get("id").getAsInt());
+                new Collection.Builder(jsonObject.get("id").getAsString());
 
         builder.title(jsonObject.get("title").getAsString());
 

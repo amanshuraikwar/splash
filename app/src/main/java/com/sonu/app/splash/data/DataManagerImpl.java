@@ -244,7 +244,7 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public Observable<Boolean> isCollectionFav(int collectionId) {
+    public Observable<Boolean> isCollectionFav(String collectionId) {
         return localDataManager.isCollectionFav(collectionId);
     }
 
@@ -259,7 +259,7 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public Observable<FavCollection> getFavCollectionById(int collectionId) {
+    public Observable<FavCollection> getFavCollectionById(String collectionId) {
         return localDataManager.getFavCollectionById(collectionId);
     }
 

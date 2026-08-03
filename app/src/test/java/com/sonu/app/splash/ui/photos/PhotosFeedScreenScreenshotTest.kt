@@ -84,7 +84,7 @@ class PhotosFeedScreenScreenshotTest {
     @Test
     fun recordsCollectionsScreen() {
         val collections = fixtureCollections()
-        val loadedCollectionIds = Collections.synchronizedSet(mutableSetOf<Int>())
+        val loadedCollectionIds = Collections.synchronizedSet(mutableSetOf<String>())
         val imageLoader = fixtureCollectionImageLoader(collections)
 
         composeRule.setContent {
@@ -195,7 +195,7 @@ class PhotosFeedScreenScreenshotTest {
         )
 
         return titles.mapIndexed { index, title ->
-            UnsplashCollection.Builder(10_000 + index)
+            UnsplashCollection.Builder("collection-$index")
                 .title(title)
                 .totalPhotos((index + 2) * 18)
                 .coverPhoto(

@@ -33,9 +33,9 @@ public interface LocalDataManager {
     Observable<Boolean> removeFav(FavCollection favCollection);
     Observable<Boolean> removeFav(FavUser favUser);
     Observable<Boolean> isPhotoFav(String photoId);
-    Observable<Boolean> isCollectionFav(int collectionId);
+    Observable<Boolean> isCollectionFav(String collectionId);
     Observable<Boolean> isUserFav(String userId);
     Observable<FavPhoto> getFavPhotoById(String photoId);
-    Observable<FavCollection> getFavCollectionById(int collectionId);
+    Observable<FavCollection> getFavCollectionById(String collectionId);
     Observable<FavUser> getFavUserById(String userId);
 }

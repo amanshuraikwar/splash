@@ -46,7 +46,7 @@ public interface FavsDao {
     FavPhoto getFavPhotoById(String photoId);
 
     @Query("SELECT * from FavCollection where id = :collectionId")
-    FavCollection getFavCollectionsById(int collectionId);
+    FavCollection getFavCollectionsById(String collectionId);
 
     @Query("SELECT * from FavUser where id = :userId")
     FavUser getFavUsersById(String userId);

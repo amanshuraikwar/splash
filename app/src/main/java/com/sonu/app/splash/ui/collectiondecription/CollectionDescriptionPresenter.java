@@ -49,7 +49,7 @@ public class CollectionDescriptionPresenter
     private void checkForBookmark() {
 
         bookmarkDisp = getDataManager()
-                .isCollectionFav(Integer.parseInt(getView().getCollectionId()))
+                .isCollectionFav(getView().getCollectionId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(value -> {
@@ -66,11 +66,11 @@ public class CollectionDescriptionPresenter
 
         favCollectionDisp =
                 getDataManager()
-                        .isCollectionFav(Integer.parseInt(getView().getCollectionId()))
+                        .isCollectionFav(getView().getCollectionId())
                         .flatMap(this::getFavObs)
                         .flatMap(temp ->
                                 getDataManager().isCollectionFav(
-                                        Integer.parseInt(getView().getCollectionId())))
+                                        getView().getCollectionId()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -92,7 +92,7 @@ public class CollectionDescriptionPresenter
         if (isFav) {
 
             return getDataManager()
-                    .getFavCollectionById(Integer.parseInt(getView().getCollectionId()))
+                    .getFavCollectionById(getView().getCollectionId())
                     .flatMap(getDataManager()::removeFav)
                     .filter(success -> success);
         } else {

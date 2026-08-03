@@ -17,7 +17,7 @@ import com.sonu.app.splash.data.local.room.photodownload.PhotoDownloadDao;
 
 @Database(entities = {
         PhotoDownload.class,
-        FavPhoto.class, FavCollection.class, FavUser.class}, version = 9)
+        FavPhoto.class, FavCollection.class, FavUser.class}, version = 10)
 @TypeConverters({com.sonu.app.splash.data.local.room.TypeConverters.class})
 public abstract class AppDatabase extends RoomDatabase {
 

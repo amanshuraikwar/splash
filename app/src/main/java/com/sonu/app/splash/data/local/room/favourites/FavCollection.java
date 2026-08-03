@@ -2,6 +2,7 @@ package com.sonu.app.splash.data.local.room.favourites;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.annotation.NonNull;
 
 import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.model.unsplash.CollectionLinks;
@@ -16,7 +17,8 @@ import com.sonu.app.splash.model.unsplash.Photo;
 public class FavCollection {
 
     @PrimaryKey
-    private int id;
+    @NonNull
+    private String id;
 
     private String title,
             description,
@@ -42,7 +44,7 @@ public class FavCollection {
 
     private CollectionLinks collectionLinks;
 
-    public FavCollection(int id,
+    public FavCollection(@NonNull String id,
                          String title,
                          String description,
                          String publishedAt,
@@ -96,7 +98,8 @@ public class FavCollection {
         this.collectionLinks = collection.getCollectionLinks();
     }
 
-    public int getId() {
+    @NonNull
+    public String getId() {
         return id;
     }
 
