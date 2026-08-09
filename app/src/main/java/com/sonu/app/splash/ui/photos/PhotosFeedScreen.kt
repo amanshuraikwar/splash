@@ -8,6 +8,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.keyframesWithSpline
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -49,6 +50,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -88,6 +92,29 @@ private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
         durationMillis = 300,
         easing = FastOutSlowInEasing,
     )
+}
+
+private val PhotosHeaderContentBoundsTransform = BoundsTransform { initialBounds, targetBounds ->
+    keyframesWithSpline {
+        durationMillis = 300
+
+        val midpointSize = Size(
+            width = (initialBounds.width + targetBounds.width) * 0.5f,
+            height = (initialBounds.height + targetBounds.height) * 0.5f,
+        )
+        val midpointCenter = Offset(
+            x = (initialBounds.center.x + targetBounds.center.x) * 0.5f,
+            y = (initialBounds.center.y + targetBounds.center.y) * 0.5f - 20f,
+        )
+        val midpointTopLeft = Offset(
+            x = midpointCenter.x - midpointSize.width * 0.5f,
+            y = midpointCenter.y - midpointSize.height * 0.5f,
+        )
+
+        Rect(midpointTopLeft, midpointSize)
+            .atFraction(0.5f)
+            .using(FastOutSlowInEasing)
+    }
 }
 
 internal enum class PhotosFeedPage(val title: String) {
@@ -222,23 +249,30 @@ private fun PhotosFeedHeader(
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
     val headerContentModifier =
         if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-            val overlayModifier = with(sharedTransitionScope) {
-                Modifier.renderInSharedTransitionScopeOverlay(zIndexInOverlay = 4f)
-            }
-            with(animatedVisibilityScope) {
-                overlayModifier.animateEnterExit(
+            with(sharedTransitionScope) {
+                Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(
+                        key = SplashSharedElementKey.photosTopChromeContent,
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
                     enter = fadeIn(
                         animationSpec = tween(
-                            durationMillis = 225,
+                            durationMillis = 180,
+                            delayMillis = 120,
                             easing = LinearOutSlowInEasing,
                         ),
                     ),
                     exit = fadeOut(
                         animationSpec = tween(
-                            durationMillis = 195,
+                            durationMillis = 120,
                             easing = FastOutLinearInEasing,
                         ),
                     ),
+                    boundsTransform = PhotosHeaderContentBoundsTransform,
+                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
+                        contentScale = ContentScale.FillBounds,
+                    ),
+                    zIndexInOverlay = 4f,
                 )
             }
         } else if (animatedVisibilityScope != null) {
@@ -246,13 +280,14 @@ private fun PhotosFeedHeader(
                 Modifier.animateEnterExit(
                     enter = fadeIn(
                         animationSpec = tween(
-                            durationMillis = 225,
+                            durationMillis = 180,
+                            delayMillis = 120,
                             easing = LinearOutSlowInEasing,
                         ),
                     ),
                     exit = fadeOut(
                         animationSpec = tween(
-                            durationMillis = 195,
+                            durationMillis = 120,
                             easing = FastOutLinearInEasing,
                         ),
                     ),
@@ -291,6 +326,28 @@ private fun PhotosFeedHeader(
         } else {
             Modifier
         }
+    val headerIndicatorModifier =
+        if (animatedVisibilityScope != null) {
+            with(animatedVisibilityScope) {
+                Modifier.animateEnterExit(
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 180,
+                            delayMillis = 120,
+                            easing = LinearOutSlowInEasing,
+                        ),
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 120,
+                            easing = FastOutLinearInEasing,
+                        ),
+                    ),
+                )
+            }
+        } else {
+            Modifier
+        }
 
     Box(
         modifier = Modifier
@@ -308,22 +365,43 @@ private fun PhotosFeedHeader(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(headerContentModifier)
                 .padding(top = statusBarPadding),
         ) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .padding(start = 12.dp, end = 48.dp),
-                verticalAlignment = Alignment.CenterVertically,
             ) {
-                pages.forEachIndexed { index, page ->
-                    PhotosFeedHeaderTab(
-                        title = page.title,
-                        selected = index == selectedPage,
-                        onClick = { onPageClick(index) },
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                        .then(headerContentModifier),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    pages.forEachIndexed { index, page ->
+                        PhotosFeedHeaderTab(
+                            title = page.title,
+                            selected = index == selectedPage,
+                            onClick = { onPageClick(index) },
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .then(headerIndicatorModifier),
+                ) {
+                    pages.forEachIndexed { index, page ->
+                        PhotosFeedHeaderIndicator(
+                            title = page.title,
+                            selected = index == selectedPage,
+                        )
+                    }
                 }
             }
         }
@@ -338,7 +416,7 @@ private fun PhotosFeedHeaderTab(
 ) {
     Column(
         modifier = Modifier
-            .height(56.dp)
+            .height(54.dp)
             .width(IntrinsicSize.Max)
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -361,11 +439,28 @@ private fun PhotosFeedHeaderTab(
                 ),
             )
         }
+    }
+}
 
-        Spacer(
+@Composable
+private fun PhotosFeedHeaderIndicator(
+    title: String,
+    selected: Boolean,
+) {
+    Box(
+        modifier = Modifier.width(IntrinsicSize.Max),
+    ) {
+        BasicText(
+            text = title,
+            maxLines = 1,
+            style = Polygon.typography.tab,
+            modifier = Modifier.height(0.dp),
+        )
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
                 .height(2.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
                 .background(
                     if (selected) {
                         PolygonPalette.DarkGrey1

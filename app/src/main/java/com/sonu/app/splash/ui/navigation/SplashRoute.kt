@@ -68,6 +68,7 @@ sealed interface SplashRoute : NavKey {
 
 object SplashSharedElementKey {
     const val photosTopChrome = "photos:top-chrome"
+    const val photosTopChromeContent = "photos:top-chrome-content"
 
     fun photoSurface(photoId: String) = "photo:$photoId:surface"
     fun photoImage(photoId: String) = "photo:$photoId:image"

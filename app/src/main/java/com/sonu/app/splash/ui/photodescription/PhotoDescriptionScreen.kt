@@ -13,6 +13,7 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.keyframesWithSpline
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -49,6 +50,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -93,6 +97,29 @@ private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
         durationMillis = 300,
         easing = FastOutSlowInEasing,
     )
+}
+
+private val PhotosHeaderContentBoundsTransform = BoundsTransform { initialBounds, targetBounds ->
+    keyframesWithSpline {
+        durationMillis = 300
+
+        val midpointSize = Size(
+            width = (initialBounds.width + targetBounds.width) * 0.5f,
+            height = (initialBounds.height + targetBounds.height) * 0.5f,
+        )
+        val midpointCenter = Offset(
+            x = (initialBounds.center.x + targetBounds.center.x) * 0.5f,
+            y = (initialBounds.center.y + targetBounds.center.y) * 0.5f - 20f,
+        )
+        val midpointTopLeft = Offset(
+            x = midpointCenter.x - midpointSize.width * 0.5f,
+            y = midpointCenter.y - midpointSize.height * 0.5f,
+        )
+
+        Rect(midpointTopLeft, midpointSize)
+            .atFraction(0.5f)
+            .using(FastOutSlowInEasing)
+    }
 }
 
 @Composable
@@ -368,23 +395,30 @@ private fun PhotoBackButton(
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
     val buttonContentModifier =
         if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-            val overlayModifier = with(sharedTransitionScope) {
-                Modifier.renderInSharedTransitionScopeOverlay(zIndexInOverlay = 4f)
-            }
-            with(animatedVisibilityScope) {
-                overlayModifier.animateEnterExit(
+            with(sharedTransitionScope) {
+                Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(
+                        key = SplashSharedElementKey.photosTopChromeContent,
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
                     enter = fadeIn(
                         animationSpec = tween(
-                            durationMillis = 225,
+                            durationMillis = 180,
+                            delayMillis = 120,
                             easing = LinearOutSlowInEasing,
                         ),
                     ),
                     exit = fadeOut(
                         animationSpec = tween(
-                            durationMillis = 195,
+                            durationMillis = 120,
                             easing = FastOutLinearInEasing,
                         ),
                     ),
+                    boundsTransform = PhotosHeaderContentBoundsTransform,
+                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
+                        contentScale = ContentScale.FillBounds,
+                    ),
+                    zIndexInOverlay = 4f,
                 )
             }
         } else if (animatedVisibilityScope != null) {
@@ -392,13 +426,14 @@ private fun PhotoBackButton(
                 Modifier.animateEnterExit(
                     enter = fadeIn(
                         animationSpec = tween(
-                            durationMillis = 225,
+                            durationMillis = 180,
+                            delayMillis = 120,
                             easing = LinearOutSlowInEasing,
                         ),
                     ),
                     exit = fadeOut(
                         animationSpec = tween(
-                            durationMillis = 195,
+                            durationMillis = 120,
                             easing = FastOutLinearInEasing,
                         ),
                     ),
