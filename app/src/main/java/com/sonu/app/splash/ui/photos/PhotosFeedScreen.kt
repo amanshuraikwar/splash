@@ -295,14 +295,14 @@ private fun PhotosFeedHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .zIndex(1f)
-            .shadow(Polygon.elevation.medium),
+            .zIndex(1f),
     ) {
         Box(
-            modifier = Modifier
-                .matchParentSize()
-                .then(sharedTopChromeModifier)
-                .background(Polygon.colors.surface),
+                modifier = Modifier
+                    .matchParentSize()
+                    .then(sharedTopChromeModifier)
+                    .shadow(Polygon.elevation.medium)
+                    .background(Polygon.colors.surface),
         )
 
         Column(

@@ -48,6 +48,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -440,7 +441,6 @@ private fun PhotoBackButton(
     Box(
         modifier = modifier
             .size(40.dp)
-            .clip(Polygon.shapes.small)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -448,6 +448,7 @@ private fun PhotoBackButton(
             modifier = Modifier
                 .matchParentSize()
                 .then(sharedTopChromeModifier)
+                .shadow(Polygon.elevation.medium)
                 .clip(Polygon.shapes.small)
                 .background(PolygonPalette.White),
         )
