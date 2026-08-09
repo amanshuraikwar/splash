@@ -1,7 +1,10 @@
 package com.sonu.app.splash.ui.navigation
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
@@ -59,6 +62,24 @@ fun SplashNavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             sharedTransitionScope = this,
+            transitionSpec = {
+                ContentTransform(
+                    targetContentEnter = EnterTransition.None,
+                    initialContentExit = ExitTransition.None,
+                )
+            },
+            popTransitionSpec = {
+                ContentTransform(
+                    targetContentEnter = EnterTransition.None,
+                    initialContentExit = ExitTransition.None,
+                )
+            },
+            predictivePopTransitionSpec = {
+                ContentTransform(
+                    targetContentEnter = EnterTransition.None,
+                    initialContentExit = ExitTransition.None,
+                )
+            },
             entryProvider = entryProvider {
                 entry<SplashRoute.Home> { key ->
                     ProvideSplashDestinationScope(

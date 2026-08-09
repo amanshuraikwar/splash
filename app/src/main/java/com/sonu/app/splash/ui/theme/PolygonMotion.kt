@@ -7,9 +7,9 @@ import androidx.compose.ui.unit.dp
 
 @Immutable
 data class PolygonMotion(
-    val fastDurationMillis: Int = 150,
-    val standardDurationMillis: Int = 250,
-    val slowDurationMillis: Int = 400,
+    val fastDurationMillis: Int = 195,
+    val standardDurationMillis: Int = 300,
+    val slowDurationMillis: Int = 375,
     val dragDismissThreshold: Dp = 96.dp,
 )
 

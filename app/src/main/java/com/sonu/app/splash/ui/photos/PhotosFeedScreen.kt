@@ -1,7 +1,14 @@
 package com.sonu.app.splash.ui.photos
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.BoundsTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -68,6 +75,20 @@ import com.sonu.app.splash.ui.theme.PolygonPalette
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
+
+private val PhotoSharedBoundsTransform = BoundsTransform { _, _ ->
+    tween(
+        durationMillis = 375,
+        easing = FastOutSlowInEasing,
+    )
+}
+
+private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
+    tween(
+        durationMillis = 300,
+        easing = FastOutSlowInEasing,
+    )
+}
 
 internal enum class PhotosFeedPage(val title: String) {
     AllPhotos("all photos"),
@@ -206,15 +227,35 @@ private fun PhotosFeedHeader(
             }
             with(animatedVisibilityScope) {
                 overlayModifier.animateEnterExit(
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 225,
+                            easing = LinearOutSlowInEasing,
+                        ),
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 195,
+                            easing = FastOutLinearInEasing,
+                        ),
+                    ),
                 )
             }
         } else if (animatedVisibilityScope != null) {
             with(animatedVisibilityScope) {
                 Modifier.animateEnterExit(
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 225,
+                            easing = LinearOutSlowInEasing,
+                        ),
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 195,
+                            easing = FastOutLinearInEasing,
+                        ),
+                    ),
                 )
             }
         } else {
@@ -228,8 +269,19 @@ private fun PhotosFeedHeader(
                         key = SplashSharedElementKey.photosTopChrome,
                     ),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 225,
+                            easing = LinearOutSlowInEasing,
+                        ),
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 195,
+                            easing = FastOutLinearInEasing,
+                        ),
+                    ),
+                    boundsTransform = PhotosHeaderBoundsTransform,
                     resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
                         contentScale = ContentScale.FillBounds,
                     ),
@@ -698,7 +750,7 @@ private fun PhotoFeedCard(
             .then(cardModifier)
             .testTag(PhotosFeedTestTags.photoCard(photoId))
             .clip(Polygon.shapes.none)
-            .background(photo.backgroundColor()),
+            .background(PolygonPalette.White),
     ) {
         if (sharedTransitionScope != null && animatedVisibilityScope != null) {
             with(sharedTransitionScope) {
@@ -710,11 +762,12 @@ private fun PhotoFeedCard(
                                 key = SplashSharedElementKey.photoSurface(photoId),
                             ),
                             animatedVisibilityScope = animatedVisibilityScope,
-                            enter = fadeIn(),
-                            exit = fadeOut(),
+                            enter = EnterTransition.None,
+                            exit = ExitTransition.None,
+                            boundsTransform = PhotoSharedBoundsTransform,
                             resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                         )
-                        .background(photo.backgroundColor()),
+                        .background(PolygonPalette.White),
                 )
             }
         }
@@ -728,6 +781,7 @@ private fun PhotoFeedCard(
                             key = SplashSharedElementKey.photoImage(photoId),
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = PhotoSharedBoundsTransform,
                     ),
                     onSuccess = onImageSuccess,
                     imageLoader = imageLoader,

@@ -63,5 +63,25 @@ UNSPLASH_ACCESS_KEY=your_access_key ./gradlew :app:assembleDebug
 
 You can also put `UNSPLASH_ACCESS_KEY=your_access_key` in untracked `local.properties`.
 
+## ADB over Wi-Fi
+
+For the USB-assisted ADB TCP/IP workflow, use the maintained helper script:
+
+```sh
+./scripts/adbwificonnect.sh
+```
+
+Use `--device SERIAL` for a specific USB-connected device, `--all` for every
+USB-connected device, or `--dry-run` to inspect the commands first. Android 11
+and newer can also use Wireless debugging with `adb pair` without a USB cable.
+
+To run it by name from any working directory, install it on your `PATH` once:
+
+```sh
+mkdir -p "$HOME/.local/bin"
+ln -sf "/path/to/splash/scripts/adbwificonnect.sh" "$HOME/.local/bin/adbwificonnect"
+export PATH="$HOME/.local/bin:$PATH"
+```
+
 ## Please
 > ### Please don't over use the app as the Api has a limit.

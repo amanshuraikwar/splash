@@ -197,7 +197,7 @@ class PhotosFeedScreenScreenshotTest {
         }
 
         composeRule.waitUntil(timeoutMillis = 10_000) {
-            loadedPhotoIds.contains(selectedPhotoId)
+            loadedPhotoIds.containsAll(photos.map { it.id })
         }
 
         if (provideRoborazziContext().options.taskType.isRecording()) {

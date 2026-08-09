@@ -3,8 +3,17 @@ package com.sonu.app.splash.ui.photodescription
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.BoundsTransform
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -33,6 +42,9 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +78,21 @@ import com.sonu.app.splash.ui.theme.Polygon
 import com.sonu.app.splash.ui.theme.PolygonPalette
 import java.text.NumberFormat
 import java.util.Locale
+import kotlinx.coroutines.flow.first
+
+private val PhotoSharedBoundsTransform = BoundsTransform { _, _ ->
+    tween(
+        durationMillis = 375,
+        easing = FastOutSlowInEasing,
+    )
+}
+
+private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
+    tween(
+        durationMillis = 300,
+        easing = FastOutSlowInEasing,
+    )
+}
 
 @Composable
 internal fun PhotoDescriptionRoute(
@@ -109,13 +136,46 @@ internal fun PhotoDescriptionScreen(
         WindowInsets.navigationBars.getBottom(this).toDp()
     }
     val photo = state.photo
-    val heroColor = photo?.backgroundColor() ?: state.preview.backgroundColor()
     val heroAspectRatio = photo?.safeAspectRatio() ?: state.preview.safeAspectRatio()
+    val sharedTransitionScope = LocalSplashSharedTransitionScope.current
+    val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
+    val hasNavigationAnimation = animatedVisibilityScope != null
+    val isSharedTransitionActive = sharedTransitionScope?.isTransitionActive == true
+    val detailContentVisibility = remember(state.photoId) {
+        MutableTransitionState(false)
+    }
+
+    LaunchedEffect(state.photoId, hasNavigationAnimation, sharedTransitionScope) {
+        if (hasNavigationAnimation) {
+            withFrameNanos { }
+            if (sharedTransitionScope?.isTransitionActive == true) {
+                snapshotFlow { sharedTransitionScope.isTransitionActive }
+                    .first { isActive -> !isActive }
+            }
+        }
+        detailContentVisibility.targetState = true
+    }
+
+    val routeExitModifier = if (animatedVisibilityScope != null) {
+        with(animatedVisibilityScope) {
+            Modifier.animateEnterExit(
+                enter = EnterTransition.None,
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 195,
+                        easing = FastOutLinearInEasing,
+                    ),
+                ),
+            )
+        }
+    } else {
+        Modifier
+    }
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Polygon.colors.surface),
+            .background(Color.Transparent),
     ) {
         PhotoSharedBackground(
             photoId = state.photoId,
@@ -130,7 +190,6 @@ internal fun PhotoDescriptionScreen(
         ) {
             PhotoHero(
                 state = state,
-                heroColor = heroColor,
                 imageLoader = imageLoader,
                 imageCrossfade = imageCrossfade,
                 modifier = Modifier
@@ -138,39 +197,60 @@ internal fun PhotoDescriptionScreen(
                     .aspectRatio(heroAspectRatio),
             )
 
-            Spacer(modifier = Modifier.height(36.dp))
+            AnimatedVisibility(
+                visibleState = detailContentVisibility,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(routeExitModifier),
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 225,
+                        easing = LinearOutSlowInEasing,
+                    ),
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 195,
+                        easing = FastOutLinearInEasing,
+                    ),
+                ),
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(36.dp))
 
-            PhotoLocationRow(location = photo?.location)
+                    PhotoLocationRow(location = photo?.location)
 
-            PhotoDescriptionText(
-                description = photo?.description ?: state.preview.description,
-            )
+                    PhotoDescriptionText(
+                        description = photo?.description ?: state.preview.description,
+                    )
 
-            PhotoUserBlock(
-                user = photo?.user,
-                preview = state.preview,
-                imageLoader = imageLoader,
-                imageCrossfade = imageCrossfade,
-            )
+                    PhotoUserBlock(
+                        user = photo?.user,
+                        preview = state.preview,
+                        imageLoader = imageLoader,
+                        imageCrossfade = imageCrossfade,
+                    )
 
-            PhotoStatsStrip(photo = photo)
+                    PhotoStatsStrip(photo = photo)
 
-            PhotoInfoGrid(photo = photo)
+                    PhotoInfoGrid(photo = photo)
 
-            if (state.isLoading) {
-                InlineDetailMessage(text = "Loading details")
-            }
+                    if (state.isLoading) {
+                        InlineDetailMessage(text = "Loading details")
+                    }
 
-            state.errorMessage?.let { message ->
-                InlineDetailMessage(
-                    text = message,
-                    actionText = "Retry",
-                    onActionClick = onRetryClick,
-                )
-            }
+                    state.errorMessage?.let { message ->
+                        InlineDetailMessage(
+                            text = message,
+                            actionText = "Retry",
+                            onActionClick = onRetryClick,
+                        )
+                    }
 
-            state.actionMessage?.let { message ->
-                InlineDetailMessage(text = message)
+                    state.actionMessage?.let { message ->
+                        InlineDetailMessage(text = message)
+                    }
+                }
             }
         }
 
@@ -201,10 +281,11 @@ private fun PhotoSharedBackground(
                         key = SplashSharedElementKey.photoSurface(photoId),
                     ),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = EnterTransition.None,
+                    exit = ExitTransition.None,
+                    boundsTransform = PhotoSharedBoundsTransform,
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
-                    renderInOverlayDuringTransition = false,
+                    renderInOverlayDuringTransition = true,
                     zIndexInOverlay = 0f,
                 )
             }
@@ -215,7 +296,7 @@ private fun PhotoSharedBackground(
     Box(
         modifier = modifier
             .then(sharedBackgroundModifier)
-            .background(Polygon.colors.surface),
+            .background(PolygonPalette.White),
     )
 }
 
@@ -223,14 +304,12 @@ private fun PhotoSharedBackground(
 @Composable
 private fun PhotoHero(
     state: PhotoDescriptionUiState,
-    heroColor: Color,
     imageLoader: ImageLoader?,
     imageCrossfade: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val sharedTransitionScope = LocalSplashSharedTransitionScope.current
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
-    val isSharedTransitionActive = sharedTransitionScope?.isTransitionActive == true
     val sharedImageModifier =
         if (sharedTransitionScope != null && animatedVisibilityScope != null) {
             with(sharedTransitionScope) {
@@ -239,6 +318,7 @@ private fun PhotoHero(
                         key = SplashSharedElementKey.photoImage(state.photoId),
                     ),
                     animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = PhotoSharedBoundsTransform,
                     zIndexInOverlay = 1f,
                 )
             }
@@ -248,42 +328,22 @@ private fun PhotoHero(
 
     Box(
         modifier = modifier
-            .background(heroColor)
+            .background(Color.Transparent)
             .zIndex(1f),
     ) {
         val stableImageUrl = state.preview.imageUrl
             ?: state.photo?.photoUrls?.small
             ?: state.photo?.photoUrls?.regular
-        val highQualityImageUrl = state.photo?.photoUrls?.regular
-            ?: state.photo?.photoUrls?.small
-            ?: stableImageUrl
-        val imageUrl = if (isSharedTransitionActive) {
-            stableImageUrl
-        } else {
-            highQualityImageUrl
-        }
         val sharedImageMemoryCacheKey = SplashSharedElementKey.photoImageMemoryCache(state.photoId)
-        val isUsingStableImage = imageUrl == stableImageUrl
-        val imageMemoryCacheKey = if (isUsingStableImage) {
-            sharedImageMemoryCacheKey
-        } else {
-            null
-        }
-        val placeholderMemoryCacheKey = if (isUsingStableImage) {
-            null
-        } else {
-            sharedImageMemoryCacheKey
-        }
 
         PhotoDetailImage(
-            imageUrl = imageUrl,
+            imageUrl = stableImageUrl,
             contentDescription = state.photo?.accessibilityLabel()
                 ?: state.preview.accessibilityLabel(),
             imageLoader = imageLoader,
-            crossfade = imageCrossfade && !isSharedTransitionActive && !isUsingStableImage,
+            crossfade = false,
             contentScale = ContentScale.FillBounds,
-            memoryCacheKey = imageMemoryCacheKey,
-            placeholderMemoryCacheKey = placeholderMemoryCacheKey,
+            memoryCacheKey = sharedImageMemoryCacheKey,
             modifier = Modifier
                 .matchParentSize()
                 .then(sharedImageModifier),
@@ -312,15 +372,35 @@ private fun PhotoBackButton(
             }
             with(animatedVisibilityScope) {
                 overlayModifier.animateEnterExit(
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 225,
+                            easing = LinearOutSlowInEasing,
+                        ),
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 195,
+                            easing = FastOutLinearInEasing,
+                        ),
+                    ),
                 )
             }
         } else if (animatedVisibilityScope != null) {
             with(animatedVisibilityScope) {
                 Modifier.animateEnterExit(
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 225,
+                            easing = LinearOutSlowInEasing,
+                        ),
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 195,
+                            easing = FastOutLinearInEasing,
+                        ),
+                    ),
                 )
             }
         } else {
@@ -334,8 +414,19 @@ private fun PhotoBackButton(
                         key = SplashSharedElementKey.photosTopChrome,
                     ),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 225,
+                            easing = LinearOutSlowInEasing,
+                        ),
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 195,
+                            easing = FastOutLinearInEasing,
+                        ),
+                    ),
+                    boundsTransform = PhotosHeaderBoundsTransform,
                     resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
                         contentScale = ContentScale.FillBounds,
                     ),
@@ -722,21 +813,6 @@ private fun PhotoDescriptionPreview.safeAspectRatio(): Float {
     } else {
         1f
     }
-}
-
-private fun Photo.backgroundColor(): Color {
-    return color.toPhotoColor()
-}
-
-private fun PhotoDescriptionPreview.backgroundColor(): Color {
-    return color.toPhotoColor()
-}
-
-private fun String?.toPhotoColor(): Color {
-    val colorString = this ?: return PolygonPalette.Grey2
-    return runCatching {
-        Color(android.graphics.Color.parseColor(colorString))
-    }.getOrDefault(PolygonPalette.Grey2)
 }
 
 private fun Photo.accessibilityLabel(): String {
