@@ -8,15 +8,18 @@ import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.keyframesWithSpline
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,10 +52,8 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -97,29 +98,6 @@ private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
         durationMillis = 300,
         easing = FastOutSlowInEasing,
     )
-}
-
-private val PhotosHeaderContentBoundsTransform = BoundsTransform { initialBounds, targetBounds ->
-    keyframesWithSpline {
-        durationMillis = 300
-
-        val midpointSize = Size(
-            width = (initialBounds.width + targetBounds.width) * 0.5f,
-            height = (initialBounds.height + targetBounds.height) * 0.5f,
-        )
-        val midpointCenter = Offset(
-            x = (initialBounds.center.x + targetBounds.center.x) * 0.5f,
-            y = (initialBounds.center.y + targetBounds.center.y) * 0.5f - 20f,
-        )
-        val midpointTopLeft = Offset(
-            x = midpointCenter.x - midpointSize.width * 0.5f,
-            y = midpointCenter.y - midpointSize.height * 0.5f,
-        )
-
-        Rect(midpointTopLeft, midpointSize)
-            .atFraction(0.5f)
-            .using(FastOutSlowInEasing)
-    }
 }
 
 @Composable
@@ -393,45 +371,41 @@ private fun PhotoBackButton(
 ) {
     val sharedTransitionScope = LocalSplashSharedTransitionScope.current
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
-    val buttonContentModifier =
-        if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-            with(sharedTransitionScope) {
-                Modifier.sharedBounds(
-                    sharedContentState = rememberSharedContentState(
-                        key = SplashSharedElementKey.photosTopChromeContent,
-                    ),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 180,
-                            delayMillis = 120,
-                            easing = LinearOutSlowInEasing,
-                        ),
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 120,
-                            easing = FastOutLinearInEasing,
-                        ),
-                    ),
-                    boundsTransform = PhotosHeaderContentBoundsTransform,
-                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
-                        contentScale = ContentScale.FillBounds,
-                    ),
-                    zIndexInOverlay = 4f,
+    val buttonContentAlpha = animatedVisibilityScope?.transition?.animateFloat(
+        transitionSpec = {
+            if (targetState == EnterExitState.Visible) {
+                tween(
+                    durationMillis = 180,
+                    delayMillis = 120,
+                    easing = LinearOutSlowInEasing,
+                )
+            } else {
+                tween(
+                    durationMillis = 120,
+                    easing = FastOutLinearInEasing,
                 )
             }
-        } else if (animatedVisibilityScope != null) {
+        },
+        label = "photo-back-content-alpha",
+    ) { state ->
+        if (state == EnterExitState.Visible) 1f else 0f
+    }?.value ?: 1f
+    val buttonContentModifier =
+        if (animatedVisibilityScope != null) {
             with(animatedVisibilityScope) {
-                Modifier.animateEnterExit(
-                    enter = fadeIn(
+                Modifier
+                    .graphicsLayer { alpha = buttonContentAlpha }
+                    .animateEnterExit(
+                    enter = slideInHorizontally(
+                        initialOffsetX = { it },
                         animationSpec = tween(
                             durationMillis = 180,
                             delayMillis = 120,
                             easing = LinearOutSlowInEasing,
                         ),
                     ),
-                    exit = fadeOut(
+                    exit = slideOutHorizontally(
+                        targetOffsetX = { it },
                         animationSpec = tween(
                             durationMillis = 120,
                             easing = FastOutLinearInEasing,
@@ -486,20 +460,21 @@ private fun PhotoBackButton(
                 .shadow(Polygon.elevation.medium)
                 .clip(Polygon.shapes.small)
                 .background(PolygonPalette.White),
-        )
-
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .then(buttonContentModifier),
-            contentAlignment = Alignment.Center,
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_back_black_24dp),
-                contentDescription = "Back",
-                colorFilter = ColorFilter.tint(PolygonPalette.DarkGrey3),
-                modifier = Modifier.size(24.dp),
-            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(Polygon.shapes.small)
+                    .then(buttonContentModifier),
+                contentAlignment = Alignment.Center,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_arrow_back_black_24dp),
+                    contentDescription = "Back",
+                    colorFilter = ColorFilter.tint(PolygonPalette.DarkGrey3),
+                    modifier = Modifier.size(24.dp),
+                )
+            }
         }
     }
 }

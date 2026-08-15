@@ -4,19 +4,25 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.keyframesWithSpline
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,17 +48,20 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -80,6 +89,8 @@ import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
 
+private val LocalPhotosFeedScrollChanged = staticCompositionLocalOf<(Boolean) -> Unit> { {} }
+
 private val PhotoSharedBoundsTransform = BoundsTransform { _, _ ->
     tween(
         durationMillis = 375,
@@ -92,29 +103,6 @@ private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
         durationMillis = 300,
         easing = FastOutSlowInEasing,
     )
-}
-
-private val PhotosHeaderContentBoundsTransform = BoundsTransform { initialBounds, targetBounds ->
-    keyframesWithSpline {
-        durationMillis = 300
-
-        val midpointSize = Size(
-            width = (initialBounds.width + targetBounds.width) * 0.5f,
-            height = (initialBounds.height + targetBounds.height) * 0.5f,
-        )
-        val midpointCenter = Offset(
-            x = (initialBounds.center.x + targetBounds.center.x) * 0.5f,
-            y = (initialBounds.center.y + targetBounds.center.y) * 0.5f - 20f,
-        )
-        val midpointTopLeft = Offset(
-            x = midpointCenter.x - midpointSize.width * 0.5f,
-            y = midpointCenter.y - midpointSize.height * 0.5f,
-        )
-
-        Rect(midpointTopLeft, midpointSize)
-            .atFraction(0.5f)
-            .using(FastOutSlowInEasing)
-    }
 }
 
 internal enum class PhotosFeedPage(val title: String) {
@@ -171,7 +159,7 @@ private fun PhotosFeedPageRoute(
         onRetryClick = viewModel::refresh,
         onLoadMore = viewModel::loadMore,
         onPhotoClick = onPhotoClick,
-        includeStatusBarPadding = false,
+        includeStatusBarPadding = true,
     )
 }
 
@@ -193,7 +181,7 @@ private fun CollectionsFeedRoute(
         state = state,
         onRetryClick = viewModel::refresh,
         onLoadMore = viewModel::loadMore,
-        includeStatusBarPadding = false,
+        includeStatusBarPadding = true,
     )
 }
 
@@ -205,35 +193,42 @@ internal fun PhotosFeedPagerScaffold(
 ) {
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val coroutineScope = rememberCoroutineScope()
+    val pageScrollStates = remember { mutableStateMapOf<Int, Boolean>() }
     val density = LocalDensity.current
     val statusBarPadding = with(density) {
         WindowInsets.statusBars.getTop(this).toDp()
     }
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(Polygon.colors.background),
     ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxSize(),
+        ) { index ->
+            CompositionLocalProvider(
+                LocalPhotosFeedScrollChanged provides { isScrolled ->
+                    pageScrollStates[index] = isScrolled
+                },
+            ) {
+                pageContent(pages[index])
+            }
+        }
+
         PhotosFeedHeader(
             pages = pages,
             selectedPage = pagerState.currentPage,
             statusBarPadding = statusBarPadding,
+            floating = pageScrollStates[pagerState.currentPage] == true,
             onPageClick = { index ->
                 coroutineScope.launch {
                     pagerState.animateScrollToPage(index)
                 }
             },
         )
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-        ) { index ->
-            pageContent(pages[index])
-        }
     }
 }
 
@@ -243,49 +238,47 @@ private fun PhotosFeedHeader(
     pages: List<PhotosFeedPage>,
     selectedPage: Int,
     statusBarPadding: Dp,
+    floating: Boolean,
     onPageClick: (Int) -> Unit,
 ) {
     val sharedTransitionScope = LocalSplashSharedTransitionScope.current
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
-    val headerContentModifier =
-        if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-            with(sharedTransitionScope) {
-                Modifier.sharedBounds(
-                    sharedContentState = rememberSharedContentState(
-                        key = SplashSharedElementKey.photosTopChromeContent,
-                    ),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 180,
-                            delayMillis = 120,
-                            easing = LinearOutSlowInEasing,
-                        ),
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 120,
-                            easing = FastOutLinearInEasing,
-                        ),
-                    ),
-                    boundsTransform = PhotosHeaderContentBoundsTransform,
-                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
-                        contentScale = ContentScale.FillBounds,
-                    ),
-                    zIndexInOverlay = 4f,
+    val navigationTransitionActive = sharedTransitionScope?.isTransitionActive == true
+    val headerContentAlpha = animatedVisibilityScope?.transition?.animateFloat(
+        transitionSpec = {
+            if (targetState == EnterExitState.Visible) {
+                tween(
+                    durationMillis = 180,
+                    delayMillis = 120,
+                    easing = LinearOutSlowInEasing,
+                )
+            } else {
+                tween(
+                    durationMillis = 120,
+                    easing = FastOutLinearInEasing,
                 )
             }
-        } else if (animatedVisibilityScope != null) {
+        },
+        label = "photos-header-content-alpha",
+    ) { state ->
+        if (state == EnterExitState.Visible) 1f else 0f
+    }?.value ?: 1f
+    val headerContentModifier =
+        if (animatedVisibilityScope != null) {
             with(animatedVisibilityScope) {
-                Modifier.animateEnterExit(
-                    enter = fadeIn(
+                Modifier
+                    .graphicsLayer { alpha = headerContentAlpha }
+                    .animateEnterExit(
+                    enter = slideInHorizontally(
+                        initialOffsetX = { -it },
                         animationSpec = tween(
                             durationMillis = 180,
                             delayMillis = 120,
                             easing = LinearOutSlowInEasing,
                         ),
                     ),
-                    exit = fadeOut(
+                    exit = slideOutHorizontally(
+                        targetOffsetX = { -it },
                         animationSpec = tween(
                             durationMillis = 120,
                             easing = FastOutLinearInEasing,
@@ -326,81 +319,108 @@ private fun PhotosFeedHeader(
         } else {
             Modifier
         }
-    val headerIndicatorModifier =
-        if (animatedVisibilityScope != null) {
-            with(animatedVisibilityScope) {
-                Modifier.animateEnterExit(
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 180,
-                            delayMillis = 120,
-                            easing = LinearOutSlowInEasing,
-                        ),
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 120,
-                            easing = FastOutLinearInEasing,
-                        ),
-                    ),
-                )
-            }
-        } else {
-            Modifier
-        }
-
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .zIndex(1f),
     ) {
-        Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .then(sharedTopChromeModifier)
-                    .shadow(Polygon.elevation.medium)
-                    .background(Polygon.colors.surface),
+        val headerWidth = animateDpAsState(
+            targetValue = if (floating && !navigationTransitionActive) {
+                maxWidth - 32.dp
+            } else {
+                maxWidth
+            },
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = FastOutSlowInEasing,
+            ),
+            label = "photos-header-width",
         )
+        val headerHeight = animateDpAsState(
+            targetValue = if (floating && !navigationTransitionActive) {
+                56.dp
+            } else {
+                statusBarPadding + 56.dp
+            },
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = FastOutSlowInEasing,
+            ),
+            label = "photos-header-height",
+        )
+        val headerStart = animateDpAsState(
+            targetValue = if (floating && !navigationTransitionActive) 16.dp else 0.dp,
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = FastOutSlowInEasing,
+            ),
+            label = "photos-header-start",
+        )
+        val headerTop = animateDpAsState(
+            targetValue = if (floating && !navigationTransitionActive) {
+                statusBarPadding + 12.dp
+            } else {
+                0.dp
+            },
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = FastOutSlowInEasing,
+            ),
+            label = "photos-header-top",
+        )
+        val contentTopPadding = animateDpAsState(
+            targetValue = if (floating && !navigationTransitionActive) 0.dp else statusBarPadding,
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = FastOutSlowInEasing,
+            ),
+            label = "photos-header-content-top",
+        )
+        val cornerRadius = animateDpAsState(
+            targetValue = if (floating && !navigationTransitionActive) 4.dp else 0.dp,
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = FastOutSlowInEasing,
+            ),
+            label = "photos-header-corners",
+        )
+        val headerShape = RoundedCornerShape(cornerRadius.value)
 
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = statusBarPadding),
+                .padding(start = headerStart.value, top = headerTop.value)
+                .width(headerWidth.value)
+                .height(headerHeight.value),
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(start = 12.dp, end = 48.dp),
+                    .matchParentSize()
+                    .then(sharedTopChromeModifier)
+                    .shadow(Polygon.elevation.medium, headerShape)
+                    .clip(headerShape)
+                    .background(Polygon.colors.surface),
             ) {
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp)
-                        .then(headerContentModifier),
-                    verticalAlignment = Alignment.CenterVertically,
+                        .fillMaxSize()
+                        .clip(headerShape)
+                        .padding(top = contentTopPadding.value),
                 ) {
-                    pages.forEachIndexed { index, page ->
-                        PhotosFeedHeaderTab(
-                            title = page.title,
-                            selected = index == selectedPage,
-                            onClick = { onPageClick(index) },
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .then(headerIndicatorModifier),
-                ) {
-                    pages.forEachIndexed { index, page ->
-                        PhotosFeedHeaderIndicator(
-                            title = page.title,
-                            selected = index == selectedPage,
-                        )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .padding(start = 12.dp, end = 48.dp)
+                            .then(headerContentModifier),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        pages.forEachIndexed { index, page ->
+                            PhotosFeedHeaderTab(
+                                title = page.title,
+                                selected = index == selectedPage,
+                                onClick = { onPageClick(index) },
+                            )
+                        }
                     }
                 }
             }
@@ -416,7 +436,7 @@ private fun PhotosFeedHeaderTab(
 ) {
     Column(
         modifier = Modifier
-            .height(54.dp)
+            .height(56.dp)
             .width(IntrinsicSize.Max)
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -439,23 +459,6 @@ private fun PhotosFeedHeaderTab(
                 ),
             )
         }
-    }
-}
-
-@Composable
-private fun PhotosFeedHeaderIndicator(
-    title: String,
-    selected: Boolean,
-) {
-    Box(
-        modifier = Modifier.width(IntrinsicSize.Max),
-    ) {
-        BasicText(
-            text = title,
-            maxLines = 1,
-            style = Polygon.typography.tab,
-            modifier = Modifier.height(0.dp),
-        )
         Box(
             modifier = Modifier
                 .height(2.dp)
@@ -472,29 +475,6 @@ private fun PhotosFeedHeaderIndicator(
     }
 }
 
-@Composable
-private fun feedContentPadding(includeStatusBarPadding: Boolean): PaddingValues {
-    val density = LocalDensity.current
-    val gridEdgePadding = 8.dp
-    val statusBarPadding = with(density) {
-        WindowInsets.statusBars.getTop(this).toDp()
-    }
-    val navigationBarPadding = with(density) {
-        WindowInsets.navigationBars.getBottom(this).toDp()
-    }
-
-    return PaddingValues(
-        start = gridEdgePadding,
-        top = if (includeStatusBarPadding) {
-            statusBarPadding + gridEdgePadding
-        } else {
-            gridEdgePadding
-        },
-        end = gridEdgePadding,
-        bottom = navigationBarPadding + gridEdgePadding,
-    )
-}
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PhotosFeedScreen(
@@ -509,8 +489,31 @@ fun PhotosFeedScreen(
     includeStatusBarPadding: Boolean = true,
 ) {
     val gridState = rememberLazyStaggeredGridState()
-    val contentPadding = feedContentPadding(includeStatusBarPadding)
-
+    val onScrollChanged = LocalPhotosFeedScrollChanged.current
+    val density = LocalDensity.current
+    val statusBarPadding = with(density) {
+        WindowInsets.statusBars.getTop(this).toDp()
+    }
+    val navigationBarPadding = with(density) {
+        WindowInsets.navigationBars.getBottom(this).toDp()
+    }
+    val gridTopContentPadding = 56.dp + if (includeStatusBarPadding) statusBarPadding else 0.dp
+    val floatingThresholdPx = with(density) {
+        gridTopContentPadding.toPx()
+    }
+    val isScrolled = remember {
+        derivedStateOf {
+            gridState.firstVisibleItemIndex > 0 ||
+                gridState.firstVisibleItemScrollOffset >= floatingThresholdPx
+        }
+    }
+    LaunchedEffect(isScrolled.value) {
+        onScrollChanged(isScrolled.value)
+    }
+    val contentPadding = PaddingValues(
+        top = gridTopContentPadding,
+        bottom = navigationBarPadding,
+    )
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -523,8 +526,6 @@ fun PhotosFeedScreen(
                     state = gridState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = contentPadding,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalItemSpacing = 8.dp,
                 ) {
                     itemsIndexed(
                         items = state.photos,
@@ -581,8 +582,31 @@ internal fun CollectionsFeedScreen(
     includeStatusBarPadding: Boolean = true,
 ) {
     val gridState = rememberLazyStaggeredGridState()
-    val contentPadding = feedContentPadding(includeStatusBarPadding)
-
+    val onScrollChanged = LocalPhotosFeedScrollChanged.current
+    val density = LocalDensity.current
+    val statusBarPadding = with(density) {
+        WindowInsets.statusBars.getTop(this).toDp()
+    }
+    val navigationBarPadding = with(density) {
+        WindowInsets.navigationBars.getBottom(this).toDp()
+    }
+    val gridTopContentPadding = 56.dp + if (includeStatusBarPadding) statusBarPadding else 0.dp
+    val floatingThresholdPx = with(density) {
+        gridTopContentPadding.toPx()
+    }
+    val isScrolled = remember {
+        derivedStateOf {
+            gridState.firstVisibleItemIndex > 0 ||
+                gridState.firstVisibleItemScrollOffset >= floatingThresholdPx
+        }
+    }
+    LaunchedEffect(isScrolled.value) {
+        onScrollChanged(isScrolled.value)
+    }
+    val contentPadding = PaddingValues(
+        top = gridTopContentPadding,
+        bottom = navigationBarPadding,
+    )
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -595,8 +619,6 @@ internal fun CollectionsFeedScreen(
                     state = gridState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = contentPadding,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalItemSpacing = 8.dp,
                 ) {
                     itemsIndexed(
                         items = state.collections,
