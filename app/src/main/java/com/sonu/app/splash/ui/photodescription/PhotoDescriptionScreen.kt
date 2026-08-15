@@ -21,10 +21,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -46,28 +48,47 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.MeshGradientPainter
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.toBitmap
 import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import coil3.request.crossfade
 import com.sonu.app.splash.R
 import com.sonu.app.splash.data.DataManager
@@ -82,9 +103,11 @@ import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.navigation.SplashSharedElementKey
 import com.sonu.app.splash.ui.theme.Polygon
 import com.sonu.app.splash.ui.theme.PolygonPalette
+import com.sonu.app.splash.ui.theme.PolygonTheme
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.flow.first
+import androidx.palette.graphics.Palette
 
 private val PhotoSharedBoundsTransform = BoundsTransform { _, _ ->
     tween(
@@ -142,6 +165,11 @@ internal fun PhotoDescriptionScreen(
         WindowInsets.navigationBars.getBottom(this).toDp()
     }
     val photo = state.photo
+    val fallbackTitleColor = (photo?.color ?: state.preview.color)
+        .toComposeColor(Polygon.colors.primaryText)
+    var titleMeshColors by remember(state.photoId) {
+        mutableStateOf(fallbackTitleColor.toMeshColorSet())
+    }
     val heroAspectRatio = photo?.safeAspectRatio() ?: state.preview.safeAspectRatio()
     val sharedTransitionScope = LocalSplashSharedTransitionScope.current
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
@@ -198,6 +226,20 @@ internal fun PhotoDescriptionScreen(
                 state = state,
                 imageLoader = imageLoader,
                 imageCrossfade = imageCrossfade,
+                onImageSuccess = { result ->
+                    result.image.toBitmap(
+                        width = result.image.width.coerceAtLeast(1),
+                        height = result.image.height.coerceAtLeast(1),
+                    ).let { bitmap ->
+                        Palette.from(bitmap)
+                            .maximumColorCount(8)
+                            .clearFilters()
+                            .generate { palette ->
+                                titleMeshColors = palette?.toMeshColorSet(fallbackTitleColor)
+                                    ?: fallbackTitleColor.toMeshColorSet()
+                            }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(heroAspectRatio),
@@ -224,10 +266,13 @@ internal fun PhotoDescriptionScreen(
                 Column {
                     Spacer(modifier = Modifier.height(36.dp))
 
-                    PhotoLocationRow(location = photo?.location)
+                    PhotoLocationRow(
+                        location = photo?.location,
+                    )
 
                     PhotoDescriptionText(
                         description = photo?.description ?: state.preview.description,
+                        titleMeshColors = titleMeshColors,
                     )
 
                     PhotoUserBlock(
@@ -312,6 +357,7 @@ private fun PhotoHero(
     state: PhotoDescriptionUiState,
     imageLoader: ImageLoader?,
     imageCrossfade: Boolean,
+    onImageSuccess: (SuccessResult) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val sharedTransitionScope = LocalSplashSharedTransitionScope.current
@@ -350,6 +396,7 @@ private fun PhotoHero(
             crossfade = false,
             contentScale = ContentScale.FillBounds,
             memoryCacheKey = sharedImageMemoryCacheKey,
+            onSuccess = onImageSuccess,
             modifier = Modifier
                 .matchParentSize()
                 .then(sharedImageModifier),
@@ -488,6 +535,7 @@ private fun PhotoDetailImage(
     contentScale: ContentScale,
     memoryCacheKey: String? = null,
     placeholderMemoryCacheKey: String? = null,
+    onSuccess: (SuccessResult) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     if (imageUrl.isNullOrBlank()) {
@@ -507,6 +555,7 @@ private fun PhotoDetailImage(
             model = request,
             contentDescription = contentDescription,
             contentScale = contentScale,
+            onSuccess = { state -> onSuccess(state.result) },
             modifier = modifier,
         )
     } else {
@@ -515,6 +564,7 @@ private fun PhotoDetailImage(
             contentDescription = contentDescription,
             imageLoader = imageLoader,
             contentScale = contentScale,
+            onSuccess = { state -> onSuccess(state.result) },
             modifier = modifier,
         )
     }
@@ -567,17 +617,19 @@ private fun PhotoLocationRow(
 @Composable
 private fun PhotoDescriptionText(
     description: String?,
+    titleMeshColors: List<Color>,
     modifier: Modifier = Modifier,
 ) {
     val text = description?.takeIf { it.isNotBlank() } ?: "No description"
 
-    BasicText(
+    MeshGradientText(
         text = text,
         modifier = modifier
             .fillMaxWidth()
             .background(PolygonPalette.Grey2)
             .padding(16.dp),
         style = Polygon.typography.photoDescription,
+        colors = titleMeshColors,
     )
 }
 
@@ -809,6 +861,133 @@ private data class PhotoInfoItem(
     @DrawableRes val iconRes: Int,
     val value: String,
 )
+
+@Composable
+private fun MeshGradientText(
+    text: String,
+    style: TextStyle,
+    colors: List<Color>,
+    modifier: Modifier = Modifier,
+) {
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+
+    BoxWithConstraints(modifier = modifier) {
+        val maxWidthPx = with(density) { maxWidth.roundToPx() }.coerceAtLeast(1)
+        val textLayout = remember(text, style, maxWidthPx) {
+            textMeasurer.measure(
+                text = AnnotatedString(text),
+                style = style.copy(color = Color.Transparent),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                constraints = Constraints(maxWidth = maxWidthPx),
+            )
+        }
+        val gradientPainter = remember(colors) {
+            MeshGradientPainter(rows = 1, columns = 1) {
+                setVertex(0, 0, Offset(0f, 0f), colors[0])
+                setVertex(0, 1, Offset(1f, 0f), colors[1])
+                setVertex(1, 0, Offset(0f, 1f), colors[2])
+                setVertex(1, 1, Offset(1f, 1f), colors[3])
+            }
+        }
+        val textSize = Size(
+            textLayout.size.width.toFloat(),
+            textLayout.size.height.toFloat(),
+        )
+
+        Canvas(
+            modifier = Modifier
+                .size(
+                    with(density) { textLayout.size.width.toDp() },
+                    with(density) { textLayout.size.height.toDp() },
+                )
+                .semantics { contentDescription = text },
+        ) {
+            drawContext.canvas.saveLayer(
+                Rect(0f, 0f, size.width, size.height),
+                Paint(),
+            )
+            drawText(
+                textLayoutResult = textLayout,
+                color = Color.White,
+            )
+            drawContext.canvas.saveLayer(
+                Rect(0f, 0f, size.width, size.height),
+                Paint().apply { blendMode = BlendMode.SrcIn },
+            )
+            with(gradientPainter) {
+                draw(textSize)
+            }
+            drawContext.canvas.restore()
+            drawContext.canvas.restore()
+        }
+    }
+}
+
+@Preview(
+    name = "Photo title mesh gradient",
+    showBackground = true,
+    backgroundColor = 0xFF101010,
+    widthDp = 393,
+    heightDp = 180,
+)
+@Composable
+internal fun PhotoDescriptionTitlePreview() {
+    PolygonTheme {
+        PhotoDescriptionTitlePreviewContent()
+    }
+}
+
+@Composable
+internal fun PhotoDescriptionTitlePreviewContent(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(PolygonPalette.Grey2)
+            .padding(16.dp),
+    ) {
+        MeshGradientText(
+            text = "A title rendered with image colors",
+            modifier = Modifier.fillMaxWidth(),
+            style = Polygon.typography.photoDescription,
+            colors = listOf(
+                Color(0xFFE85D75),
+                Color(0xFF6C63FF),
+                Color(0xFF12B886),
+                Color(0xFFFFC857),
+            ),
+        )
+    }
+}
+
+private fun Palette.toMeshColorSet(fallback: Color): List<Color> {
+    val semanticColors = listOf(
+        vibrantSwatch,
+        darkVibrantSwatch,
+        lightVibrantSwatch,
+        mutedSwatch,
+        darkMutedSwatch,
+        lightMutedSwatch,
+    ).mapNotNull { swatch -> swatch?.let { Color(it.rgb) } }
+    val populationColors = swatches
+        .sortedByDescending { it.population }
+        .map { Color(it.rgb) }
+    val availableColors = (semanticColors + populationColors + fallback).distinct()
+    return List(4) { index -> availableColors[index % availableColors.size] }
+}
+
+private fun Color.toMeshColorSet(): List<Color> {
+    return listOf(this, this, this, this)
+}
+
+private fun String?.toComposeColor(fallback: Color): Color {
+    return takeUnless { it.isNullOrBlank() }
+        ?.let { value -> runCatching { Color(android.graphics.Color.parseColor(value)) }.getOrNull() }
+        ?: fallback
+}
 
 private fun Photo.safeAspectRatio(): Float {
     return if (width > 0 && height > 0) {

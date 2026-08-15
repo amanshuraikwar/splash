@@ -8,6 +8,7 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -51,9 +52,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,6 +69,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.runtime.key
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -113,6 +118,9 @@ internal enum class PhotosFeedPage(val title: String) {
 internal object PhotosFeedTestTags {
     fun photoCard(photoId: String) = "photos-feed:photo-card:$photoId"
 }
+
+private const val PHOTO_GRID_CONTENT_TYPE = "photo-grid-item"
+private const val PHOTO_GRID_LOADING_CONTENT_TYPE = "photo-grid-loading"
 
 @Composable
 fun PhotosFeedRoute(
@@ -530,13 +538,13 @@ fun PhotosFeedScreen(
                     itemsIndexed(
                         items = state.photos,
                         key = { _, photo -> photo.id.orEmpty() },
+                        contentType = { _, _ -> PHOTO_GRID_CONTENT_TYPE },
                     ) { index, photo ->
                         PhotoFeedCard(
                             photo = photo,
                             onPhotoClick = onPhotoClick,
                             onImageSuccess = onImageSuccess,
                             imageLoader = imageLoader,
-                            imageCrossfade = imageCrossfade,
                         )
 
                         if (index == state.photos.lastIndex) {
@@ -547,7 +555,7 @@ fun PhotosFeedScreen(
                     }
 
                     if (state.isLoadingMore) {
-                        item {
+                        item(contentType = PHOTO_GRID_LOADING_CONTENT_TYPE) {
                             InlineLoadingMessage()
                         }
                     }
@@ -843,15 +851,25 @@ private fun PhotoFeedCard(
     modifier: Modifier = Modifier,
     onImageSuccess: (Photo) -> Unit,
     imageLoader: ImageLoader?,
-    imageCrossfade: Boolean,
 ) {
     val sharedTransitionScope = LocalSplashSharedTransitionScope.current
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
     val aspectRatio = photo.safeAspectRatio()
     val photoId = photo.id.orEmpty()
+    val imageUrl = photo.photoUrls?.small.orEmpty()
+    val photoBindingKey = "$photoId|$imageUrl|${photo.width}x${photo.height}"
+    var imageLoaded by remember(photoBindingKey) { mutableStateOf(false) }
+    val imageAlpha = animateFloatAsState(
+        targetValue = if (imageLoaded) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = LinearOutSlowInEasing,
+        ),
+        label = "photo-grid-image-alpha",
+    )
     val imageModifier = Modifier
-        .fillMaxWidth()
-        .aspectRatio(aspectRatio)
+        .fillMaxSize()
+        .graphicsLayer { alpha = imageAlpha.value }
     val cardModifier = Modifier
         .fillMaxWidth()
         .then(
@@ -865,9 +883,10 @@ private fun PhotoFeedCard(
     Box(
         modifier = modifier
             .then(cardModifier)
+            .aspectRatio(aspectRatio)
             .testTag(PhotosFeedTestTags.photoCard(photoId))
             .clip(Polygon.shapes.none)
-            .background(PolygonPalette.White),
+            .background(photo.backgroundColor()),
     ) {
         if (sharedTransitionScope != null && animatedVisibilityScope != null) {
             with(sharedTransitionScope) {
@@ -891,30 +910,44 @@ private fun PhotoFeedCard(
 
         if (sharedTransitionScope != null && animatedVisibilityScope != null) {
             with(sharedTransitionScope) {
+                key(photoBindingKey) {
+                    PhotoImage(
+                        photo = photo,
+                        modifier = imageModifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(
+                                key = SplashSharedElementKey.photoImage(photoId),
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = PhotoSharedBoundsTransform,
+                        ),
+                        onSuccess = {},
+                        imageLoader = imageLoader,
+                        crossfade = false,
+                        memoryCacheKey = SplashSharedElementKey.photoImageMemoryCache(photoId),
+                        onLoading = { imageLoaded = false },
+                        onImageLoaded = {
+                            imageLoaded = true
+                            onImageSuccess(photo)
+                        },
+                    )
+                }
+            }
+        } else {
+            key(photoBindingKey) {
                 PhotoImage(
                     photo = photo,
-                    modifier = imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(
-                            key = SplashSharedElementKey.photoImage(photoId),
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = PhotoSharedBoundsTransform,
-                    ),
-                    onSuccess = onImageSuccess,
+                    modifier = imageModifier,
+                    onSuccess = {},
                     imageLoader = imageLoader,
                     crossfade = false,
                     memoryCacheKey = SplashSharedElementKey.photoImageMemoryCache(photoId),
+                    onLoading = { imageLoaded = false },
+                    onImageLoaded = {
+                        imageLoaded = true
+                        onImageSuccess(photo)
+                    },
                 )
             }
-        } else {
-            PhotoImage(
-                photo = photo,
-                modifier = imageModifier,
-                onSuccess = onImageSuccess,
-                imageLoader = imageLoader,
-                crossfade = imageCrossfade,
-                memoryCacheKey = null,
-            )
         }
     }
 }
@@ -927,6 +960,8 @@ private fun PhotoImage(
     imageLoader: ImageLoader?,
     crossfade: Boolean,
     memoryCacheKey: String?,
+    onLoading: () -> Unit = {},
+    onImageLoaded: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val imageUrl = photo.photoUrls?.small.orEmpty()
@@ -941,7 +976,11 @@ private fun PhotoImage(
             model = request,
             contentDescription = photo.accessibilityLabel(),
             contentScale = ContentScale.FillBounds,
-            onSuccess = { onSuccess(photo) },
+            onLoading = { onLoading() },
+            onSuccess = {
+                onImageLoaded()
+                onSuccess(photo)
+            },
             modifier = modifier,
         )
     } else {
@@ -950,7 +989,11 @@ private fun PhotoImage(
             contentDescription = photo.accessibilityLabel(),
             imageLoader = imageLoader,
             contentScale = ContentScale.FillBounds,
-            onSuccess = { onSuccess(photo) },
+            onLoading = { onLoading() },
+            onSuccess = {
+                onImageLoaded()
+                onSuccess(photo)
+            },
             modifier = modifier,
         )
     }
