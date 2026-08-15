@@ -13,8 +13,12 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -630,6 +634,7 @@ private fun PhotoDescriptionText(
             .padding(16.dp),
         style = Polygon.typography.photoDescription,
         colors = titleMeshColors,
+        animate = true,
     )
 }
 
@@ -867,35 +872,56 @@ private fun MeshGradientText(
     text: String,
     style: TextStyle,
     colors: List<Color>,
+    animate: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
+    val infiniteTransition = rememberInfiniteTransition(label = "title-mesh-gradient")
+    val animationProgress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 4200,
+                easing = LinearEasing,
+            ),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "title-mesh-anchor-motion",
+    )
+    val titleTextColor = Polygon.colors.primaryText
 
     BoxWithConstraints(modifier = modifier) {
         val maxWidthPx = with(density) { maxWidth.roundToPx() }.coerceAtLeast(1)
+        val measuredStyle = style.copy(color = titleTextColor)
         val textLayout = remember(text, style, maxWidthPx) {
             textMeasurer.measure(
                 text = AnnotatedString(text),
-                style = style.copy(color = Color.Transparent),
+                style = measuredStyle,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 constraints = Constraints(maxWidth = maxWidthPx),
             )
         }
-        val gradientPainter = remember(colors) {
-            MeshGradientPainter(rows = 1, columns = 1) {
-                setVertex(0, 0, Offset(0f, 0f), colors[0])
-                setVertex(0, 1, Offset(1f, 0f), colors[1])
-                setVertex(1, 0, Offset(0f, 1f), colors[2])
-                setVertex(1, 1, Offset(1f, 1f), colors[3])
+        val anchorPositions = remember(animationProgress, animate) {
+            meshAnchorPositions(if (animate) animationProgress else 0f)
+        }
+        val meshColors = colors.ifEmpty { listOf(PolygonPalette.Grey3) }
+        val gradientPainter = remember(meshColors, anchorPositions) {
+            MeshGradientPainter(rows = 2, columns = 2) {
+                anchorPositions.forEachIndexed { index, position ->
+                    val row = index / 3
+                    val column = index % 3
+                    setVertex(
+                        row,
+                        column,
+                        position,
+                        meshColors[index % meshColors.size],
+                    )
+                }
             }
         }
-        val textSize = Size(
-            textLayout.size.width.toFloat(),
-            textLayout.size.height.toFloat(),
-        )
-
         Canvas(
             modifier = Modifier
                 .size(
@@ -917,7 +943,7 @@ private fun MeshGradientText(
                 Paint().apply { blendMode = BlendMode.SrcIn },
             )
             with(gradientPainter) {
-                draw(textSize)
+                draw(size)
             }
             drawContext.canvas.restore()
             drawContext.canvas.restore()
@@ -942,6 +968,7 @@ internal fun PhotoDescriptionTitlePreview() {
 @Composable
 internal fun PhotoDescriptionTitlePreviewContent(
     modifier: Modifier = Modifier,
+    animate: Boolean = true,
 ) {
     Box(
         modifier = modifier
@@ -959,6 +986,7 @@ internal fun PhotoDescriptionTitlePreviewContent(
                 Color(0xFF12B886),
                 Color(0xFFFFC857),
             ),
+            animate = animate,
         )
     }
 }
@@ -975,12 +1003,74 @@ private fun Palette.toMeshColorSet(fallback: Color): List<Color> {
     val populationColors = swatches
         .sortedByDescending { it.population }
         .map { Color(it.rgb) }
-    val availableColors = (semanticColors + populationColors + fallback).distinct()
-    return List(4) { index -> availableColors[index % availableColors.size] }
+    return (semanticColors + populationColors + fallback)
+        .distinct()
+        .expandToMeshColors(fallback)
 }
 
 private fun Color.toMeshColorSet(): List<Color> {
-    return listOf(this, this, this, this)
+    return listOf(this).expandToMeshColors(this)
+}
+
+private fun List<Color>.expandToMeshColors(fallback: Color): List<Color> {
+    val baseColors = (this + fallback).distinct()
+    val derivedColors = listOf(0.18f, 0.34f, 0.5f, 0.66f, 0.82f)
+        .flatMapIndexed { index, fraction ->
+            baseColors.map { color ->
+                if (index % 2 == 0) {
+                    color.mixWith(Color.White, fraction)
+                } else {
+                    color.mixWith(Color.Black, fraction)
+                }
+            }
+        }
+
+    return (baseColors + derivedColors)
+        .distinct()
+        .take(9)
+}
+
+private fun Color.mixWith(other: Color, fraction: Float): Color {
+    return Color(
+        red = red + (other.red - red) * fraction,
+        green = green + (other.green - green) * fraction,
+        blue = blue + (other.blue - blue) * fraction,
+        alpha = alpha + (other.alpha - alpha) * fraction,
+    )
+}
+
+private fun meshAnchorPositions(progress: Float): List<Offset> {
+    val basePositions = listOf(
+        Offset(0f, 0f),
+        Offset(0.5f, 0f),
+        Offset(1f, 0f),
+        Offset(0f, 0.5f),
+        Offset(0.5f, 0.5f),
+        Offset(1f, 0.5f),
+        Offset(0f, 1f),
+        Offset(0.5f, 1f),
+        Offset(1f, 1f),
+    )
+    val anchorAmplitudes = listOf(
+        Offset(0f, 0f),
+        Offset(0.18f, 0f),
+        Offset(0f, 0f),
+        Offset(0f, 0.18f),
+        Offset(0.24f, 0.24f),
+        Offset(0f, 0.18f),
+        Offset(0f, 0f),
+        Offset(0.18f, 0f),
+        Offset(0f, 0f),
+    )
+    val phase = progress * (2f * Math.PI.toFloat())
+    return basePositions.mapIndexed { index, position ->
+        val amplitude = anchorAmplitudes[index]
+        val anchorPhase = phase + (index * 0.7f)
+        Offset(
+            x = (position.x + amplitude.x * kotlin.math.sin(anchorPhase)).coerceIn(0f, 1f),
+            y = (position.y + amplitude.y * kotlin.math.cos(anchorPhase)).coerceIn(0f, 1f),
+        )
+    }
 }
 
 private fun String?.toComposeColor(fallback: Color): Color {

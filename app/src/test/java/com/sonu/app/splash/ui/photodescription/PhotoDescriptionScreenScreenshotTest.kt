@@ -28,6 +28,7 @@ class PhotoDescriptionScreenScreenshotTest {
             PolygonTheme {
                 PhotoDescriptionTitlePreviewContent(
                     modifier = Modifier.testTag(PHOTO_TITLE_MESH_TAG),
+                    animate = false,
                 )
             }
         }
