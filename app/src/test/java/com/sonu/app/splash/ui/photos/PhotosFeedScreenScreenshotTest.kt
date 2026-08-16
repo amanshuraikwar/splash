@@ -32,7 +32,7 @@ import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionScreen
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionUiState
 import com.sonu.app.splash.ui.photodescription.toPreview
-import com.sonu.app.splash.ui.theme.PolygonTheme
+import com.sonu.app.polygon.theme.PolygonTheme
 import java.io.File
 import java.net.URI
 import java.util.Collections

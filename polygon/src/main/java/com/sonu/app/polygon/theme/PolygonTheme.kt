@@ -1,4 +1,4 @@
-package com.sonu.app.splash.ui.theme
+package com.sonu.app.polygon.theme
 
 import android.graphics.Color.TRANSPARENT as TransparentColor
 import androidx.activity.ComponentActivity

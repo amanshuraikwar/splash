@@ -7,7 +7,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.sonu.app.splash.ui.theme.PolygonTheme
+import com.sonu.app.polygon.theme.PolygonTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
