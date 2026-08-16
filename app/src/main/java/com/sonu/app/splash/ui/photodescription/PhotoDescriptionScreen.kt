@@ -105,9 +105,9 @@ import com.sonu.app.splash.ui.navigation.LocalSplashSharedTransitionScope
 import com.sonu.app.splash.ui.navigation.SplashDestinationScope
 import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.navigation.SplashSharedElementKey
-import com.sonu.app.splash.ui.theme.Polygon
-import com.sonu.app.splash.ui.theme.PolygonPalette
-import com.sonu.app.splash.ui.theme.PolygonTheme
+import com.sonu.app.polygon.theme.Polygon
+import com.sonu.app.polygon.theme.PolygonPalette
+import com.sonu.app.polygon.theme.PolygonTheme
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.flow.first

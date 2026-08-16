@@ -1,4 +1,4 @@
-package com.sonu.app.splash.ui.theme
+package com.sonu.app.polygon.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf

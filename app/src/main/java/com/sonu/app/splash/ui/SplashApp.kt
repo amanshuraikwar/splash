@@ -8,7 +8,7 @@ import com.sonu.app.splash.ui.navigation.SplashDestinationScope
 import com.sonu.app.splash.ui.navigation.SplashNavDisplay
 import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.navigation.rememberSplashBackStack
-import com.sonu.app.splash.ui.theme.PolygonTheme
+import com.sonu.app.polygon.theme.PolygonTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

@@ -108,6 +108,8 @@ ksp {
 }
 
 dependencies {
+    implementation project(":polygon")
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     // AndroidX and Material
