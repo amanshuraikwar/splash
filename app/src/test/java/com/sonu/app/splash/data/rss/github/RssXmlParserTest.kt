@@ -27,7 +27,7 @@ class RssXmlParserTest {
                       <guid>item-1</guid>
                       <pubDate>Tue, 25 Aug 2026 10:15:00 GMT</pubDate>
                       <description>A useful description.</description>
-                      <media:content url="https://example.com/image.jpg" medium="image" />
+                      <media:content url="https://example.com/image.jpg" medium="image" width="1600" height="900" />
                     </item>
                   </channel>
                 </rss>
@@ -40,6 +40,8 @@ class RssXmlParserTest {
         assertEquals("item-1", feed.items.single().id)
         assertEquals("https://example.com/items/example", feed.items.single().link)
         assertEquals("https://example.com/image.jpg", feed.items.single().imageUrl)
+        assertEquals(1600, feed.items.single().imageWidth)
+        assertEquals(900, feed.items.single().imageHeight)
         assertNotNull(feed.items.single().publishedAtEpochMillis)
     }
 

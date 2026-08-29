@@ -62,14 +62,11 @@ class RssXmlParser @Inject constructor() {
 
                             "description", "summary", "content", "encoded" -> {
                                 activeText = builder.text(TextKind.DESCRIPTION, parser)
-                                parser.attribute("url")?.let { builder.imageCandidates += it }
-                                parser.attribute("href")?.let { builder.imageCandidates += it }
+                                builder.addImageAttributes(parser)
                             }
 
                             "thumbnail", "enclosure", "image" -> {
-                                parser.attribute("url")?.let { builder.imageCandidates += it }
-                                parser.attribute("href")?.let { builder.imageCandidates += it }
-                                parser.attribute("src")?.let { builder.imageCandidates += it }
+                                builder.addImageAttributes(parser)
                             }
 
                             "url" -> activeText = builder.text(TextKind.IMAGE, parser)
@@ -126,11 +123,26 @@ class RssXmlParser @Inject constructor() {
         var id: String? = null
         var description: String? = null
         var publishedAtEpochMillis: Long? = null
+        var imageWidth: Int? = null
+        var imageHeight: Int? = null
         val linkCandidates = mutableListOf<String>()
         val imageCandidates = mutableListOf<String>()
 
         fun text(kind: TextKind, parser: XmlPullParser): ActiveText {
             return ActiveText(kind = kind, tag = parser.localTagName(), depth = parser.depth)
+        }
+
+        fun addImageAttributes(parser: XmlPullParser) {
+            parser.attribute("url")?.let { imageCandidates += it }
+            parser.attribute("href")?.let { imageCandidates += it }
+            parser.attribute("src")?.let { imageCandidates += it }
+
+            if (imageWidth == null) {
+                imageWidth = parser.attribute("width")?.toPositiveInt()
+            }
+            if (imageHeight == null) {
+                imageHeight = parser.attribute("height")?.toPositiveInt()
+            }
         }
 
         fun accept(kind: TextKind, value: String) {
@@ -178,6 +190,8 @@ class RssXmlParser @Inject constructor() {
                 description = description?.let(::cleanText)?.takeIf { it.isNotBlank() },
                 imageUrl = imageUrl,
                 publishedAtEpochMillis = publishedAtEpochMillis,
+                imageWidth = imageWidth ?: 0,
+                imageHeight = imageHeight ?: 0,
             )
         }
     }
@@ -221,6 +235,10 @@ class RssXmlParser @Inject constructor() {
 
         fun extractImageUrls(html: String): List<String> {
             return imagePattern.findAll(html).map { it.groupValues[1] }.toList()
+        }
+
+        fun String.toPositiveInt(): Int? {
+            return toIntOrNull()?.takeIf { it > 0 }
         }
 
         fun cleanText(value: String): String {

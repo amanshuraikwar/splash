@@ -9,4 +9,6 @@ data class RssItem(
     val description: String?,
     val imageUrl: String?,
     val publishedAtEpochMillis: Long?,
+    val imageWidth: Int = 0,
+    val imageHeight: Int = 0,
 )

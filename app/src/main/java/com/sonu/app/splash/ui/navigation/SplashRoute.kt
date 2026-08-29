@@ -61,6 +61,8 @@ sealed interface SplashRoute : NavKey {
         val description: String? = null,
         val imageUrl: String? = null,
         val publishedAtEpochMillis: Long? = null,
+        val imageWidth: Int = 0,
+        val imageHeight: Int = 0,
     ) : SplashRoute {
         companion object {
             fun fromItem(item: RssItem): RssDetail {
@@ -73,6 +75,8 @@ sealed interface SplashRoute : NavKey {
                     description = item.description,
                     imageUrl = item.imageUrl,
                     publishedAtEpochMillis = item.publishedAtEpochMillis,
+                    imageWidth = item.imageWidth,
+                    imageHeight = item.imageHeight,
                 )
             }
         }

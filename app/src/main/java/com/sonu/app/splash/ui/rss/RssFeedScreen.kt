@@ -31,6 +31,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -74,6 +75,7 @@ internal fun RssFeedRoute(
     ),
 ) {
     val state = viewModel.uiState
+    val imageDimensions = remember { mutableStateMapOf<String, Pair<Int, Int>>() }
 
     LaunchedEffect(viewModel) {
         viewModel.loadInitial()
@@ -83,7 +85,19 @@ internal fun RssFeedRoute(
         state = state,
         onRetryClick = viewModel::refresh,
         onItemClick = { item ->
-            destinationScope.navigate(SplashRoute.RssDetail.fromItem(item))
+            val dimensions = imageDimensions[item.id]
+            val itemWithDimensions = if (dimensions != null) {
+                item.copy(
+                    imageWidth = dimensions.first,
+                    imageHeight = dimensions.second,
+                )
+            } else {
+                item
+            }
+            destinationScope.navigate(SplashRoute.RssDetail.fromItem(itemWithDimensions))
+        },
+        onItemImageDimensions = { item, width, height ->
+            imageDimensions[item.id] = width to height
         },
     )
 }
@@ -93,6 +107,7 @@ internal fun RssFeedScreen(
     state: RssFeedUiState,
     onRetryClick: () -> Unit,
     onItemClick: (RssItem) -> Unit,
+    onItemImageDimensions: (RssItem, Int, Int) -> Unit = { _, _, _ -> },
     modifier: Modifier = Modifier,
     imageLoader: ImageLoader? = null,
     imageCrossfade: Boolean = true,
@@ -143,6 +158,9 @@ internal fun RssFeedScreen(
                         RssFeedCard(
                             item = item,
                             onClick = { onItemClick(item) },
+                            onImageSuccess = { width, height ->
+                                onItemImageDimensions(item, width, height)
+                            },
                             imageLoader = imageLoader,
                             imageCrossfade = imageCrossfade,
                         )
@@ -170,6 +188,7 @@ internal fun RssFeedScreen(
 private fun RssFeedCard(
     item: RssItem,
     onClick: () -> Unit,
+    onImageSuccess: (Int, Int) -> Unit,
     imageLoader: ImageLoader?,
     imageCrossfade: Boolean,
     modifier: Modifier = Modifier,
@@ -247,6 +266,9 @@ private fun RssFeedCard(
                         model = request,
                         contentDescription = item.title,
                         contentScale = ContentScale.Crop,
+                        onSuccess = { state ->
+                            onImageSuccess(state.result.image.width, state.result.image.height)
+                        },
                         onError = {
                             imageFailed = true
                         },
@@ -262,6 +284,9 @@ private fun RssFeedCard(
                         imageLoader = imageLoader,
                         contentDescription = item.title,
                         contentScale = ContentScale.Crop,
+                        onSuccess = { state ->
+                            onImageSuccess(state.result.image.width, state.result.image.height)
+                        },
                         onError = {
                             imageFailed = true
                         },

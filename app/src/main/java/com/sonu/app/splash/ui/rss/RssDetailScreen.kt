@@ -48,7 +48,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -114,8 +116,30 @@ internal fun RssDetailScreen(
     val sharedTransitionScope = LocalSplashSharedTransitionScope.current
     val animatedVisibilityScope = LocalSplashAnimatedVisibilityScope.current
     var imageFailed by remember(route.itemId, route.imageUrl) { mutableStateOf(false) }
+    var imageWidth by remember(route.itemId, route.imageUrl) {
+        mutableStateOf(route.imageWidth)
+    }
+    var imageHeight by remember(route.itemId, route.imageUrl) {
+        mutableStateOf(route.imageHeight)
+    }
     val showImage = !route.imageUrl.isNullOrBlank() && !imageFailed
     val hasNavigationAnimation = animatedVisibilityScope != null
+    val imageContentScaleFraction = animatedVisibilityScope?.transition?.animateFloat(
+        transitionSpec = {
+            tween(
+                durationMillis = 375,
+                easing = FastOutSlowInEasing,
+            )
+        },
+        label = "rss-image-content-scale",
+    ) { state ->
+        if (state == EnterExitState.Visible) 1f else 0f
+    }?.value ?: 1f
+    val imageAspectRatio = if (imageWidth > 0 && imageHeight > 0) {
+        imageWidth.toFloat() / imageHeight.toFloat()
+    } else {
+        1f
+    }
     val detailContentVisibility = remember(route.itemId) {
         MutableTransitionState(false)
     }
@@ -200,13 +224,20 @@ internal fun RssDetailScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .aspectRatio(imageAspectRatio)
                         .zIndex(1f),
                 ) {
                     RssDetailImage(
                         model = request,
                         contentDescription = route.title,
                         imageLoader = imageLoader,
+                        contentScale = RssAnimatedContentScale(imageContentScaleFraction),
+                        onSuccess = { width, height ->
+                            if (width > 0 && height > 0) {
+                                imageWidth = width
+                                imageHeight = height
+                            }
+                        },
                         onError = { imageFailed = true },
                         modifier = Modifier
                             .matchParentSize()
@@ -471,6 +502,8 @@ private fun RssDetailImage(
     model: ImageRequest,
     contentDescription: String,
     imageLoader: ImageLoader?,
+    contentScale: ContentScale,
+    onSuccess: (Int, Int) -> Unit,
     onError: () -> Unit,
     modifier: Modifier,
 ) {
@@ -478,7 +511,10 @@ private fun RssDetailImage(
         AsyncImage(
             model = model,
             contentDescription = contentDescription,
-            contentScale = ContentScale.Crop,
+            contentScale = contentScale,
+            onSuccess = { state ->
+                onSuccess(state.result.image.width, state.result.image.height)
+            },
             onError = { onError() },
             modifier = modifier,
         )
@@ -487,9 +523,26 @@ private fun RssDetailImage(
             model = model,
             imageLoader = imageLoader,
             contentDescription = contentDescription,
-            contentScale = ContentScale.Crop,
+            contentScale = contentScale,
+            onSuccess = { state ->
+                onSuccess(state.result.image.width, state.result.image.height)
+            },
             onError = { onError() },
             modifier = modifier,
+        )
+    }
+}
+
+private class RssAnimatedContentScale(
+    private val fraction: Float,
+) : ContentScale {
+    override fun computeScaleFactor(srcSize: Size, dstSize: Size): ScaleFactor {
+        val crop = ContentScale.Crop.computeScaleFactor(srcSize, dstSize)
+        val fit = ContentScale.Fit.computeScaleFactor(srcSize, dstSize)
+        val progress = fraction.coerceIn(0f, 1f)
+        return ScaleFactor(
+            scaleX = crop.scaleX + (fit.scaleX - crop.scaleX) * progress,
+            scaleY = crop.scaleY + (fit.scaleY - crop.scaleY) * progress,
         )
     }
 }
