@@ -1,13 +1,13 @@
 package com.sonu.app.splash.data.cache;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
+import com.sonu.app.splash.data.media.CreatorPageLoader;
 import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.util.LogUtils;
-import com.sonu.app.splash.util.UnsplashJsonUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.sonu.app.splash.ui.legacy.LegacyUiModelMapper;
 
 import javax.inject.Inject;
 
@@ -17,28 +17,23 @@ import javax.inject.Inject;
 
 public class SearchUsersCache extends SearchCache<User> {
 
+    private final CreatorPageLoader pageLoader;
+
     @Inject
-    public SearchUsersCache(RequestHandler requestHandler) {
-        super(requestHandler);
+    public SearchUsersCache(CreatorPageLoader pageLoader) {
+        super();
+        this.pageLoader = pageLoader;
     }
 
     @Override
-    String getApiEndpoint() {
-        return String.format(ApiEndpoints.SEARCH_USERS, getQuery(), "%s");
+    protected List<User> fetchPage(int page) {
+        return pageLoader.loadSearch(getQuery(), page).stream()
+                .map(LegacyUiModelMapper::toUser)
+                .collect(Collectors.toList());
     }
 
     @Override
     String getTag() {
         return LogUtils.getLogTag(SearchUsersCache.class);
-    }
-
-    @Override
-    User getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.buildUserObj(element.getAsJsonObject());
-    }
-
-    @Override
-    protected JsonElement getMeaningFullData(String body) throws JsonParseException {
-        return new JsonParser().parse(body).getAsJsonObject().get("results");
     }
 }

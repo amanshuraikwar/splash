@@ -6,7 +6,11 @@ import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.SystemBarStyle;
 
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.download.Downloader;
+import com.sonu.app.splash.data.local.LocalStore;
+import com.sonu.app.splash.data.media.CollectionRepository;
+import com.sonu.app.splash.data.media.MediaRepository;
+import com.sonu.app.splash.data.rss.RssRepository;
 
 import javax.inject.Inject;
 
@@ -19,7 +23,19 @@ import dagger.android.support.DaggerAppCompatActivity;
 public class HomeActivity extends DaggerAppCompatActivity {
 
     @Inject
-    DataManager dataManager;
+    MediaRepository mediaRepository;
+
+    @Inject
+    CollectionRepository collectionRepository;
+
+    @Inject
+    RssRepository rssRepository;
+
+    @Inject
+    LocalStore localStore;
+
+    @Inject
+    Downloader downloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +45,12 @@ public class HomeActivity extends DaggerAppCompatActivity {
                 SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT));
         super.onCreate(savedInstanceState);
 
-        HomeCompose.setContent(this, dataManager);
+        HomeCompose.setContent(
+                this,
+                mediaRepository,
+                collectionRepository,
+                rssRepository,
+                localStore,
+                downloader);
     }
 }

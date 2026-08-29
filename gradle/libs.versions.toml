@@ -11,6 +11,7 @@ core = "1.19.0"
 collection = "1.6.0"
 coil = "3.5.0"
 constraintlayout = "2.2.2"
+coroutines = "1.11.0"
 dagger = "2.60.1"
 espresso = "3.7.0"
 fragment = "1.8.9"
@@ -31,8 +32,6 @@ retrofit = "3.0.0"
 robolectric = "4.16.1"
 roborazzi = "1.70.0"
 room = "2.8.4"
-rxandroid2 = "2.1.1"
-rxjava2 = "2.2.21"
 testRunner = "1.7.0"
 viewpager = "1.1.0"
 
@@ -76,6 +75,7 @@ androidx-viewpager = { group = "androidx.viewpager", name = "viewpager", version
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 coil-test = { group = "io.coil-kt.coil3", name = "coil-test", version.ref = "coil" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-android = { group = "com.google.dagger", name = "dagger-android", version.ref = "dagger" }
 dagger-android-processor = { group = "com.google.dagger", name = "dagger-android-processor", version.ref = "dagger" }
@@ -96,8 +96,6 @@ retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
-rxandroid2 = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid2" }
-rxjava2 = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxjava2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

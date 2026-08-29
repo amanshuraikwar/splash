@@ -3,12 +3,10 @@ package com.sonu.app.splash.ui.search;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 
 import javax.inject.Inject;
-
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by amanshuraikwar on 02/02/18.
@@ -18,11 +16,9 @@ public class SearchPresenter
         extends BasePresenterImpl<SearchContract.View>
         implements SearchContract.Presenter {
 
-    private Disposable downloadPhotoDisp;
-
     @Inject
-    public SearchPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
-        super(appBus, dataManager, activity);
+    public SearchPresenter(AppBus appBus, AppDataStore appDataStore, Activity activity) {
+        super(appBus, appDataStore, activity);
     }
 
     @Override
@@ -54,10 +50,5 @@ public class SearchPresenter
     public void detachView() {
         super.detachView();
 
-        if (downloadPhotoDisp != null) {
-            if (!downloadPhotoDisp.isDisposed()) {
-                downloadPhotoDisp.dispose();
-            }
-        }
     }
 }

@@ -2,9 +2,6 @@ package com.sonu.app.splash.data.cache;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.JsonElement;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
-
 
 
 /**
@@ -15,8 +12,8 @@ public abstract class SearchCache<DataModel> extends SimpleContentCache<DataMode
 
     private String query;
 
-    SearchCache(RequestHandler requestHandler) {
-        super(requestHandler);
+    SearchCache() {
+        super();
 
         query = "";
     }

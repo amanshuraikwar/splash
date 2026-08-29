@@ -3,7 +3,7 @@ package com.sonu.app.splash.ui.content.searchusers;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.data.cache.SearchCache;
 import com.sonu.app.splash.ui.content.ContentContract;
@@ -33,8 +33,8 @@ public class SearchUsersContract {
         private SearchCache searchCache;
 
         @Inject
-        public PresenterImpl(AppBus appBus, DataManager dataManager, Activity activity) {
-            super(appBus, dataManager, activity);
+        public PresenterImpl(AppBus appBus, AppDataStore appDataStore, Activity activity) {
+            super(appBus, appDataStore, activity);
         }
 
         @Override
@@ -45,7 +45,7 @@ public class SearchUsersContract {
         @Override
         public ContentCache getContentCache() {
             if (searchCache == null) {
-                searchCache = getDataManager().getSearchUsersCache();
+                searchCache = getAppDataStore().getSearchUsersCache();
             }
 
             if (!searchCache.getQuery().equals(getView().getCurSearchQuery())) {

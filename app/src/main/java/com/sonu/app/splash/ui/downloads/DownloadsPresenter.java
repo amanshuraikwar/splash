@@ -8,15 +8,10 @@ import android.util.Pair;
 import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by amanshuraikwar on 24/12/17.
@@ -28,14 +23,9 @@ public class DownloadsPresenter
 
     private static final String TAG = LogUtils.getLogTag(DownloadsPresenter.class);
 
-    private Disposable
-            getDownloadedPhotosDisp,
-            updatePhotoDownloadDisp,
-            downloadFilePathDisp;
-
     @Inject
-    public DownloadsPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
-        super(appBus, dataManager, activity);
+    public DownloadsPresenter(AppBus appBus, AppDataStore appDataStore, Activity activity) {
+        super(appBus, appDataStore, activity);
     }
 
     @Override
@@ -50,56 +40,24 @@ public class DownloadsPresenter
 
     private void runDownloadStatusTask() {
 
-        getDownloadedPhotosDisp = getDataManager()
-                .getRunningPausedPendingDownloads()
-                .flatMapIterable(items -> items)
-                .flatMap(this::check, this::getPair)
-                .flatMap(this::update)
-                .toList()
-                .flatMapObservable(item4 -> getDataManager().getPhotoDownloads())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        photoDownloads -> {
-
-                            Log.i(TAG,
-                                    "getPhotoDownloads:accept:photosNo="
-                                            +photoDownloads.size());
-                            getView().displayPhotos(photoDownloads);
-                        },
-                        throwable -> {
-
-                            throwable.printStackTrace();
-                            getView().showError();
-                        },
-                        () -> getView().hideLoading(),
-                        disposable -> getView().showLoading());
-    }
-
-    private Observable<PhotoDownload.Status> check(PhotoDownload photoDownload) {
-
-        return Observable.create(e -> {
-            try {
-                e.onNext(
-                        getDataManager()
-                                .checkDownloadStatus(photoDownload.getDownloadReference()));
-                e.onComplete();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                e.tryOnError(ex);
-            }
-        });
-    }
-
-    private Pair<PhotoDownload, PhotoDownload.Status> getPair(PhotoDownload photoDownload,
-                                                              PhotoDownload.Status status) {
-        return new Pair<>(photoDownload, status);
-    }
-
-    private Observable<Boolean> update(Pair<PhotoDownload, PhotoDownload.Status> pair) {
-
-        pair.first.setStatus(pair.second);
-        return getDataManager().updatePhotoDownload(pair.first);
+        getView().showLoading();
+        runInBackground(
+                () -> {
+                    for (PhotoDownload photoDownload :
+                            getAppDataStore().getRunningPausedPendingDownloads()) {
+                        photoDownload.setStatus(
+                                getAppDataStore().checkDownloadStatus(
+                                        photoDownload.getDownloadReference()));
+                        getAppDataStore().updatePhotoDownload(photoDownload);
+                    }
+                    return getAppDataStore().getPhotoDownloads();
+                },
+                photoDownloads -> {
+                    Log.i(TAG, "getPhotoDownloads:count=" + photoDownloads.size());
+                    getView().displayPhotos(photoDownloads);
+                    getView().hideLoading();
+                },
+                throwable -> getView().showError());
     }
 
     @Override
@@ -111,47 +69,37 @@ public class DownloadsPresenter
     @Override
     public void onDownloadComplete(long downloadReference) {
 
-        updatePhotoDownloadDisp = getDataManager()
-                .getPhotoDownloadByDownloadReference(downloadReference)
-                .flatMap(this::check, this::getPair)
-                .flatMap(this::update, this::getPair)
-                .filter(item -> item.second)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> getView().updatePhotoDownload(item.first));
+        runInBackground(
+                () -> {
+                    PhotoDownload photoDownload = getAppDataStore()
+                            .getPhotoDownloadByDownloadReference(downloadReference);
+                    if (photoDownload == null) {
+                        return null;
+                    }
+                    photoDownload.setStatus(
+                            getAppDataStore().checkDownloadStatus(downloadReference));
+                    return getAppDataStore().updatePhotoDownload(photoDownload)
+                            ? photoDownload
+                            : null;
+                },
+                photoDownload -> {
+                    if (photoDownload != null) {
+                        getView().updatePhotoDownload(photoDownload);
+                    }
+                },
+                Throwable::printStackTrace);
     }
 
     @Override
     public void onOpenFileClick(long downloadReference) {
 
-        downloadFilePathDisp =
-                downloadFilePath(downloadReference)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                item -> {
-
-                                    Log.i(TAG,
-                                            "getFilePath:accept:path="
-                                                    +item);
-                                    getView().sendFileIntent(item);
-                                },
-                                Throwable::printStackTrace);
-    }
-
-    private Observable<Uri> downloadFilePath(long downloadReference) {
-
-        return Observable.create(e -> {
-            try {
-                e.onNext(
-                        getDataManager()
-                                .getDownloadedFilePath(downloadReference));
-                e.onComplete();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                e.tryOnError(ex);
-            }
-        });
+        runInBackground(
+                () -> getAppDataStore().getDownloadedFilePath(downloadReference),
+                item -> {
+                    Log.i(TAG, "getFilePath:path=" + item);
+                    getView().sendFileIntent(item);
+                },
+                Throwable::printStackTrace);
     }
 
     private boolean check(long downloadReference, PhotoDownload photoDownload) {
@@ -167,18 +115,5 @@ public class DownloadsPresenter
     public void detachView() {
         super.detachView();
 
-        getDownloadedPhotosDisp.dispose();
-
-        if (updatePhotoDownloadDisp != null) {
-            if (!updatePhotoDownloadDisp.isDisposed()) {
-                updatePhotoDownloadDisp.dispose();
-            }
-        }
-
-        if (downloadFilePathDisp != null) {
-            if (!downloadFilePathDisp.isDisposed()) {
-                downloadFilePathDisp.dispose();
-            }
-        }
     }
 }

@@ -4,16 +4,12 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UiExceptionUtils;
 
 import javax.inject.Inject;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by amanshuraikwar on 13/02/18.
@@ -24,12 +20,11 @@ public class PhotoStatsPresenter
         implements PhotoStatsContract.Presenter {
 
     private static final String TAG = LogUtils.getLogTag(PhotoStatsPresenter.class);
-    private Disposable photoStatsDisp;
     private boolean fetchingData;
 
     @Inject
-    public PhotoStatsPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
-        super(appBus, dataManager, activity);
+    public PhotoStatsPresenter(AppBus appBus, AppDataStore appDataStore, Activity activity) {
+        super(appBus, appDataStore, activity);
     }
 
     @Override
@@ -49,41 +44,26 @@ public class PhotoStatsPresenter
             return;
         }
 
-        photoStatsDisp =
-                getDataManager()
-                        .getPhotoStats(getView().getPhotoId())
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                            photoStats -> {
-                                Log.d(TAG, "getData:onNext:called");
-                                getView().updateUi(photoStats);
-                            },
-                            throwable -> {
-                                Log.d(TAG, "getData:onError:called");
-                                Log.e(TAG, "getData:onError:error=" + throwable);
-                                throwable.printStackTrace();
-                                getView().showError();
-                                fetchingData = false;
-                            },
-                            () -> {
-                                Log.d(TAG, "getData:onCompleted:called");
-                                getView().hideLoading();
-                                fetchingData = false;
-                            },
-                            disposable -> {
-                                Log.d(TAG, "getData:onSubscribe:called");
-                                getView().showLoading();
-                                fetchingData = true;
-                            });
+        fetchingData = true;
+        getView().showLoading();
+        runInBackground(
+                () -> getAppDataStore().getPhotoStats(getView().getPhotoId()),
+                photoStats -> {
+                    Log.d(TAG, "getData:completed");
+                    getView().updateUi(photoStats);
+                    getView().hideLoading();
+                    fetchingData = false;
+                },
+                throwable -> {
+                    Log.e(TAG, "getData:error=" + throwable);
+                    getView().showError();
+                    fetchingData = false;
+                });
     }
 
     @Override
     public void detachView() {
         super.detachView();
 
-        if (photoStatsDisp != null) {
-            photoStatsDisp.dispose();
-        }
     }
 }

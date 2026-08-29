@@ -5,7 +5,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.local.room.favourites.FavCollection;
 import com.sonu.app.splash.data.local.room.favourites.FavPhoto;
 import com.sonu.app.splash.data.local.room.favourites.FavUser;
@@ -24,15 +24,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Function3;
-import io.reactivex.schedulers.Schedulers;
-
 /**
  * Created by amanshuraikwar on 17/02/18.
  */
@@ -41,11 +32,9 @@ public class FavsPresenter
         extends BasePresenterImpl<FavsContract.View>
         implements FavsContract.Presenter {
 
-    private Disposable dataDisp, downloadPhotoDisp;;
-
     @Inject
-    public FavsPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
-        super(appBus, dataManager, activity);
+    public FavsPresenter(AppBus appBus, AppDataStore appDataStore, Activity activity) {
+        super(appBus, appDataStore, activity);
     }
 
     @Override
@@ -59,47 +48,30 @@ public class FavsPresenter
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void getData() {
-
-        dataDisp =
-                Observable
-                        .zip(
-                                getDataManager().getFavPhotos(),
-                                getDataManager().getFavCollections(),
-                                getDataManager().getFavUsers(),
-                                Triple::new)
-                        .flatMap(item ->
-                                Observable.create(e -> {
-                                    try {
-                                        e.onNext(processData(item.first, item.second, item.third));
-                                        e.onComplete();
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                        e.tryOnError(ex);
-                                    }
-                                }))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(item ->
-                                getView().displayData((List<ListItem>) item));
+        getView().showLoading();
+        runInBackground(
+                () -> processData(
+                        getAppDataStore().getFavPhotos(),
+                        getAppDataStore().getFavCollections(),
+                        getAppDataStore().getFavUsers()),
+                items -> {
+                    getView().displayData(items);
+                    getView().hideLoading();
+                },
+                throwable -> getView().showError());
     }
 
     @Override
     public void downloadPhoto(Photo photo) {
 
-        downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
+        PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
     }
 
     @Override
     public void detachView() {
         super.detachView();
 
-        if (downloadPhotoDisp != null) {
-            if (!downloadPhotoDisp.isDisposed()) {
-                downloadPhotoDisp.dispose();
-            }
-        }
     }
 
     private List<ListItem> processData(List<FavPhoto> photos,

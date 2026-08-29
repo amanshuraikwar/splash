@@ -1,8 +1,10 @@
 package com.sonu.app.splash.data.cache;
 
-import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
+import com.sonu.app.splash.data.media.MediaPageLoader;
+import com.sonu.app.splash.data.media.model.Media;
 import com.sonu.app.splash.util.LogUtils;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -17,15 +19,15 @@ public class CollectionPhotosCache extends PhotosCache {
     private String id;
 
     @Inject
-    public CollectionPhotosCache(RequestHandler requestHandler,
+    public CollectionPhotosCache(MediaPageLoader pageLoader,
                                  String id) {
-        super(requestHandler);
+        super(pageLoader);
         this.id = id;
     }
 
     @Override
-    protected String getApiEndpoint() {
-        return String.format(ApiEndpoints.GET_COLLECTION_PHOTOS, id, "%s");
+    protected List<Media> loadMediaPage(int page) {
+        return getPageLoader().loadCollectionMedia(id, page);
     }
 
     @Override

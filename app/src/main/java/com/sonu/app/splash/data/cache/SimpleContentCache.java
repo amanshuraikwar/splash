@@ -2,32 +2,15 @@ package com.sonu.app.splash.data.cache;
 
 import android.util.Log;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.sonu.app.splash.data.network.unsplashapi.RequestGenerator;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
-import com.sonu.app.splash.data.network.unsplashapi.UnsplashApiException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
-
-import io.reactivex.Observable;
-import io.reactivex.exceptions.UndeliverableException;
-import okhttp3.Request;
-
 /**
  * Created by amanshuraikwar on 20/12/17.
  */
 
 public abstract class SimpleContentCache<DataModel> implements ContentCache<DataModel> {
 
-    private RequestHandler requestHandler;
     private List<DataModel> cachedContent;
     private int curPage = 1;
 
@@ -36,39 +19,24 @@ public abstract class SimpleContentCache<DataModel> implements ContentCache<Data
 
     private enum STATE {NORMAL, FETCHING}
 
-    SimpleContentCache(RequestHandler requestHandler) {
-        this.requestHandler = requestHandler;
+    SimpleContentCache() {
         cachedContent = new ArrayList<>();
         setState(STATE.NORMAL);
     }
 
     // synchronized to give thread safety
     @Override
-    public synchronized Observable<List<DataModel>> getMoreContent() {
-        return Observable.create(e -> {
-            try {
-                if (state == STATE.FETCHING) {
-                    e.onNext(Collections.emptyList());
-                    e.onComplete();
-                }
+    public synchronized List<DataModel> getMoreContent() {
+        if (state == STATE.FETCHING) {
+            return Collections.emptyList();
+        }
 
-                e.onNext(getMoreContentAct());
-                e.onComplete();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                e.tryOnError(ex);
-            }
-        });
+        return getMoreContentAct();
     }
 
     @Override
-    public synchronized Observable<List<DataModel>> getCachedContent() {
-        return Observable.fromCallable(new Callable<List<DataModel>>() {
-            @Override
-            public List<DataModel> call() throws Exception {
-                return cachedContent;
-            }
-        });
+    public synchronized List<DataModel> getCachedContent() {
+        return new ArrayList<>(cachedContent);
     }
 
     @Override
@@ -84,11 +52,10 @@ public abstract class SimpleContentCache<DataModel> implements ContentCache<Data
         state = STATE.NORMAL;
     }
 
-    abstract String getApiEndpoint();
     abstract String getTag();
-    abstract DataModel getDataModelFromJson(JsonElement element);
+    protected abstract List<DataModel> fetchPage(int page);
 
-    private List<DataModel> getMoreContentAct() throws IOException, UnsplashApiException {
+    private List<DataModel> getMoreContentAct() {
         Log.d(getTag(), "getMoreContentAct():called");
 
         setState(STATE.FETCHING);
@@ -97,27 +64,12 @@ public abstract class SimpleContentCache<DataModel> implements ContentCache<Data
 
         try {
 
-            // giving page number to fetch
-            String url = String.format(getApiEndpoint(), curPage);
-
-            Request request = RequestGenerator.get(url);
-
-            String body = requestHandler.request(request).string();
-            Log.i(getTag(), "getMoreContentAct():response-body:"+body);
-
-            JsonArray jsonArray = getMeaningFullData(body).getAsJsonArray();
-            Log.i(getTag(), "getMoreContentAct():response-body-json:"+jsonArray);
-
-            contentList = new ArrayList<>();
-
-            for (JsonElement element : jsonArray) {
-
-                contentList.add(getDataModelFromJson(element));
-            }
+            contentList = fetchPage(curPage);
+            Log.i(getTag(), "getMoreContentAct():items=" + contentList.size());
 
             // updating cache
             updateCache(contentList);
-        } catch (IOException | UnsplashApiException |UndeliverableException e) {
+        } catch (RuntimeException e) {
             setState(STATE.NORMAL);
             throw e;
         }
@@ -127,21 +79,12 @@ public abstract class SimpleContentCache<DataModel> implements ContentCache<Data
         return contentList;
     }
 
-    protected JsonElement getMeaningFullData(String body) throws JsonParseException {
-
-        return new JsonParser().parse(body);
-    }
-
     private synchronized void setState(STATE state) {
         this.state = state;
     }
 
-    private synchronized STATE getState() {
-        return state;
-    }
-
-    private synchronized void updateCache(List<DataModel> photoList) {
-        cachedContent.addAll(photoList);
+    private synchronized void updateCache(List<DataModel> contentList) {
+        cachedContent.addAll(contentList);
         curPage += 1;
     }
 }

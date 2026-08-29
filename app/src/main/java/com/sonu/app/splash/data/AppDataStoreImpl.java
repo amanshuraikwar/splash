@@ -19,25 +19,25 @@ import com.sonu.app.splash.data.local.room.favourites.FavCollection;
 import com.sonu.app.splash.data.local.room.favourites.FavPhoto;
 import com.sonu.app.splash.data.local.room.favourites.FavUser;
 import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
-import com.sonu.app.splash.data.local.LocalDataManager;
-import com.sonu.app.splash.data.network.NetworkDataManager;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
+import com.sonu.app.splash.data.local.LocalStore;
+import com.sonu.app.splash.data.media.CollectionPageLoader;
+import com.sonu.app.splash.data.media.CreatorPageLoader;
+import com.sonu.app.splash.data.media.MediaPageLoader;
 import com.sonu.app.splash.di.ApplicationContext;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.model.unsplash.PhotoStats;
 import com.sonu.app.splash.model.unsplash.User;
+import com.sonu.app.splash.ui.legacy.LegacyUiModelMapper;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-
 /**
  * Created by amanshuraikwar on 18/12/17.
  */
 
-public class DataManagerImpl implements DataManager {
+public class AppDataStoreImpl implements AppDataStore {
 
     @Inject
     @ApplicationContext
@@ -68,19 +68,22 @@ public class DataManagerImpl implements DataManager {
     SearchUsersCache searchUsersCache;
 
     @Inject
-    NetworkDataManager networkDataManager;
+    MediaPageLoader mediaPageLoader;
 
     @Inject
-    RequestHandler requestHandler;
+    CollectionPageLoader collectionPageLoader;
+
+    @Inject
+    CreatorPageLoader creatorPageLoader;
 
     @Inject
     Downloader downloader;
 
     @Inject
-    LocalDataManager localDataManager;
+    LocalStore localStore;
 
     @Inject
-    public DataManagerImpl(){
+    public AppDataStoreImpl(){
     }
 
     @Override
@@ -120,17 +123,17 @@ public class DataManagerImpl implements DataManager {
 
     @Override
     public UserPhotosCache getUserPhotosCache(String username) {
-        return new UserPhotosCache(requestHandler, username);
+        return new UserPhotosCache(mediaPageLoader, username);
     }
 
     @Override
     public UserCollectionsCache getUserCollectionsCache(String username) {
-        return new UserCollectionsCache(requestHandler, username);
+        return new UserCollectionsCache(collectionPageLoader, username);
     }
 
     @Override
     public CollectionPhotosCache getCollectionPhotosCache(String id) {
-        return new CollectionPhotosCache(requestHandler, id);
+        return new CollectionPhotosCache(mediaPageLoader, id);
     }
 
     @Override
@@ -154,117 +157,117 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public Observable<Photo> getPhotoDescription(String photoId) {
-        return networkDataManager.getPhotoDescription(photoId);
+    public Photo getPhotoDescription(String photoId) {
+        return LegacyUiModelMapper.toPhoto(mediaPageLoader.loadById(photoId));
     }
 
     @Override
-    public Observable<User> getUserDescription(String username) {
-        return networkDataManager.getUserDescription(username);
+    public User getUserDescription(String username) {
+        return LegacyUiModelMapper.toUser(creatorPageLoader.loadByUsername(username));
     }
 
     @Override
-    public Observable<PhotoStats> getPhotoStats(String photoId) {
-        return networkDataManager.getPhotoStats(photoId);
+    public PhotoStats getPhotoStats(String photoId) {
+        return LegacyUiModelMapper.toPhotoStats(mediaPageLoader.loadStatistics(photoId));
     }
 
     @Override
-    public Observable<List<PhotoDownload>> getPhotoDownloads() {
-        return localDataManager.getPhotoDownloads();
+    public List<PhotoDownload> getPhotoDownloads() {
+        return localStore.getPhotoDownloads();
     }
 
     @Override
-    public Observable<Boolean> addPhotoDownload(PhotoDownload photoDownload) {
-        return localDataManager.addPhotoDownload(photoDownload);
+    public boolean addPhotoDownload(PhotoDownload photoDownload) {
+        return localStore.addPhotoDownload(photoDownload);
     }
 
     @Override
-    public Observable<List<PhotoDownload>> getRunningPausedPendingDownloads() {
-        return localDataManager.getRunningPausedPendingDownloads();
+    public List<PhotoDownload> getRunningPausedPendingDownloads() {
+        return localStore.getRunningPausedPendingDownloads();
     }
 
     @Override
-    public Observable<Boolean> updatePhotoDownload(PhotoDownload photoDownload) {
-        return localDataManager.updatePhotoDownload(photoDownload);
+    public boolean updatePhotoDownload(PhotoDownload photoDownload) {
+        return localStore.updatePhotoDownload(photoDownload);
     }
 
     @Override
-    public Observable<PhotoDownload> getPhotoDownloadByDownloadReference(long downloadReference) {
-        return localDataManager.getPhotoDownloadByDownloadReference(downloadReference);
+    public PhotoDownload getPhotoDownloadByDownloadReference(long downloadReference) {
+        return localStore.getPhotoDownloadByDownloadReference(downloadReference);
     }
 
     @Override
-    public Observable<Boolean> addFav(FavPhoto favPhoto) {
-        return localDataManager.addFav(favPhoto);
+    public boolean addFav(FavPhoto favPhoto) {
+        return localStore.addFav(favPhoto);
     }
 
     @Override
-    public Observable<Boolean> addFav(FavCollection favCollection) {
-        return localDataManager.addFav(favCollection);
+    public boolean addFav(FavCollection favCollection) {
+        return localStore.addFav(favCollection);
     }
 
     @Override
-    public Observable<Boolean> addFav(FavUser favUser) {
-        return localDataManager.addFav(favUser);
+    public boolean addFav(FavUser favUser) {
+        return localStore.addFav(favUser);
     }
 
     @Override
-    public Observable<List<FavPhoto>> getFavPhotos() {
-        return localDataManager.getFavPhotos();
+    public List<FavPhoto> getFavPhotos() {
+        return localStore.getFavPhotos();
     }
 
     @Override
-    public Observable<List<FavCollection>> getFavCollections() {
-        return localDataManager.getFavCollections();
+    public List<FavCollection> getFavCollections() {
+        return localStore.getFavCollections();
     }
 
     @Override
-    public Observable<List<FavUser>> getFavUsers() {
-        return localDataManager.getFavUsers();
+    public List<FavUser> getFavUsers() {
+        return localStore.getFavUsers();
     }
 
     @Override
-    public Observable<Boolean> removeFav(FavPhoto favPhoto) {
-        return localDataManager.removeFav(favPhoto);
+    public boolean removeFav(FavPhoto favPhoto) {
+        return localStore.removeFav(favPhoto);
     }
 
     @Override
-    public Observable<Boolean> removeFav(FavCollection favCollection) {
-        return localDataManager.removeFav(favCollection);
+    public boolean removeFav(FavCollection favCollection) {
+        return localStore.removeFav(favCollection);
     }
 
     @Override
-    public Observable<Boolean> removeFav(FavUser favUser) {
-        return localDataManager.removeFav(favUser);
+    public boolean removeFav(FavUser favUser) {
+        return localStore.removeFav(favUser);
     }
 
     @Override
-    public Observable<Boolean> isPhotoFav(String photoId) {
-        return localDataManager.isPhotoFav(photoId);
+    public boolean isPhotoFav(String photoId) {
+        return localStore.isPhotoFav(photoId);
     }
 
     @Override
-    public Observable<Boolean> isCollectionFav(String collectionId) {
-        return localDataManager.isCollectionFav(collectionId);
+    public boolean isCollectionFav(String collectionId) {
+        return localStore.isCollectionFav(collectionId);
     }
 
     @Override
-    public Observable<Boolean> isUserFav(String userId) {
-        return localDataManager.isUserFav(userId);
+    public boolean isUserFav(String userId) {
+        return localStore.isUserFav(userId);
     }
 
     @Override
-    public Observable<FavPhoto> getFavPhotoById(String photoId) {
-        return localDataManager.getFavPhotoById(photoId);
+    public FavPhoto getFavPhotoById(String photoId) {
+        return localStore.getFavPhotoById(photoId);
     }
 
     @Override
-    public Observable<FavCollection> getFavCollectionById(String collectionId) {
-        return localDataManager.getFavCollectionById(collectionId);
+    public FavCollection getFavCollectionById(String collectionId) {
+        return localStore.getFavCollectionById(collectionId);
     }
 
     @Override
-    public Observable<FavUser> getFavUserById(String userId) {
-        return localDataManager.getFavUserById(userId);
+    public FavUser getFavUserById(String userId) {
+        return localStore.getFavUserById(userId);
     }
 }

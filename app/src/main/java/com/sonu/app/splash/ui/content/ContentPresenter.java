@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 
@@ -16,9 +16,9 @@ public abstract class ContentPresenter<View extends ContentContract.View>
         extends BasePresenterImpl<View> implements ContentContract.Presenter<View> {
 
     public ContentPresenter(AppBus appBus,
-                            DataManager dataManager,
+                            AppDataStore appDataStore,
                             Activity activity) {
-        super(appBus, dataManager, activity);
+        super(appBus, appDataStore, activity);
     }
 
     @Override

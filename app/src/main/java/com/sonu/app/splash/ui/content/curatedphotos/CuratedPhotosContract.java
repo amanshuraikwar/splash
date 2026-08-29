@@ -3,7 +3,7 @@ package com.sonu.app.splash.ui.content.curatedphotos;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.ui.architecture.PresenterPlugin;
 import com.sonu.app.splash.ui.content.ContentContract;
@@ -12,8 +12,6 @@ import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
-
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by amanshuraikwar on 28/01/18.
@@ -32,13 +30,11 @@ public class CuratedPhotosContract {
 
     public static class PresenterImpl extends ContentPresenter<View> implements Presenter {
 
-        private Disposable downloadPhotoDisp;
-
         @Inject
         public PresenterImpl(AppBus appBus,
-                             DataManager dataManager,
+                             AppDataStore appDataStore,
                              Activity activity) {
-            super(appBus, dataManager, activity);
+            super(appBus, appDataStore, activity);
         }
 
         @Override
@@ -48,24 +44,19 @@ public class CuratedPhotosContract {
 
         @Override
         public ContentCache getContentCache() {
-            return getDataManager().getCuratedPhotoCache();
+            return getAppDataStore().getCuratedPhotoCache();
         }
 
         @Override
         public void downloadPhoto(Photo photo) {
 
-            downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
+            PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
         }
 
         @Override
         public void detachView() {
             super.detachView();
 
-            if (downloadPhotoDisp != null) {
-                if (!downloadPhotoDisp.isDisposed()) {
-                    downloadPhotoDisp.dispose();
-                }
-            }
         }
     }
 }

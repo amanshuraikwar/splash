@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.local.room.favourites.FavPhoto;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
@@ -20,14 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-
 /**
  * Created by amanshuraikwar on 19/12/17.
  */
@@ -37,12 +29,11 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
     private static final String TAG = LogUtils.getLogTag(PhotoDescriptionPresenter.class);
 
-    private Disposable photoDescriptionDesc, downloadPhotoDisp, favPhotoDisp, bookmarkDisp;
     private boolean fetchingData;
 
     @Inject
-    public PhotoDescriptionPresenter(AppBus appBus, DataManager dataManager, Activity activity) {
-        super(appBus, dataManager, activity);
+    public PhotoDescriptionPresenter(AppBus appBus, AppDataStore appDataStore, Activity activity) {
+        super(appBus, appDataStore, activity);
     }
 
     @Override
@@ -59,17 +50,16 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
     private void checkForBookmark() {
 
-        bookmarkDisp = getDataManager()
-                .isPhotoFav(getView().getCurPhotoId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(value -> {
+        runInBackground(
+                () -> getAppDataStore().isPhotoFav(getView().getCurPhotoId()),
+                value -> {
                     if (value) {
                         getView().setFavActive();
                     } else {
                         getView().setFavInactive();
                     }
-                });
+                },
+                throwable -> getView().setFavInactive());
     }
 
     @Override
@@ -82,32 +72,21 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
             fetchingData = true;
 
-            photoDescriptionDesc = getDataManager()
-                    .getPhotoDescription(getView().getCurPhotoId())
-                    .map(this::getListItems)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            listItems -> {
-                                Log.d(TAG, "getPhotoDescription:onNext:called");
-                                getView().displayItems(listItems);
-                            },
-                            throwable -> {
-                                Log.d(TAG, "getPhotoDescription:onError:called");
-                                Log.e(TAG, "getPhotoDescription:onError:error=" + throwable);
-                                throwable.printStackTrace();
-                                getView().showError();
-                                fetchingData = false;
-                            },
-                            () -> {
-                                Log.d(TAG, "getPhotoDescription:onCompleted:called");
-                                getView().hideLoading();
-                                fetchingData = false;
-                            },
-                            disposable -> {
-                                Log.d(TAG, "getPhotoDescription:onSubscribe:called");
-                                getView().showLoading();
-                            });
+            getView().showLoading();
+            runInBackground(
+                    () -> getListItems(
+                            getAppDataStore().getPhotoDescription(getView().getCurPhotoId())),
+                    listItems -> {
+                        Log.d(TAG, "getPhotoDescription:completed");
+                        getView().displayItems(listItems);
+                        getView().hideLoading();
+                        fetchingData = false;
+                    },
+                    throwable -> {
+                        Log.e(TAG, "getPhotoDescription:error=" + throwable);
+                        getView().showError();
+                        fetchingData = false;
+                    });
         }
     }
 
@@ -126,67 +105,40 @@ public class PhotoDescriptionPresenter extends BasePresenterImpl<PhotoDescriptio
 
     @Override
     public void downloadPhoto(Photo photo) {
-        downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
+        PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
     }
 
     @Override
     public void onAddToFavClick() {
 
-        favPhotoDisp =
-                getDataManager()
-                        .isPhotoFav(getView().getCurPhotoId())
-                        .flatMap(this::getFavObs)
-                        .flatMap(temp -> getDataManager().isPhotoFav(getView().getCurPhotoId()))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                isFav -> {
-
-                                    if (isFav) {
-
-                                        getView().setFavActive();
-                                    } else {
-
-                                        getView().setFavInactive();
-                                    }
-                                }
-                        );
-    }
-
-    private Observable<Boolean> getFavObs(Boolean isFav) {
-
-        if (isFav) {
-
-            return getDataManager()
-                    .getFavPhotoById(getView().getCurPhotoId())
-                    .flatMap(getDataManager()::removeFav)
-                    .filter(success -> success);
-        } else {
-
-            return getDataManager()
-                    .addFav(new FavPhoto(getView().getCurPhoto(), NumberUtils.getCurrentDate()))
-                    .filter(success -> success);
-        }
+        runInBackground(
+                () -> {
+                    boolean isFavorite = getAppDataStore().isPhotoFav(getView().getCurPhotoId());
+                    if (isFavorite) {
+                        FavPhoto favorite = getAppDataStore()
+                                .getFavPhotoById(getView().getCurPhotoId());
+                        if (favorite != null) {
+                            getAppDataStore().removeFav(favorite);
+                        }
+                    } else {
+                        getAppDataStore().addFav(
+                                new FavPhoto(getView().getCurPhoto(), NumberUtils.getCurrentDate()));
+                    }
+                    return getAppDataStore().isPhotoFav(getView().getCurPhotoId());
+                },
+                isFavorite -> {
+                    if (isFavorite) {
+                        getView().setFavActive();
+                    } else {
+                        getView().setFavInactive();
+                    }
+                },
+                throwable -> getView().setFavInactive());
     }
 
     @Override
     public void detachView() {
         super.detachView();
 
-        photoDescriptionDesc.dispose();
-
-        if (downloadPhotoDisp != null) {
-            if (!downloadPhotoDisp.isDisposed()) {
-                downloadPhotoDisp.dispose();
-            }
-        }
-
-        if (favPhotoDisp != null) {
-            if (!favPhotoDisp.isDisposed()) {
-                favPhotoDisp.dispose();
-            }
-        }
-
-        bookmarkDisp.dispose();
     }
 }

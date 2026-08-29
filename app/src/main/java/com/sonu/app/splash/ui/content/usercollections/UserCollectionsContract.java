@@ -3,7 +3,7 @@ package com.sonu.app.splash.ui.content.usercollections;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.PresenterPlugin;
@@ -14,8 +14,6 @@ import com.sonu.app.splash.ui.content.userphotos.UserPhotosContract;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
-
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by amanshuraikwar on 12/02/18.
@@ -36,9 +34,9 @@ public class UserCollectionsContract {
 
         @Inject
         public PresenterImpl(AppBus appBus,
-                             DataManager dataManager,
+                             AppDataStore appDataStore,
                              Activity activity) {
-            super(appBus, dataManager, activity);
+            super(appBus, appDataStore, activity);
         }
 
         @Override
@@ -48,7 +46,7 @@ public class UserCollectionsContract {
 
         @Override
         public ContentCache getContentCache() {
-            return getDataManager().getUserCollectionsCache(getView().getUsername());
+            return getAppDataStore().getUserCollectionsCache(getView().getUsername());
         }
 
         @Override

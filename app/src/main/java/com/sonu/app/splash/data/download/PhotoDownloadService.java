@@ -9,8 +9,9 @@ import android.util.Pair;
 
 import com.sonu.app.splash.R;
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload;
+import com.sonu.app.splash.ui.architecture.CoroutineTaskScope;
 import com.sonu.app.splash.util.LogUtils;
 
 import java.io.File;
@@ -20,17 +21,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.Callable;
-
 import javax.inject.Inject;
 
 import dagger.android.DaggerService;
 import dagger.internal.Beta;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+import kotlinx.coroutines.Job;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -68,13 +63,14 @@ public class PhotoDownloadService extends DaggerService {
 
     private int curDownloadProgress;
     private String curError;
-    private Disposable curDisposable;
+    private Job currentDownloadJob;
+    private final CoroutineTaskScope taskScope = new CoroutineTaskScope();
 
     @Inject
     AppBus appBus;
 
     @Inject
-    DataManager dataManager;
+    AppDataStore appDataStore;
 
     private final ProgressListener progressListener =
             new ProgressListener() {
@@ -87,7 +83,7 @@ public class PhotoDownloadService extends DaggerService {
                     // * notifying attached presenters
                     // * this is a light and frequent update
                     //   thus notified in a PUSH fashion
-                    appBus.updateDownloadProgress.onNext(new Pair<>(bytesRead, contentLength));
+                    appBus.updateDownloadProgress.emit(new Pair<>(bytesRead, contentLength));
                 }
     };
 
@@ -125,7 +121,7 @@ public class PhotoDownloadService extends DaggerService {
         downloadingIds = new HashSet<>();
 
         // setting download session active
-        dataManager.getDownloadSession().setSessionActive(true);
+        appDataStore.getDownloadSession().setSessionActive(true);
 
     }
 
@@ -187,8 +183,10 @@ public class PhotoDownloadService extends DaggerService {
     public void onDestroy() {
         super.onDestroy();
 
+        taskScope.cancelAll();
+
         // de-activating download session
-        dataManager.getDownloadSession().setSessionActive(false);
+        appDataStore.getDownloadSession().setSessionActive(false);
     }
 
     private void handleNewPhotoDownload(PhotoDownload photoDownload) {
@@ -242,32 +240,13 @@ public class PhotoDownloadService extends DaggerService {
 
             sendQuickMessageToUi(getString(R.string.download_started));
 
-            curDisposable =
-                    Observable.fromCallable(
-                            new Callable<ResponseBody>() {
-
-                                @Override
-                                public ResponseBody call() throws Exception {
-                                    return startDownloadAct(photoDownload);
-                                }
-                            })
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Consumer<ResponseBody>() {
-
-                                @Override
-                                public void accept(ResponseBody responseBody) throws Exception {
-
-                                    onDownloadComplete();
-                                }
-                            }, new Consumer<Throwable>() {
-
-                                @Override
-                                public void accept(Throwable throwable) throws Exception {
-                                    state = STATE.WAITING;
-                                    notifyUi(throwable.getMessage());
-                                }
-                            });
+            currentDownloadJob = taskScope.launch(
+                    () -> startDownloadAct(photoDownload),
+                    responseBody -> onDownloadComplete(),
+                    throwable -> {
+                        state = STATE.WAITING;
+                        notifyUi(throwable.getMessage());
+                    });
         } else {
             Log.wtf(TAG, "startDownload:queue head is null");
         }
@@ -303,17 +282,17 @@ public class PhotoDownloadService extends DaggerService {
         curError = error;
 
         // update state in session
-        dataManager.getDownloadSession().setDownloadState(new DownloadState(this));
+        appDataStore.getDownloadSession().setDownloadState(new DownloadState(this));
 
         // * notify any attached presenter about the change
         // * notified in a PULL fashion
-        appBus.onDownloadStateChange.onNext(0);
+        appBus.onDownloadStateChange.emit(0);
     }
 
     private void sendQuickMessageToUi(String error) {
 
         // pushing quick error to UI
-        appBus.sendQuickMessage.onNext(error);
+        appBus.sendQuickMessage.emit(error);
     }
 
     @Beta
@@ -323,10 +302,10 @@ public class PhotoDownloadService extends DaggerService {
         if (photoId.equals(downloadQueue.peek().getPhotoId())) {
 
             // todo : fix
-            // * does not stop the download going on in a separate thread
-            //   just stops observing the OBSERVABLE
+            // * cancels the coroutine job responsible for the current download
 
-            curDisposable.dispose();
+            taskScope.cancel(currentDownloadJob);
+            currentDownloadJob = null;
 
             // removing from queue
             downloadingIds.remove(downloadQueue.poll().getPhotoId());

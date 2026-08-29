@@ -12,14 +12,20 @@ import com.sonu.app.splash.data.cache.UserCollectionsCache;
 import com.sonu.app.splash.data.cache.UserPhotosCache;
 import com.sonu.app.splash.data.download.DownloadSession;
 import com.sonu.app.splash.data.download.Downloader;
-import com.sonu.app.splash.data.local.LocalDataManager;
-import com.sonu.app.splash.data.network.NetworkDataManager;
+import com.sonu.app.splash.data.local.LocalStore;
+import com.sonu.app.splash.model.unsplash.Photo;
+import com.sonu.app.splash.model.unsplash.PhotoStats;
+import com.sonu.app.splash.model.unsplash.User;
 
 /**
  * Created by amanshuraikwar on 18/12/17.
  */
 
-public interface DataManager extends LocalDataManager, NetworkDataManager, Downloader {
+public interface AppDataStore extends LocalStore, Downloader {
+
+    Photo getPhotoDescription(String photoId);
+    User getUserDescription(String username);
+    PhotoStats getPhotoStats(String photoId);
 
     AllPhotosCache getAllPhotosCache();
 

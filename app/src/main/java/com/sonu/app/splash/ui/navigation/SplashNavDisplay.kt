@@ -51,6 +51,7 @@ fun SplashNavDisplay(
     home: @Composable SplashDestinationScope.(SplashRoute.Home) -> Unit = {},
     about: @Composable SplashDestinationScope.(SplashRoute.About) -> Unit = {},
     photoDescription: @Composable SplashDestinationScope.(SplashRoute.PhotoDescription) -> Unit = {},
+    rssDetail: @Composable SplashDestinationScope.(SplashRoute.RssDetail) -> Unit = {},
     photoFullscreen: @Composable SplashDestinationScope.(SplashRoute.PhotoFullscreen) -> Unit = {},
     photoStats: @Composable SplashDestinationScope.(SplashRoute.PhotoStats) -> Unit = {},
     userDescription: @Composable SplashDestinationScope.(SplashRoute.UserDescription) -> Unit = {},
@@ -108,6 +109,16 @@ fun SplashNavDisplay(
                         animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                     ) {
                         photoDescription(key)
+                    }
+                }
+
+                entry<SplashRoute.RssDetail> { key ->
+                    ProvideSplashDestinationScope(
+                        backStack = backStack,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+                    ) {
+                        rssDetail(key)
                     }
                 }
 

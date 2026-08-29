@@ -2,8 +2,6 @@ package com.sonu.app.splash.bus;
 
 import android.util.Pair;
 
-import io.reactivex.subjects.PublishSubject;
-
 /**
  * Created by amanshuraikwar on 18/12/17.
  */
@@ -11,28 +9,28 @@ import io.reactivex.subjects.PublishSubject;
 public class AppBus {
 
     // navigation related subjects
-    public PublishSubject<Integer> onHomeNavItemVisible;
+    public EventChannel<Integer> onHomeNavItemVisible;
 
     // download related subjects
-    public PublishSubject<Integer> onDownloadStateChange;
-    public PublishSubject<Pair<Long, Long>> updateDownloadProgress;
+    public EventChannel<Integer> onDownloadStateChange;
+    public EventChannel<Pair<Long, Long>> updateDownloadProgress;
 
     // general ui subjects
-    public PublishSubject<String> sendQuickMessage;
+    public EventChannel<String> sendQuickMessage;
 
     // download notification
-    public PublishSubject<Long> downloadStarted;
+    public EventChannel<Long> downloadStarted;
 
     public AppBus() {
 
         // initialising all the publish subjects
-        onHomeNavItemVisible = PublishSubject.create();
+        onHomeNavItemVisible = new EventChannel<>();
 
-        onDownloadStateChange = PublishSubject.create();
-        updateDownloadProgress = PublishSubject.create();
+        onDownloadStateChange = new EventChannel<>();
+        updateDownloadProgress = new EventChannel<>();
 
-        sendQuickMessage = PublishSubject.create();
+        sendQuickMessage = new EventChannel<>();
 
-        downloadStarted = PublishSubject.create();
+        downloadStarted = new EventChannel<>();
     }
 }
