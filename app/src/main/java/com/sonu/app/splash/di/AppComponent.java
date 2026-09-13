@@ -5,8 +5,9 @@ import android.app.Application;
 import com.sonu.app.splash.MyApp;
 import com.sonu.app.splash.bus.AppBus;
 import com.sonu.app.splash.bus.AppBusModule;
-import com.sonu.app.splash.data.DataManager;
-import com.sonu.app.splash.data.DataManagerModule;
+import com.sonu.app.splash.data.AppDataStore;
+import com.sonu.app.splash.data.AppDataStoreModule;
+import com.sonu.app.splash.data.media.MediaRepository;
 
 import javax.inject.Singleton;
 
@@ -21,13 +22,14 @@ import dagger.android.support.AndroidSupportInjectionModule;
 
 @Singleton
 @Component(modules = {AppModule.class,
-        DataManagerModule.class,
+        AppDataStoreModule.class,
         AppBusModule.class,
         ActivityBindingModule.class,
         AndroidSupportInjectionModule.class})
 public interface AppComponent extends AndroidInjector<MyApp> {
 
-    DataManager getDataManager();
+    AppDataStore getAppDataStore();
+    MediaRepository getMediaRepository();
     AppBus getAppBus();
 
     // Gives us syntactic sugar. we can then do DaggerAppComponent.builder().application(this).build().inject(this);

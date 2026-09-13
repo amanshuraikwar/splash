@@ -1,11 +1,13 @@
 package com.sonu.app.splash.data.cache;
 
-import com.google.gson.JsonElement;
-import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
+import com.sonu.app.splash.data.media.CollectionPageLoader;
 import com.sonu.app.splash.model.unsplash.Collection;
 import com.sonu.app.splash.util.LogUtils;
-import com.sonu.app.splash.util.UnsplashJsonUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.sonu.app.splash.ui.legacy.LegacyUiModelMapper;
 
 import javax.inject.Inject;
 
@@ -20,15 +22,20 @@ public class UserCollectionsCache extends SimpleContentCache<Collection> {
     private String username;
 
     @Inject
-    public UserCollectionsCache(RequestHandler requestHandler,
+    public UserCollectionsCache(CollectionPageLoader pageLoader,
                                 String username) {
-        super(requestHandler);
+        super();
+        this.pageLoader = pageLoader;
         this.username = username;
     }
 
+    private final CollectionPageLoader pageLoader;
+
     @Override
-    protected String getApiEndpoint() {
-        return String.format(ApiEndpoints.GET_USER_COLLECTIONS, username, "%s");
+    protected List<Collection> fetchPage(int page) {
+        return pageLoader.loadCreator(username, page).stream()
+                .map(LegacyUiModelMapper::toCollection)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -36,8 +43,4 @@ public class UserCollectionsCache extends SimpleContentCache<Collection> {
         return TAG;
     }
 
-    @Override
-    Collection getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.buildCollectionObj(element.getAsJsonObject());
-    }
 }

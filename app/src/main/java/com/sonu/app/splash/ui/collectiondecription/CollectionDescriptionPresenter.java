@@ -3,21 +3,13 @@ package com.sonu.app.splash.ui.collectiondecription;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
-import com.sonu.app.splash.data.cache.CollectionPhotosCache;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.local.room.favourites.FavCollection;
-import com.sonu.app.splash.data.local.room.favourites.FavPhoto;
-import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.ui.architecture.PresenterPlugin;
 import com.sonu.app.splash.util.NumberUtils;
 
 import javax.inject.Inject;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by amanshuraikwar on 04/02/18.
@@ -27,13 +19,11 @@ public class CollectionDescriptionPresenter
         extends BasePresenterImpl<CollectionDescriptionContract.View>
         implements CollectionDescriptionContract.Presenter {
 
-    private Disposable favCollectionDisp, bookmarkDisp;
-
     @Inject
     public CollectionDescriptionPresenter(AppBus appBus,
-                                          DataManager dataManager,
+                                          AppDataStore appDataStore,
                                           Activity activity) {
-        super(appBus, dataManager, activity);
+        super(appBus, appDataStore, activity);
     }
 
     @Override
@@ -48,71 +38,52 @@ public class CollectionDescriptionPresenter
 
     private void checkForBookmark() {
 
-        bookmarkDisp = getDataManager()
-                .isCollectionFav(getView().getCollectionId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(value -> {
+        runInBackground(
+                () -> getAppDataStore().isCollectionFav(getView().getCollectionId()),
+                value -> {
                     if (value) {
                         getView().setFavActive();
                     } else {
                         getView().setFavInactive();
                     }
-                });
+                },
+                throwable -> getView().setFavInactive());
     }
 
     @Override
     public void onAddToFavClick() {
 
-        favCollectionDisp =
-                getDataManager()
-                        .isCollectionFav(getView().getCollectionId())
-                        .flatMap(this::getFavObs)
-                        .flatMap(temp ->
-                                getDataManager().isCollectionFav(
-                                        getView().getCollectionId()))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                isFav -> {
-
-                                    if (isFav) {
-
-                                        getView().setFavActive();
-                                    } else {
-
-                                        getView().setFavInactive();
-                                    }
-                                }
-                        );
-    }
-
-    private Observable<Boolean> getFavObs(Boolean isFav) {
-
-        if (isFav) {
-
-            return getDataManager()
-                    .getFavCollectionById(getView().getCollectionId())
-                    .flatMap(getDataManager()::removeFav)
-                    .filter(success -> success);
-        } else {
-
-            return getDataManager()
-                    .addFav(new FavCollection(getView().getCollection(), NumberUtils.getCurrentDate()))
-                    .filter(success -> success);
-        }
+        runInBackground(
+                () -> {
+                    boolean isFavorite = getAppDataStore()
+                            .isCollectionFav(getView().getCollectionId());
+                    if (isFavorite) {
+                        FavCollection favorite = getAppDataStore()
+                                .getFavCollectionById(getView().getCollectionId());
+                        if (favorite != null) {
+                            getAppDataStore().removeFav(favorite);
+                        }
+                    } else {
+                        getAppDataStore().addFav(
+                                new FavCollection(
+                                        getView().getCollection(),
+                                        NumberUtils.getCurrentDate()));
+                    }
+                    return getAppDataStore().isCollectionFav(getView().getCollectionId());
+                },
+                isFavorite -> {
+                    if (isFavorite) {
+                        getView().setFavActive();
+                    } else {
+                        getView().setFavInactive();
+                    }
+                },
+                throwable -> getView().setFavInactive());
     }
 
     @Override
     public void detachView() {
         super.detachView();
 
-        if (favCollectionDisp != null) {
-            if (!favCollectionDisp.isDisposed()) {
-                favCollectionDisp.dispose();
-            }
-        }
-
-        bookmarkDisp.dispose();
     }
 }

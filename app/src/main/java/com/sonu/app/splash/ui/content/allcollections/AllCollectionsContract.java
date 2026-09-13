@@ -3,7 +3,7 @@ package com.sonu.app.splash.ui.content.allcollections;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.ui.content.ContentContract;
 import com.sonu.app.splash.ui.content.ContentPresenter;
@@ -29,9 +29,9 @@ public class AllCollectionsContract {
 
         @Inject
         public PresenterImpl(AppBus appBus,
-                             DataManager dataManager,
+                             AppDataStore appDataStore,
                              Activity activity) {
-            super(appBus, dataManager, activity);
+            super(appBus, appDataStore, activity);
         }
 
         @Override
@@ -41,7 +41,7 @@ public class AllCollectionsContract {
 
         @Override
         public ContentCache getContentCache() {
-            return getDataManager().getAllCollectionsCache();
+            return getAppDataStore().getAllCollectionsCache();
         }
     }
 }

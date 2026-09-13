@@ -5,11 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.sonu.app.splash.data.DataManager
+import androidx.lifecycle.viewModelScope
+import com.sonu.app.splash.data.media.MediaContentCache
+import com.sonu.app.splash.data.media.MediaPageRequest
+import com.sonu.app.splash.data.media.MediaPageRequestFactory
+import com.sonu.app.splash.data.media.MediaRepository
 import com.sonu.app.splash.model.unsplash.Photo
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import com.sonu.app.splash.ui.legacy.LegacyUiModelMapper
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 data class PhotosFeedUiState(
     val photos: List<Photo> = emptyList(),
@@ -20,14 +24,32 @@ data class PhotosFeedUiState(
 )
 
 internal class PhotosFeedViewModel(
-    private val dataManager: DataManager,
+    mediaRepository: MediaRepository,
 ) : ViewModel() {
+
+    private val contentCache = MediaContentCache(
+        repository = mediaRepository,
+        requestFactory = MediaPageRequestFactory { page -> MediaPageRequest.All(page) },
+    )
 
     var uiState by mutableStateOf(PhotosFeedUiState())
         private set
 
-    private val disposables = CompositeDisposable()
     private var hasStarted = false
+
+    init {
+        viewModelScope.launch {
+            contentCache.state.collect { state ->
+                uiState = PhotosFeedUiState(
+                    photos = state.items.map(LegacyUiModelMapper::toPhoto),
+                    isInitialLoading = state.isLoading && state.items.isEmpty(),
+                    isLoadingMore = state.isLoading && state.items.isNotEmpty(),
+                    canLoadMore = state.canLoadMore,
+                    errorMessage = state.error?.readableMessage(),
+                )
+            }
+        }
+    }
 
     fun loadInitial() {
         if (hasStarted) {
@@ -36,91 +58,28 @@ internal class PhotosFeedViewModel(
 
         hasStarted = true
 
-        val cache = dataManager.getAllPhotosCache()
-        if (cache.isCacheEmpty()) {
-            loadMore()
-            return
-        }
-
-        disposables.add(
-            cache.getCachedContent()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { photos ->
-                        uiState = uiState.copy(
-                            photos = photos,
-                            canLoadMore = true,
-                            errorMessage = null,
-                        )
-                    },
-                    { throwable ->
-                        uiState = uiState.copy(errorMessage = throwable.readableMessage())
-                    },
-                ),
-        )
-    }
-
-    fun loadMore() {
-        val currentState = uiState
-        if (currentState.isInitialLoading ||
-            currentState.isLoadingMore ||
-            !currentState.canLoadMore
-        ) {
-            return
-        }
-
-        val isInitialLoad = currentState.photos.isEmpty()
-        uiState = currentState.copy(
-            isInitialLoading = isInitialLoad,
-            isLoadingMore = !isInitialLoad,
-            errorMessage = null,
-        )
-
-        disposables.add(
-            dataManager.getAllPhotosCache()
-                .getMoreContent()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { photos ->
-                        uiState = uiState.copy(
-                            photos = (uiState.photos + photos).distinctBy { it.id },
-                            isInitialLoading = false,
-                            isLoadingMore = false,
-                            canLoadMore = photos.isNotEmpty(),
-                            errorMessage = null,
-                        )
-                    },
-                    { throwable ->
-                        uiState = uiState.copy(
-                            isInitialLoading = false,
-                            isLoadingMore = false,
-                            errorMessage = throwable.readableMessage(),
-                        )
-                    },
-                ),
-        )
-    }
-
-    fun refresh() {
-        dataManager.getAllPhotosCache().resetCache()
-        uiState = PhotosFeedUiState()
         loadMore()
     }
 
-    override fun onCleared() {
-        disposables.clear()
-        super.onCleared()
+    fun loadMore() {
+        viewModelScope.launch {
+            contentCache.loadMore()
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            contentCache.refresh()
+        }
     }
 
     class Factory(
-        private val dataManager: DataManager,
+        private val mediaRepository: MediaRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(PhotosFeedViewModel::class.java)) {
-                return PhotosFeedViewModel(dataManager) as T
+                return PhotosFeedViewModel(mediaRepository) as T
             }
 
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
@@ -129,5 +88,5 @@ internal class PhotosFeedViewModel(
 }
 
 private fun Throwable.readableMessage(): String {
-    return localizedMessage?.takeIf { it.isNotBlank() } ?: "Unable to load photos"
+    return localizedMessage?.takeIf { it.isNotBlank() } ?: "Unable to load media"
 }

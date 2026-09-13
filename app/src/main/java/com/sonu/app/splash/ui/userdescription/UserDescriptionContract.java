@@ -1,6 +1,6 @@
 package com.sonu.app.splash.ui.userdescription;
 
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.model.unsplash.User;
 import com.sonu.app.splash.ui.architecture.BasePresenter;

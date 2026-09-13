@@ -3,7 +3,7 @@ package com.sonu.app.splash.ui.content.userphotos;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.ui.architecture.PresenterPlugin;
@@ -13,8 +13,6 @@ import com.sonu.app.splash.ui.content.curatedphotos.CuratedPhotosContract;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
-
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by amanshuraikwar on 12/02/18.
@@ -34,13 +32,11 @@ public class UserPhotosContract {
 
     public static class PresenterImpl extends ContentPresenter<View> implements Presenter {
 
-        private Disposable downloadPhotoDisp;
-
         @Inject
         public PresenterImpl(AppBus appBus,
-                             DataManager dataManager,
+                             AppDataStore appDataStore,
                              Activity activity) {
-            super(appBus, dataManager, activity);
+            super(appBus, appDataStore, activity);
         }
 
         @Override
@@ -50,13 +46,13 @@ public class UserPhotosContract {
 
         @Override
         public ContentCache getContentCache() {
-            return getDataManager().getUserPhotosCache(getView().getUsername());
+            return getAppDataStore().getUserPhotosCache(getView().getUsername());
         }
 
         @Override
         public void downloadPhoto(Photo photo) {
 
-            downloadPhotoDisp = PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
+            PresenterPlugin.DownloadPhoto.downloadPhoto(photo, this);
         }
 
         @Override
@@ -68,11 +64,6 @@ public class UserPhotosContract {
         public void detachView() {
             super.detachView();
 
-            if (downloadPhotoDisp != null) {
-                if (!downloadPhotoDisp.isDisposed()) {
-                    downloadPhotoDisp.dispose();
-                }
-            }
         }
     }
 }

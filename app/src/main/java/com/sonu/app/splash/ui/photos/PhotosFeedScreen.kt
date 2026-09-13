@@ -80,7 +80,9 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.sonu.app.splash.data.DataManager
+import com.sonu.app.splash.data.media.CollectionRepository
+import com.sonu.app.splash.data.media.MediaRepository
+import com.sonu.app.splash.data.rss.RssRepository
 import com.sonu.app.splash.model.unsplash.Photo
 import com.sonu.app.splash.model.unsplash.Collection as UnsplashCollection
 import com.sonu.app.splash.ui.navigation.LocalSplashAnimatedVisibilityScope
@@ -88,13 +90,14 @@ import com.sonu.app.splash.ui.navigation.LocalSplashSharedTransitionScope
 import com.sonu.app.splash.ui.navigation.SplashDestinationScope
 import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.navigation.SplashSharedElementKey
-import com.sonu.app.splash.ui.theme.Polygon
-import com.sonu.app.splash.ui.theme.PolygonPalette
+import com.sonu.app.splash.ui.rss.RssFeedRoute
+import com.sonu.app.polygon.theme.Polygon
+import com.sonu.app.polygon.theme.PolygonPalette
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
 
-private val LocalPhotosFeedScrollChanged = staticCompositionLocalOf<(Boolean) -> Unit> { {} }
+internal val LocalMediaFeedScrollChanged = staticCompositionLocalOf<(Boolean) -> Unit> { {} }
 
 private val PhotoSharedBoundsTransform = BoundsTransform { _, _ ->
     tween(
@@ -110,9 +113,10 @@ private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
     )
 }
 
-internal enum class PhotosFeedPage(val title: String) {
-    AllPhotos("all photos"),
+internal enum class MediaFeedPage(val title: String) {
+    AllMedia("all media"),
     Collections("collections"),
+    Rss("rss"),
 }
 
 internal object PhotosFeedTestTags {
@@ -123,8 +127,10 @@ private const val PHOTO_GRID_CONTENT_TYPE = "photo-grid-item"
 private const val PHOTO_GRID_LOADING_CONTENT_TYPE = "photo-grid-loading"
 
 @Composable
-fun PhotosFeedRoute(
-    dataManager: DataManager,
+fun MediaFeedRoute(
+    mediaRepository: MediaRepository,
+    collectionRepository: CollectionRepository,
+    rssRepository: RssRepository,
     destinationScope: SplashDestinationScope,
     onPhotoClick: ((Photo) -> Unit)? = null,
 ) {
@@ -135,25 +141,32 @@ fun PhotosFeedRoute(
         }
     }
 
-    PhotosFeedPagerScaffold { page ->
+    MediaFeedPagerScaffold { page ->
         when (page) {
-            PhotosFeedPage.AllPhotos -> PhotosFeedPageRoute(
-                dataManager = dataManager,
+            MediaFeedPage.AllMedia -> PhotosFeedPageRoute(
+                mediaRepository = mediaRepository,
                 onPhotoClick = photoClick,
             )
 
-            PhotosFeedPage.Collections -> CollectionsFeedRoute(dataManager = dataManager)
+            MediaFeedPage.Collections -> CollectionsFeedRoute(
+                collectionRepository = collectionRepository,
+            )
+
+            MediaFeedPage.Rss -> RssFeedRoute(
+                repository = rssRepository,
+                destinationScope = destinationScope,
+            )
         }
     }
 }
 
 @Composable
 private fun PhotosFeedPageRoute(
-    dataManager: DataManager,
+    mediaRepository: MediaRepository,
     onPhotoClick: ((Photo) -> Unit)? = null,
     viewModel: PhotosFeedViewModel = viewModel(
-        key = PhotosFeedPage.AllPhotos.name,
-        factory = PhotosFeedViewModel.Factory(dataManager),
+        key = MediaFeedPage.AllMedia.name,
+        factory = PhotosFeedViewModel.Factory(mediaRepository),
     ),
 ) {
     val state = viewModel.uiState
@@ -173,10 +186,10 @@ private fun PhotosFeedPageRoute(
 
 @Composable
 private fun CollectionsFeedRoute(
-    dataManager: DataManager,
+    collectionRepository: CollectionRepository,
     viewModel: CollectionsFeedViewModel = viewModel(
-        key = PhotosFeedPage.Collections.name,
-        factory = CollectionsFeedViewModel.Factory(dataManager),
+        key = MediaFeedPage.Collections.name,
+        factory = CollectionsFeedViewModel.Factory(collectionRepository),
     ),
 ) {
     val state = viewModel.uiState
@@ -194,10 +207,10 @@ private fun CollectionsFeedRoute(
 }
 
 @Composable
-internal fun PhotosFeedPagerScaffold(
+internal fun MediaFeedPagerScaffold(
     modifier: Modifier = Modifier,
-    pages: List<PhotosFeedPage> = PhotosFeedPage.entries,
-    pageContent: @Composable (PhotosFeedPage) -> Unit,
+    pages: List<MediaFeedPage> = MediaFeedPage.entries,
+    pageContent: @Composable (MediaFeedPage) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val coroutineScope = rememberCoroutineScope()
@@ -218,7 +231,7 @@ internal fun PhotosFeedPagerScaffold(
                 .fillMaxSize(),
         ) { index ->
             CompositionLocalProvider(
-                LocalPhotosFeedScrollChanged provides { isScrolled ->
+                LocalMediaFeedScrollChanged provides { isScrolled ->
                     pageScrollStates[index] = isScrolled
                 },
             ) {
@@ -243,7 +256,7 @@ internal fun PhotosFeedPagerScaffold(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PhotosFeedHeader(
-    pages: List<PhotosFeedPage>,
+    pages: List<MediaFeedPage>,
     selectedPage: Int,
     statusBarPadding: Dp,
     floating: Boolean,
@@ -497,7 +510,7 @@ fun PhotosFeedScreen(
     includeStatusBarPadding: Boolean = true,
 ) {
     val gridState = rememberLazyStaggeredGridState()
-    val onScrollChanged = LocalPhotosFeedScrollChanged.current
+    val onScrollChanged = LocalMediaFeedScrollChanged.current
     val density = LocalDensity.current
     val statusBarPadding = with(density) {
         WindowInsets.statusBars.getTop(this).toDp()
@@ -590,7 +603,7 @@ internal fun CollectionsFeedScreen(
     includeStatusBarPadding: Boolean = true,
 ) {
     val gridState = rememberLazyStaggeredGridState()
-    val onScrollChanged = LocalPhotosFeedScrollChanged.current
+    val onScrollChanged = LocalMediaFeedScrollChanged.current
     val density = LocalDensity.current
     val statusBarPadding = with(density) {
         WindowInsets.statusBars.getTop(this).toDp()

@@ -5,16 +5,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.sonu.app.splash.data.DataManager
+import androidx.lifecycle.viewModelScope
+import com.sonu.app.splash.data.download.Downloader
+import com.sonu.app.splash.data.local.LocalStore
 import com.sonu.app.splash.data.local.room.favourites.FavPhoto
 import com.sonu.app.splash.data.local.room.photodownload.PhotoDownload
+import com.sonu.app.splash.data.media.MediaRepository
 import com.sonu.app.splash.model.unsplash.Photo
 import com.sonu.app.splash.ui.navigation.SplashRoute
+import com.sonu.app.splash.ui.legacy.LegacyUiModelMapper
 import com.sonu.app.splash.util.NumberUtils
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal data class PhotoDescriptionPreview(
     val photoId: String,
@@ -41,7 +44,9 @@ internal data class PhotoDescriptionUiState(
 )
 
 internal class PhotoDescriptionViewModel(
-    private val dataManager: DataManager,
+    private val mediaRepository: MediaRepository,
+    private val localStore: LocalStore,
+    private val downloader: Downloader,
     preview: PhotoDescriptionPreview,
 ) : ViewModel() {
 
@@ -53,7 +58,6 @@ internal class PhotoDescriptionViewModel(
     )
         private set
 
-    private val disposables = CompositeDisposable()
     private var hasStarted = false
     private var fetchingPhoto = false
 
@@ -83,34 +87,27 @@ internal class PhotoDescriptionViewModel(
             actionMessage = null,
         )
 
-        disposables.add(
-            dataManager.isPhotoFav(photoId)
-                .flatMap { isFavorite ->
-                    if (isFavorite) {
-                        dataManager.getFavPhotoById(photoId)
-                            .flatMap { favorite -> dataManager.removeFav(favorite) }
+        viewModelScope.launch {
+            try {
+                val isFavorite = withContext(Dispatchers.IO) {
+                    if (localStore.isPhotoFav(photoId)) {
+                        localStore.getFavPhotoById(photoId)?.let { localStore.removeFav(it) }
                     } else {
-                        dataManager.addFav(FavPhoto(photo, NumberUtils.getCurrentDate()))
+                        localStore.addFav(FavPhoto(photo, NumberUtils.getCurrentDate()))
                     }
+                    localStore.isPhotoFav(photoId)
                 }
-                .flatMap { dataManager.isPhotoFav(photoId) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { isFavorite ->
-                        uiState = uiState.copy(
-                            isFavorite = isFavorite,
-                            isChangingFavorite = false,
-                        )
-                    },
-                    { throwable ->
-                        uiState = uiState.copy(
-                            isChangingFavorite = false,
-                            actionMessage = throwable.readableMessage("Unable to update bookmark"),
-                        )
-                    },
-                ),
-        )
+                uiState = uiState.copy(
+                    isFavorite = isFavorite,
+                    isChangingFavorite = false,
+                )
+            } catch (throwable: Throwable) {
+                uiState = uiState.copy(
+                    isChangingFavorite = false,
+                    actionMessage = throwable.readableMessage("Unable to update bookmark"),
+                )
+            }
+        }
     }
 
     fun downloadPhoto() {
@@ -124,38 +121,33 @@ internal class PhotoDescriptionViewModel(
             actionMessage = null,
         )
 
-        disposables.add(
-            Observable.fromCallable {
-                val downloadReference = dataManager.downloadPhoto(photo)
-                PhotoDownload.Builder(
-                    downloadReference,
-                    NumberUtils.getCurrentTimeStamp(),
+        viewModelScope.launch {
+            try {
+                val success = withContext(Dispatchers.IO) {
+                    val downloadReference = downloader.downloadPhoto(photo)
+                    val photoDownload = PhotoDownload.Builder(
+                        downloadReference,
+                        NumberUtils.getCurrentTimeStamp(),
+                    )
+                        .photo(photo)
+                        .build()
+                    localStore.addPhotoDownload(photoDownload)
+                }
+                uiState = uiState.copy(
+                    isDownloading = false,
+                    actionMessage = if (success) {
+                        "Download started"
+                    } else {
+                        "Unable to start download"
+                    },
                 )
-                    .photo(photo)
-                    .build()
+            } catch (throwable: Throwable) {
+                uiState = uiState.copy(
+                    isDownloading = false,
+                    actionMessage = throwable.readableMessage("Unable to start download"),
+                )
             }
-                .flatMap { photoDownload -> dataManager.addPhotoDownload(photoDownload) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { success ->
-                        uiState = uiState.copy(
-                            isDownloading = false,
-                            actionMessage = if (success) {
-                                "Download started"
-                            } else {
-                                "Unable to start download"
-                            },
-                        )
-                    },
-                    { throwable ->
-                        uiState = uiState.copy(
-                            isDownloading = false,
-                            actionMessage = throwable.readableMessage("Unable to start download"),
-                        )
-                    },
-                ),
-        )
+        }
     }
 
     private fun loadPhoto() {
@@ -170,59 +162,51 @@ internal class PhotoDescriptionViewModel(
             actionMessage = null,
         )
 
-        disposables.add(
-            dataManager.getPhotoDescription(uiState.photoId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { photo ->
-                        uiState = uiState.copy(
-                            photo = photo,
-                            isLoading = false,
-                            errorMessage = null,
-                        )
-                        fetchingPhoto = false
-                    },
-                    { throwable ->
-                        uiState = uiState.copy(
-                            isLoading = false,
-                            errorMessage = throwable.readableMessage("Unable to load photo details"),
-                        )
-                        fetchingPhoto = false
-                    },
-                ),
-        )
+        viewModelScope.launch {
+            try {
+                val photo = withContext(Dispatchers.IO) {
+                    LegacyUiModelMapper.toPhoto(mediaRepository.getById(uiState.photoId))
+                }
+                uiState = uiState.copy(
+                    photo = photo,
+                    isLoading = false,
+                    errorMessage = null,
+                )
+            } catch (throwable: Throwable) {
+                uiState = uiState.copy(
+                    isLoading = false,
+                    errorMessage = throwable.readableMessage("Unable to load photo details"),
+                )
+            } finally {
+                fetchingPhoto = false
+            }
+        }
     }
 
     private fun checkFavorite() {
-        disposables.add(
-            dataManager.isPhotoFav(uiState.photoId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { isFavorite ->
-                        uiState = uiState.copy(isFavorite = isFavorite)
-                    },
-                    {
-                        uiState = uiState.copy(isFavorite = false)
-                    },
-                ),
-        )
-    }
-
-    override fun onCleared() {
-        disposables.clear()
-        super.onCleared()
+        viewModelScope.launch {
+            val isFavorite = runCatching {
+                withContext(Dispatchers.IO) { localStore.isPhotoFav(uiState.photoId) }
+            }.getOrDefault(false)
+            uiState = uiState.copy(isFavorite = isFavorite)
+        }
     }
 
     class Factory(
-        private val dataManager: DataManager,
+        private val mediaRepository: MediaRepository,
+        private val localStore: LocalStore,
+        private val downloader: Downloader,
         private val preview: PhotoDescriptionPreview,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(PhotoDescriptionViewModel::class.java)) {
-                return PhotoDescriptionViewModel(dataManager, preview) as T
+                return PhotoDescriptionViewModel(
+                    mediaRepository,
+                    localStore,
+                    downloader,
+                    preview,
+                ) as T
             }
 
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

@@ -95,19 +95,21 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.crossfade
 import com.sonu.app.splash.R
-import com.sonu.app.splash.data.DataManager
+import com.sonu.app.splash.data.download.Downloader
+import com.sonu.app.splash.data.local.LocalStore
 import com.sonu.app.splash.model.unsplash.Exif
 import com.sonu.app.splash.model.unsplash.Location
 import com.sonu.app.splash.model.unsplash.Photo
 import com.sonu.app.splash.model.unsplash.User
+import com.sonu.app.splash.data.media.MediaRepository
 import com.sonu.app.splash.ui.navigation.LocalSplashAnimatedVisibilityScope
 import com.sonu.app.splash.ui.navigation.LocalSplashSharedTransitionScope
 import com.sonu.app.splash.ui.navigation.SplashDestinationScope
 import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.navigation.SplashSharedElementKey
-import com.sonu.app.splash.ui.theme.Polygon
-import com.sonu.app.splash.ui.theme.PolygonPalette
-import com.sonu.app.splash.ui.theme.PolygonTheme
+import com.sonu.app.polygon.theme.Polygon
+import com.sonu.app.polygon.theme.PolygonPalette
+import com.sonu.app.polygon.theme.PolygonTheme
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.flow.first
@@ -129,13 +131,17 @@ private val PhotosHeaderBoundsTransform = BoundsTransform { _, _ ->
 
 @Composable
 internal fun PhotoDescriptionRoute(
-    dataManager: DataManager,
+    mediaRepository: MediaRepository,
+    localStore: LocalStore,
+    downloader: Downloader,
     route: SplashRoute.PhotoDescription,
     destinationScope: SplashDestinationScope,
     viewModel: PhotoDescriptionViewModel = viewModel(
         key = "photo-description:${route.photoId}",
         factory = PhotoDescriptionViewModel.Factory(
-            dataManager = dataManager,
+            mediaRepository = mediaRepository,
+            localStore = localStore,
+            downloader = downloader,
             preview = route.toPreview(),
         ),
     ),

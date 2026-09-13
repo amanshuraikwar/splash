@@ -108,6 +108,8 @@ ksp {
 }
 
 dependencies {
+    implementation project(":polygon")
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     // AndroidX and Material
@@ -148,6 +150,7 @@ dependencies {
     // Coil - Compose image loading
     implementation libs.coil.compose
     implementation libs.coil.network.okhttp
+    implementation libs.coroutines.android
 
     // Glide - images
     implementation libs.glide
@@ -169,10 +172,6 @@ dependencies {
     implementation libs.dagger.android
     ksp libs.dagger.android.processor
     implementation libs.dagger.android.support
-
-    // RxJava and RxAndroid - reactive programming
-    implementation libs.rxandroid2
-    implementation libs.rxjava2
 
     // UI helpers
     implementation libs.material.progressbar

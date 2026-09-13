@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Retrofit + Gson reflect over these DTOs at runtime. Keep the model classes
+# intact in release builds so Gson can construct and populate them.
+-keep class com.sonu.app.splash.data.media.unsplash.** { *; }
+-keepattributes RuntimeVisibleAnnotations,RuntimeInvisibleAnnotations,AnnotationDefault

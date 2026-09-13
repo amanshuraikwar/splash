@@ -9,6 +9,7 @@ import com.sonu.app.splash.data.cache.ContentCache;
 import com.sonu.app.splash.ui.loading.LoadingListItem;
 import com.sonu.app.splash.ui.loading.LoadingOnClickListener;
 import com.sonu.app.splash.ui.loading.LoadingViewHolder;
+import com.sonu.app.splash.ui.architecture.CoroutineTaskScope;
 import com.sonu.app.splash.util.LogUtils;
 import com.sonu.app.splash.util.UiExceptionUtils;
 
@@ -17,11 +18,6 @@ import java.util.List;
 
 
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-
 public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
 
     private static final String TAG = LogUtils.getLogTag(ContentListAdapter.class);
@@ -29,6 +25,7 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
     private ContentCache contentCache;
     private AdapterListener adapterListener;
     private boolean fetching = false;
+    private final CoroutineTaskScope taskScope = new CoroutineTaskScope();
 
     public ContentListAdapter(@NonNull FragmentActivity parentActivity,
                               @NonNull ListItemTypeFactory typeFactory,
@@ -101,53 +98,26 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
             return;
         }
 
-        contentCache
-                .getCachedContent()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<DataModel>>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        setFetching(true);
+        setFetching(true);
+        taskScope.launch(
+                () -> (List<DataModel>) contentCache.getCachedContent(),
+                content -> {
+                    Log.d(TAG, "getCachedContent:completed");
+                    if (!content.isEmpty()) {
+                        setListItems(adapterListener.createListItems(content));
+                        addListItem(getLoadingListItem());
+                        notifyDataSetChanged();
+                    } else if (!isEmpty()) {
+                        ((LoadingListItem) getListItems().get(getItemCount() - 1))
+                                .setState(LoadingListItem.STATE.NORMAL);
+                        notifyItemChanged(getItemCount() - 1, LoadingListItem.STATE.NORMAL);
                     }
-
-                    @Override
-                    public void onNext(List<DataModel> content) {
-
-                        Log.d(TAG, "getMoreContent:onNext:called");
-
-                        if (content.size() != 0) {
-                            setListItems(adapterListener.createListItems(content));
-                            addListItem(getLoadingListItem());
-                            notifyDataSetChanged();
-                        } else {
-
-                            if (!isEmpty()) {
-
-                                ((LoadingListItem)getListItems().get(getItemCount() - 1))
-                                        .setState(LoadingListItem.STATE.NORMAL);
-                                notifyItemChanged(getItemCount() - 1, LoadingListItem.STATE.NORMAL);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                        Log.d(TAG, "getMoreContent:onError:called");
-                        Log.e(TAG, "getMoreContent:onError:error="+e);
-                        e.printStackTrace();
-                        UiExceptionUtils.handleUiException(e, adapterListener, getActivity());
-
-                        setFetching(false);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "getMoreContent:onCompleted:called");
-                        setFetching(false);
-                    }
+                    setFetching(false);
+                },
+                error -> {
+                    Log.e(TAG, "getCachedContent:error=" + error);
+                    UiExceptionUtils.handleUiException(error, adapterListener, getActivity());
+                    setFetching(false);
                 });
     }
 
@@ -161,63 +131,33 @@ public class ContentListAdapter<DataModel> extends RecyclerViewAdapter {
             return;
         }
 
-        contentCache
-                .getMoreContent()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<DataModel>>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                        setFetching(true);
-                        adapterListener.showLoading();
-                    }
-
-                    @Override
-                    public void onNext(List<DataModel> content) {
-
-                        Log.d(TAG, "getMoreContent:onNext:called");
-
-                        if (content.size() != 0) {
-
-                            int lastIndex = getItemCount() - 1;
-                            if (getItemCount() != 0) {
-                                removeListItem(getItemCount() - 1);
-                            }
-                            addListItems(adapterListener.createListItems(content));
-                            addListItem(getLoadingListItem());
-                            notifyItemRangeInserted(lastIndex+1, content.size());
-                        } else {
-
-                            if (!isEmpty()) {
-
-                                ((LoadingListItem)getListItems().get(getItemCount() - 1))
-                                        .setState(LoadingListItem.STATE.NORMAL);
-                                notifyItemChanged(getItemCount() - 1, LoadingListItem.STATE.NORMAL);
-                            }
+        setFetching(true);
+        adapterListener.showLoading();
+        taskScope.launch(
+                () -> (List<DataModel>) contentCache.getMoreContent(),
+                content -> {
+                    Log.d(TAG, "getMoreContent:completed");
+                    if (!content.isEmpty()) {
+                        int lastIndex = getItemCount() - 1;
+                        if (getItemCount() != 0) {
+                            removeListItem(getItemCount() - 1);
                         }
+                        addListItems(adapterListener.createListItems(content));
+                        addListItem(getLoadingListItem());
+                        notifyItemRangeInserted(lastIndex + 1, content.size());
+                    } else if (!isEmpty()) {
+                        ((LoadingListItem) getListItems().get(getItemCount() - 1))
+                                .setState(LoadingListItem.STATE.NORMAL);
+                        notifyItemChanged(getItemCount() - 1, LoadingListItem.STATE.NORMAL);
                     }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                        Log.d(TAG, "getMoreContent:onError:called");
-                        Log.e(TAG, "getMoreContent:onError:error="+e);
-                        e.printStackTrace();
-
-                        UiExceptionUtils.handleUiException(e, adapterListener, getActivity());
-                        setFetching(false);
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                        Log.d(TAG, "getMoreContent:onCompleted:called");
-
-                        adapterListener.hideLoading();
-                        setFetching(false);
-                    }
+                    adapterListener.hideLoading();
+                    setFetching(false);
+                },
+                error -> {
+                    Log.e(TAG, "getMoreContent:error=" + error);
+                    UiExceptionUtils.handleUiException(error, adapterListener, getActivity());
+                    adapterListener.hideLoading();
+                    setFetching(false);
                 });
     }
 

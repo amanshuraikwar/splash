@@ -8,7 +8,7 @@ import com.sonu.app.splash.ui.navigation.SplashDestinationScope
 import com.sonu.app.splash.ui.navigation.SplashNavDisplay
 import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.navigation.rememberSplashBackStack
-import com.sonu.app.splash.ui.theme.PolygonTheme
+import com.sonu.app.polygon.theme.PolygonTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -19,6 +19,7 @@ fun SplashApp(
     home: @Composable SplashDestinationScope.(SplashRoute.Home) -> Unit = {},
     about: @Composable SplashDestinationScope.(SplashRoute.About) -> Unit = {},
     photoDescription: @Composable SplashDestinationScope.(SplashRoute.PhotoDescription) -> Unit = {},
+    rssDetail: @Composable SplashDestinationScope.(SplashRoute.RssDetail) -> Unit = {},
     photoFullscreen: @Composable SplashDestinationScope.(SplashRoute.PhotoFullscreen) -> Unit = {},
     photoStats: @Composable SplashDestinationScope.(SplashRoute.PhotoStats) -> Unit = {},
     userDescription: @Composable SplashDestinationScope.(SplashRoute.UserDescription) -> Unit = {},
@@ -35,6 +36,7 @@ fun SplashApp(
             home = home,
             about = about,
             photoDescription = photoDescription,
+            rssDetail = rssDetail,
             photoFullscreen = photoFullscreen,
             photoStats = photoStats,
             userDescription = userDescription,

@@ -5,12 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.sonu.app.splash.data.DataManager
-import com.sonu.app.splash.data.cache.SearchCollectionsCache
+import androidx.lifecycle.viewModelScope
+import com.sonu.app.splash.data.media.CollectionContentCache
+import com.sonu.app.splash.data.media.CollectionPageRequest
+import com.sonu.app.splash.data.media.CollectionPageRequestFactory
+import com.sonu.app.splash.data.media.CollectionRepository
 import com.sonu.app.splash.model.unsplash.Collection as UnsplashCollection
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import com.sonu.app.splash.ui.legacy.LegacyUiModelMapper
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 private const val DEFAULT_COLLECTIONS_QUERY = "photos"
 
@@ -23,15 +26,35 @@ data class CollectionsFeedUiState(
 )
 
 internal class CollectionsFeedViewModel(
-    private val dataManager: DataManager,
+    collectionRepository: CollectionRepository,
     private val searchQuery: String = DEFAULT_COLLECTIONS_QUERY,
 ) : ViewModel() {
+
+    private val contentCache = CollectionContentCache(
+        repository = collectionRepository,
+        requestFactory = CollectionPageRequestFactory { page ->
+            CollectionPageRequest.Search(searchQuery, page)
+        },
+    )
 
     var uiState by mutableStateOf(CollectionsFeedUiState())
         private set
 
-    private val disposables = CompositeDisposable()
     private var hasStarted = false
+
+    init {
+        viewModelScope.launch {
+            contentCache.state.collect { state ->
+                uiState = CollectionsFeedUiState(
+                    collections = state.items.map(LegacyUiModelMapper::toCollection),
+                    isInitialLoading = state.isLoading && state.items.isEmpty(),
+                    isLoadingMore = state.isLoading && state.items.isNotEmpty(),
+                    canLoadMore = state.canLoadMore,
+                    errorMessage = state.error?.collectionsReadableMessage(),
+                )
+            }
+        }
+    }
 
     fun loadInitial() {
         if (hasStarted) {
@@ -40,100 +63,29 @@ internal class CollectionsFeedViewModel(
 
         hasStarted = true
 
-        val cache = contentCache()
-        if (cache.isCacheEmpty()) {
-            loadMore()
-            return
-        }
-
-        disposables.add(
-            cache.getCachedContent()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { collections ->
-                        uiState = uiState.copy(
-                            collections = collections,
-                            canLoadMore = true,
-                            errorMessage = null,
-                        )
-                    },
-                    { throwable ->
-                        uiState = uiState.copy(errorMessage = throwable.collectionsReadableMessage())
-                    },
-                ),
-        )
-    }
-
-    fun loadMore() {
-        val currentState = uiState
-        if (currentState.isInitialLoading ||
-            currentState.isLoadingMore ||
-            !currentState.canLoadMore
-        ) {
-            return
-        }
-
-        val isInitialLoad = currentState.collections.isEmpty()
-        uiState = currentState.copy(
-            isInitialLoading = isInitialLoad,
-            isLoadingMore = !isInitialLoad,
-            errorMessage = null,
-        )
-
-        disposables.add(
-            contentCache()
-                .getMoreContent()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { collections ->
-                        uiState = uiState.copy(
-                            collections = (uiState.collections + collections).distinctBy { it.id },
-                            isInitialLoading = false,
-                            isLoadingMore = false,
-                            canLoadMore = collections.isNotEmpty(),
-                            errorMessage = null,
-                        )
-                    },
-                    { throwable ->
-                        uiState = uiState.copy(
-                            isInitialLoading = false,
-                            isLoadingMore = false,
-                            errorMessage = throwable.collectionsReadableMessage(),
-                        )
-                    },
-                ),
-        )
-    }
-
-    fun refresh() {
-        contentCache().resetCache()
-        uiState = CollectionsFeedUiState()
         loadMore()
     }
 
-    private fun contentCache(): SearchCollectionsCache {
-        val cache = dataManager.getSearchCollectionsCache()
-        if (cache.getQuery() != searchQuery) {
-            cache.setQuery(searchQuery)
+    fun loadMore() {
+        viewModelScope.launch {
+            contentCache.loadMore()
         }
-        return cache
     }
 
-    override fun onCleared() {
-        disposables.clear()
-        super.onCleared()
+    fun refresh() {
+        viewModelScope.launch {
+            contentCache.refresh()
+        }
     }
 
     class Factory(
-        private val dataManager: DataManager,
+        private val collectionRepository: CollectionRepository,
         private val searchQuery: String = DEFAULT_COLLECTIONS_QUERY,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(CollectionsFeedViewModel::class.java)) {
-                return CollectionsFeedViewModel(dataManager, searchQuery) as T
+                return CollectionsFeedViewModel(collectionRepository, searchQuery) as T
             }
 
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

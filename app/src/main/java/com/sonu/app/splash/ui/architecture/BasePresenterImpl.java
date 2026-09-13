@@ -3,7 +3,12 @@ package com.sonu.app.splash.ui.architecture;
 import android.app.Activity;
 
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
+
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+
+import kotlinx.coroutines.Job;
 
 /**
  * Created by amanshuraikwar on 18/12/17.
@@ -13,12 +18,13 @@ public class BasePresenterImpl<View extends BaseView> implements BasePresenter<V
 
     private View view;
     private AppBus appBus;
-    private DataManager dataManager;
+    private AppDataStore appDataStore;
     private Activity activity;
+    private final CoroutineTaskScope taskScope = new CoroutineTaskScope();
 
-    public BasePresenterImpl(AppBus appBus, DataManager dataManager, Activity activity) {
+    public BasePresenterImpl(AppBus appBus, AppDataStore appDataStore, Activity activity) {
         this.appBus = appBus;
-        this.dataManager = dataManager;
+        this.appDataStore = appDataStore;
         this.activity = activity;
     }
 
@@ -30,12 +36,19 @@ public class BasePresenterImpl<View extends BaseView> implements BasePresenter<V
         return appBus;
     }
 
-    protected DataManager getDataManager() {
-        return dataManager;
+    protected AppDataStore getAppDataStore() {
+        return appDataStore;
     }
 
     protected Activity getActivity() {
         return activity;
+    }
+
+    protected <T> Job runInBackground(
+            Callable<T> task,
+            Consumer<T> onSuccess,
+            Consumer<Throwable> onError) {
+        return taskScope.launch(task, onSuccess, onError);
     }
 
     @Override
@@ -48,5 +61,6 @@ public class BasePresenterImpl<View extends BaseView> implements BasePresenter<V
     public void detachView() {
         // detaching view
         this.view = null;
+        taskScope.cancelAll();
     }
 }

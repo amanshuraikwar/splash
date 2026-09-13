@@ -32,7 +32,7 @@ import com.sonu.app.splash.ui.navigation.SplashRoute
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionScreen
 import com.sonu.app.splash.ui.photodescription.PhotoDescriptionUiState
 import com.sonu.app.splash.ui.photodescription.toPreview
-import com.sonu.app.splash.ui.theme.PolygonTheme
+import com.sonu.app.polygon.theme.PolygonTheme
 import java.io.File
 import java.net.URI
 import java.util.Collections
@@ -61,12 +61,12 @@ class PhotosFeedScreenScreenshotTest {
 
         composeRule.setContent {
             PolygonTheme {
-                PhotosFeedPagerScaffold(
+                MediaFeedPagerScaffold(
                     modifier = Modifier.testTag(MAIN_FEED_TAG),
-                    pages = listOf(PhotosFeedPage.AllPhotos, PhotosFeedPage.Collections),
+                    pages = listOf(MediaFeedPage.AllMedia, MediaFeedPage.Collections),
                 ) { page ->
                     when (page) {
-                        PhotosFeedPage.AllPhotos -> PhotosFeedScreen(
+                        MediaFeedPage.AllMedia -> PhotosFeedScreen(
                             state = PhotosFeedUiState(photos = photos),
                             onRetryClick = {},
                             onLoadMore = {},
@@ -79,12 +79,14 @@ class PhotosFeedScreenScreenshotTest {
                             includeStatusBarPadding = false,
                         )
 
-                        PhotosFeedPage.Collections -> CollectionsFeedScreen(
+                        MediaFeedPage.Collections -> CollectionsFeedScreen(
                             state = CollectionsFeedUiState(),
                             onRetryClick = {},
                             onLoadMore = {},
                             includeStatusBarPadding = false,
                         )
+
+                        MediaFeedPage.Rss -> error("RSS is not part of this screenshot fixture")
                     }
                 }
             }
@@ -148,11 +150,11 @@ class PhotosFeedScreenScreenshotTest {
             PolygonTheme {
                 SplashNavDisplay(
                     home = {
-                        PhotosFeedPagerScaffold(
-                            pages = listOf(PhotosFeedPage.AllPhotos, PhotosFeedPage.Collections),
+                        MediaFeedPagerScaffold(
+                            pages = listOf(MediaFeedPage.AllMedia, MediaFeedPage.Collections),
                         ) { page ->
                             when (page) {
-                                PhotosFeedPage.AllPhotos -> PhotosFeedScreen(
+                                MediaFeedPage.AllMedia -> PhotosFeedScreen(
                                     state = PhotosFeedUiState(photos = photos),
                                     onRetryClick = {},
                                     onLoadMore = {},
@@ -167,12 +169,14 @@ class PhotosFeedScreenScreenshotTest {
                                     includeStatusBarPadding = false,
                                 )
 
-                                PhotosFeedPage.Collections -> CollectionsFeedScreen(
+                                MediaFeedPage.Collections -> CollectionsFeedScreen(
                                     state = CollectionsFeedUiState(),
                                     onRetryClick = {},
                                     onLoadMore = {},
                                     includeStatusBarPadding = false,
                                 )
+
+                                MediaFeedPage.Rss -> error("RSS is not part of this screenshot fixture")
                             }
                         }
                     },

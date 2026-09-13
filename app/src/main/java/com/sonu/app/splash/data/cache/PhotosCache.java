@@ -1,10 +1,13 @@
 package com.sonu.app.splash.data.cache;
 
-import com.google.gson.JsonElement;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
+import com.sonu.app.splash.data.media.MediaPageLoader;
+import com.sonu.app.splash.data.media.model.Media;
+import com.sonu.app.splash.ui.legacy.LegacyUiModelMapper;
 import com.sonu.app.splash.model.unsplash.Photo;
 import com.sonu.app.splash.util.LogUtils;
-import com.sonu.app.splash.util.UnsplashJsonUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by amanshuraikwar on 20/12/17.
@@ -27,8 +30,11 @@ public abstract class PhotosCache extends SimpleContentCache<Photo> {
 
     private ORDER_BY ordering;
 
-    PhotosCache(RequestHandler requestHandler) {
-        super(requestHandler);
+    private final MediaPageLoader pageLoader;
+
+    PhotosCache(MediaPageLoader pageLoader) {
+        super();
+        this.pageLoader = pageLoader;
 
         // default ordering
         ordering = ORDER_BY.LATEST;
@@ -58,7 +64,15 @@ public abstract class PhotosCache extends SimpleContentCache<Photo> {
     }
 
     @Override
-    Photo getDataModelFromJson(JsonElement element) {
-        return UnsplashJsonUtils.buildPhotoObj(element.getAsJsonObject());
+    protected List<Photo> fetchPage(int page) {
+        return loadMediaPage(page).stream()
+                .map(LegacyUiModelMapper::toPhoto)
+                .collect(Collectors.toList());
+    }
+
+    protected abstract List<Media> loadMediaPage(int page);
+
+    protected MediaPageLoader getPageLoader() {
+        return pageLoader;
     }
 }

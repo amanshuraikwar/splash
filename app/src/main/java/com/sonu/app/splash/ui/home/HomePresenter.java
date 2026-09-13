@@ -5,16 +5,13 @@ import android.util.Log;
 
 import com.sonu.app.splash.ui.architecture.BasePresenterImpl;
 import com.sonu.app.splash.bus.AppBus;
-import com.sonu.app.splash.data.DataManager;
+import com.sonu.app.splash.data.AppDataStore;
 import com.sonu.app.splash.data.download.PhotoDownloadService;
 import com.sonu.app.splash.util.LogUtils;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+import com.sonu.app.splash.bus.EventChannel;
 
 /**
  * Created by amanshuraikwar on 18/12/17.
@@ -26,11 +23,11 @@ public class HomePresenter
 
     private static final String TAG = LogUtils.getLogTag(HomePresenter.class);
 
-    private Disposable downloadStartedDisp;
+    private EventChannel.Subscription downloadStartedSubscription;
 
     @Inject
-    HomePresenter(AppBus appBus, DataManager dataManager, Activity activity) {
-        super(appBus, dataManager, activity);
+    HomePresenter(AppBus appBus, AppDataStore appDataStore, Activity activity) {
+        super(appBus, appDataStore, activity);
     }
 
     @Override
@@ -39,12 +36,8 @@ public class HomePresenter
 
         if (wasViewRecreated) {
 
-            downloadStartedDisp =
-                    getAppBus()
-                            .downloadStarted
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(getView()::onDownloadStarted);
+            downloadStartedSubscription =
+                    getAppBus().downloadStarted.subscribe(getView()::onDownloadStarted);
         }
     }
 
@@ -52,6 +45,8 @@ public class HomePresenter
     public void detachView() {
         super.detachView();
 
-        downloadStartedDisp.dispose();
+        if (downloadStartedSubscription != null) {
+            downloadStartedSubscription.cancel();
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.sonu.app.splash.data.cache;
 
-import com.sonu.app.splash.data.network.unsplashapi.ApiEndpoints;
-import com.sonu.app.splash.data.network.unsplashapi.RequestHandler;
+import com.sonu.app.splash.data.media.MediaPageLoader;
+import com.sonu.app.splash.data.media.model.Media;
 import com.sonu.app.splash.util.LogUtils;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -15,13 +17,13 @@ public class CuratedPhotosCache extends PhotosCache {
     private static final String TAG = LogUtils.getLogTag(CuratedPhotosCache.class);
 
     @Inject
-    public CuratedPhotosCache(RequestHandler requestHandler) {
-        super(requestHandler);
+    public CuratedPhotosCache(MediaPageLoader pageLoader) {
+        super(pageLoader);
     }
 
     @Override
-    String getApiEndpoint() {
-        return String.format(ApiEndpoints.GET_CURATED_PHOTOS, "%s", getOrdering());
+    protected List<Media> loadMediaPage(int page) {
+        return getPageLoader().loadCurated(page, getOrdering());
     }
 
     @Override
